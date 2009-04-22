@@ -21,6 +21,10 @@
 @synthesize isConnecting;
 @synthesize requestStatus;
 
+//+ (void)initialize {
+//	[self setKeys:[NSArray arrayWithObject:@"showRead"] triggerChangeNotificationsForDependentKey:@"updateTweetFilterPredicate"];
+//}
+
 - (IBAction)updateTweetScores:(id)sender {
 	// user score
 	for(Tweet *t in [Tweet allObjects]) {
@@ -61,7 +65,18 @@
 
 - (void)updateTweetFilterPredicate {
 	NSNumber *score = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
-	self.tweetFilterPredicate = [NSPredicate predicateWithFormat:@"score >= %@" argumentArray:[NSArray arrayWithObject:score]];
+	NSPredicate *p1 = [NSPredicate predicateWithFormat:@"score >= %@" argumentArray:[NSArray arrayWithObject:score]];
+	NSMutableArray *subPredicates = [NSMutableArray arrayWithObject:p1];
+
+	NSNumber *showRead = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.showRead"];
+	if(![showRead boolValue]) {
+		NSPredicate *p2 = [NSPredicate predicateWithFormat:@"isRead == NO"];
+		[subPredicates addObject:p2];
+	}
+	
+	NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:subPredicates];		
+	NSLog(@"-- predicate %@", predicate);
+	self.tweetFilterPredicate = predicate;
 }
 
 - (id)init {
@@ -77,12 +92,14 @@
 	self.requestsIDs = [NSMutableSet set];
 	
 	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.score" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
+	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.showRead" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
 
 	return self;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-	if(object == [NSUserDefaultsController sharedUserDefaultsController] && [keyPath isEqualToString:@"values.score"]) {
+	if(object == [NSUserDefaultsController sharedUserDefaultsController] &&
+	   [[NSArray arrayWithObjects:@"values.score", @"values.showRead", nil] containsObject:keyPath]) {
 		[self updateTweetFilterPredicate];
 		return;
 	}

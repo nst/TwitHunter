@@ -22,6 +22,7 @@
 
 - (void)toggleIsRead {
 	self.isRead = [NSNumber numberWithBool:![self.isRead boolValue]];
+	NSLog(@"-- %@ %@", self.uid, self.isRead);
 }
 
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword {
