@@ -1,0 +1,13 @@
+TwitHunter is an attempt to see how scoring could be useful in a Twitter client.
+
+By scoring, I mean setting up rules that increase or descrease the score of individual tweets.
+
+You can then filter the tweets and display only the ones with the highest score.
+
+So far, it us just a quick hack, but it works :-)
+
+http://seriot.ch/temp/twithunter.png
+
+If the data model changes (and it will) delete ~/Library/Application\ Support/TwitHunter/TwitHunter.xml and relaunch.
+
+Nicolas Seriot, 2009-04-22
