@@ -21,10 +21,6 @@
 @synthesize isConnecting;
 @synthesize requestStatus;
 
-//+ (void)initialize {
-//	[self setKeys:[NSArray arrayWithObject:@"showRead"] triggerChangeNotificationsForDependentKey:@"updateTweetFilterPredicate"];
-//}
-
 - (IBAction)updateTweetScores:(id)sender {
 	// user score
 	for(Tweet *t in [Tweet allObjects]) {
@@ -32,9 +28,6 @@
 		if(score < 0) score = 0;
 		if(score > 100) score = 100;		
 		t.score = [NSNumber numberWithInt:score];
-		//NSLog(@"--2 %@ score:%d -> %@", t.user.screenName, score, t.score);
-		BOOL success = [t save];
-		if(!success) NSLog(@"--1 could not save %@", t);
 	}
 
 	// text score
@@ -48,19 +41,14 @@
 			if(score < 0) score = 0;
 			if(score > 100) score = 100;
 			t.score = [NSNumber numberWithInt:score];
-			//NSLog(@"--1 score:%@", t.score);
-			
-			BOOL success = [t save];
-			if(!success) NSLog(@"--2 could not save %@", t);
 		}
 	}
 	
-//  [tweetArrayController rearrangeObjects];
-//	NSError *error = nil;
-//	[[[[NSApplication sharedApplication] delegate] managedObjectContext] save:&error];
-//	if(error) {
-//		NSLog(@"-- error:%@", error);
-//	};
+	NSError *error = nil;
+	[[[[NSApplication sharedApplication] delegate] managedObjectContext] save:&error];
+	if(error) {
+		NSLog(@"-- error:%@", error);
+	};
 }
 
 - (void)updateTweetFilterPredicate {
@@ -75,8 +63,10 @@
 	}
 	
 	NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:subPredicates];		
-	NSLog(@"-- predicate %@", predicate);
+	NSLog(@"-- predicate: %@", predicate);
 	self.tweetFilterPredicate = predicate;
+	
+	[tweetArrayController rearrangeObjects];
 }
 
 - (id)init {
@@ -98,6 +88,8 @@
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+	//NSLog(@"-- keyPath %@", keyPath);
+	
 	if(object == [NSUserDefaultsController sharedUserDefaultsController] &&
 	   [[NSArray arrayWithObjects:@"values.score", @"values.showRead", nil] containsObject:keyPath]) {
 		[self updateTweetFilterPredicate];
@@ -147,8 +139,6 @@
 	
 	[collectionView setMaxNumberOfColumns:1];
 	
-	//[[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:40] forKey:@"score"];
-
 	twitterEngine = [[MGTwitterEngine alloc] initWithDelegate:self];
 
 	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
@@ -162,10 +152,14 @@
 	
     [twitterEngine setUsername:username password:password];
 	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTweetFilterPredicate) name:@"ReloadTweetsFilter" object:nil];
+	
 	[self update:self];
 }
 
 - (void)dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+
 	[twitterEngine release];
 
 	[tweetSortDescriptors release];

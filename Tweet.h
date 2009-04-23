@@ -25,7 +25,7 @@
 + (void)saveTwittsFromDictionariesArray:(NSArray *)a;
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword;
 
-- (void)toggleIsRead;
+//- (void)toggleIsRead;
 
 @end
 

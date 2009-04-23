@@ -20,10 +20,11 @@
 @dynamic user;
 @dynamic isRead;
 
-- (void)toggleIsRead {
-	self.isRead = [NSNumber numberWithBool:![self.isRead boolValue]];
-	NSLog(@"-- %@ %@", self.uid, self.isRead);
-}
+//- (void)toggleIsRead {
+//	self.isRead = [NSNumber numberWithBool:![self.isRead boolValue]];
+//	[self save];
+//	NSLog(@"-- %@ %@", self.uid, self.isRead);
+//}
 
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword {
 

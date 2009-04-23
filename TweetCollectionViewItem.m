@@ -9,6 +9,7 @@
 #import "TweetCollectionViewItem.h"
 #import "Tweet.h"
 #import "User.h"
+#import "NSManagedObject+TH.h"
 
 @implementation TweetCollectionViewItem
 
@@ -20,9 +21,11 @@
 	[[NSWorkspace sharedWorkspace] openURL:url];
 }
 
-- (IBAction)toggleIsRead:(id)sender {
+- (IBAction)reloadTweetsFilter:(id)sender {
 	Tweet *tweet = [self representedObject];
-	[tweet toggleIsRead];
+	//[tweet save];
+	NSLog(@"-- %@ %@", tweet.uid, tweet.isRead);
+	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"ReloadTweetsFilter" object:self]];
 }
 
 @end
