@@ -63,7 +63,7 @@
 	}
 	
 	NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:subPredicates];		
-	NSLog(@"-- predicate: %@", predicate);
+	//NSLog(@"-- predicate: %@", predicate);
 	self.tweetFilterPredicate = predicate;
 	
 	[tweetArrayController rearrangeObjects];
