@@ -9,7 +9,7 @@
 #import "NSManagedObject+TH.h"
 
 
-@implementation NSManagedObject (iLog)
+@implementation NSManagedObject (UniqueContext)
 
 + (NSManagedObjectContext *)moc {
 	return [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];

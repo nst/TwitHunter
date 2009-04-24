@@ -23,7 +23,6 @@
 
 - (IBAction)reloadTweetsFilter:(id)sender {
 	Tweet *tweet = [self representedObject];
-	//[tweet save];
 	NSLog(@"-- %@ %@", tweet.uid, tweet.isRead);
 	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"ReloadTweetsFilter" object:self]];
 }

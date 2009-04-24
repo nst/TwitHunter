@@ -9,7 +9,7 @@
 #import <CoreData/CoreData.h>
 
 
-@interface NSManagedObject (iLog)
+@interface NSManagedObject (UniqueContext)
 
 + (NSManagedObjectContext *)moc;
 - (NSManagedObjectContext *)moc;

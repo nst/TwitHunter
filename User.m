@@ -19,6 +19,8 @@
 @dynamic screenName;
 @dynamic imageURL;
 @dynamic tweets;
+@dynamic friendsCount;
+@dynamic followersCount;
 
 + (User *)userWithName:(NSString *)aName {
 	NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
@@ -37,13 +39,17 @@
 	
 	User *user = [User userWithName:[d objectForKey:@"name"]];
 	
-	if(user) return user;
+	if(!user) {
+		user = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:[self moc]];
+		user.uid = [d objectForKey:@"id"];
+		user.name = [d objectForKey:@"name"];
+	}
 	
-	user = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:[self moc]];
-	user.uid = [d objectForKey:@"id"];
-	user.name = [d objectForKey:@"name"];
 	user.screenName = [d objectForKey:@"screen_name"];
 	user.imageURL = [d objectForKey:@"profile_image_url"];
+	user.friendsCount = [NSNumber numberWithInt:[(NSString *)[d objectForKey:@"friends_count"] intValue]];
+	user.followersCount = [NSNumber numberWithInt:[(NSString *)[d objectForKey:@"followers_count"] intValue] ];
+
 	return user;
 }
 

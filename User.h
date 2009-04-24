@@ -19,6 +19,8 @@
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSString * screenName;
 @property (nonatomic, retain) NSString * imageURL;
+@property (nonatomic, retain) NSNumber * friendsCount;
+@property (nonatomic, retain) NSNumber * followersCount;
 @property (nonatomic, retain) NSSet* tweets;
 
 + (User *)getOrCreateUserWithDictionary:(NSDictionary *)d;

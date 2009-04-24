@@ -14,7 +14,7 @@
 
 	IBOutlet NSArrayController *tweetArrayController;
 	IBOutlet NSArrayController *userArrayController;
-	IBOutlet NSArrayController *textRuleArrayController;
+	IBOutlet NSArrayController *keywordArrayController;
 	IBOutlet NSCollectionView *collectionView;
 	IBOutlet NSPanel *preferences;
 
