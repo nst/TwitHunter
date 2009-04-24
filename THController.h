@@ -11,6 +11,7 @@
 
 @interface THController : NSObject <MGTwitterEngineDelegate> {
     MGTwitterEngine *twitterEngine;
+	NSTimer *timer;
 
 	IBOutlet NSArrayController *tweetArrayController;
 	IBOutlet NSArrayController *userArrayController;
@@ -32,6 +33,7 @@
 @property (nonatomic, retain) NSMutableSet *requestsIDs;
 @property (nonatomic, retain) NSNumber *isConnecting;
 @property (nonatomic, retain) NSString *requestStatus;
+@property (nonatomic, retain) NSTimer *timer;
 
 - (IBAction)update:(id)sender;
 - (IBAction)tweet:(id)sender;

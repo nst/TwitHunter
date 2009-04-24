@@ -20,6 +20,7 @@
 @synthesize requestsIDs;
 @synthesize isConnecting;
 @synthesize requestStatus;
+@synthesize timer;
 
 - (IBAction)updateTweetScores:(id)sender {
 	// user score
@@ -83,8 +84,29 @@
 	
 	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.score" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
 	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.showRead" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
+	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.updateFrequency" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
 
 	return self;
+}
+
+- (void)resetTimer {
+	if(self.timer) {
+		[timer invalidate];
+	}
+	
+	NSTimeInterval seconds = [[[NSUserDefaults standardUserDefaults] valueForKey:@"updateFrequency"] doubleValue] * 60;
+	NSLog(@"-- timer reset with interval %f", seconds);
+	
+	if(seconds < 59.9) {
+		NSLog(@"-- seconds: %f", seconds);
+		return;
+	}
+	
+	self.timer = [NSTimer scheduledTimerWithTimeInterval:seconds
+												  target:self
+												selector:@selector(timerTick)
+												userInfo:NULL
+												 repeats:YES];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -93,6 +115,12 @@
 	if(object == [NSUserDefaultsController sharedUserDefaultsController] &&
 	   [[NSArray arrayWithObjects:@"values.score", @"values.showRead", nil] containsObject:keyPath]) {
 		[self updateTweetFilterPredicate];
+		return;
+	}
+
+	if(object == [NSUserDefaultsController sharedUserDefaultsController] &&
+	   [[NSArray arrayWithObjects:@"values.updateFrequency", nil] containsObject:keyPath]) {
+		[self resetTimer];
 		return;
 	}
 	
@@ -120,6 +148,7 @@
 }
 
 - (IBAction)update:(id)sender {
+	NSLog(@"-- update");
 	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
 	//NSString *password = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.password"];
 	
@@ -155,13 +184,20 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTweetFilterPredicate) name:@"ReloadTweetsFilter" object:nil];
 	
 	[self update:self];
+	
+	[self resetTimer];	
 }
+
+- (void)timerTick {
+	[self update:self];
+}
+
 
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 
 	[twitterEngine release];
-
+	[timer release];
 	[tweetSortDescriptors release];
 	[tweetFilterPredicate release];
 	[tweetText release];

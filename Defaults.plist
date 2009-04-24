@@ -4,5 +4,7 @@
 <dict>
 	<key>score</key>
 	<integer>40</integer>
+	<key>updateFrequency</key>
+	<integer>10</integer>
 </dict>
 </plist>

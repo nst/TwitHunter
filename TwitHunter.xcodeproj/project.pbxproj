@@ -29,6 +29,7 @@
 		03359D1A0F9D09190084F7BD /* TweetCollectionViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 03359D190F9D09190084F7BD /* TweetCollectionViewItem.m */; };
 		03359F1C0F9D412A0084F7BD /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03359F1B0F9D412A0084F7BD /* Defaults.plist */; };
 		03359F790F9D48F20084F7BD /* TextRule.m in Sources */ = {isa = PBXBuildFile; fileRef = 03359F760F9D48F20084F7BD /* TextRule.m */; };
+		036E4DC10FA211D000403647 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 036E4DC00FA211D000403647 /* README */; };
 		039B77EB0F9F2C99009A0C57 /* Tweet.m in Sources */ = {isa = PBXBuildFile; fileRef = 039B77EA0F9F2C99009A0C57 /* Tweet.m */; };
 		2F7446990DB6B7EA00F9684A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2F7446970DB6B7EA00F9684A /* MainMenu.xib */; };
 		770B37ED0679A11B001EADE2 /* TwitHunter_DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 770B37EC0679A11B001EADE2 /* TwitHunter_DataModel.xcdatamodel */; };
@@ -86,6 +87,7 @@
 		03359F1B0F9D412A0084F7BD /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
 		03359F750F9D48F20084F7BD /* TextRule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextRule.h; sourceTree = "<group>"; };
 		03359F760F9D48F20084F7BD /* TextRule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextRule.m; sourceTree = "<group>"; };
+		036E4DC00FA211D000403647 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		039B77E90F9F2C99009A0C57 /* Tweet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tweet.h; sourceTree = "<group>"; };
 		039B77EA0F9F2C99009A0C57 /* Tweet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tweet.m; sourceTree = "<group>"; };
 		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -208,6 +210,7 @@
 		29B97314FDCFA39411CA2CEA /* TwitHunter */ = {
 			isa = PBXGroup;
 			children = (
+				036E4DC00FA211D000403647 /* README */,
 				0335950D0F9AAED00084F7BD /* MGTwitterEngine */,
 				033599490F9CC3A80084F7BD /* View */,
 				080E96DDFE201D6D7F000001 /* Classes */,
@@ -311,6 +314,7 @@
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				2F7446990DB6B7EA00F9684A /* MainMenu.xib in Resources */,
 				03359F1C0F9D412A0084F7BD /* Defaults.plist in Resources */,
+				036E4DC10FA211D000403647 /* README in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
