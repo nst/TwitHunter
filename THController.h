@@ -40,4 +40,7 @@
 - (IBAction)updateCredentials:(id)sender;
 - (IBAction)updateTweetScores:(id)sender;
 
+- (IBAction)markAllAsRead:(id)sender;
+- (IBAction)markAllAsUnread:(id)sender;
+
 @end

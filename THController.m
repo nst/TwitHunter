@@ -23,6 +23,8 @@
 @synthesize timer;
 
 - (IBAction)updateTweetScores:(id)sender {
+	NSLog(@"-- update scores");
+	
 	// user score
 	for(Tweet *t in [Tweet allObjects]) {
 		NSInteger score = 50 + [t.user.score intValue];
@@ -89,18 +91,18 @@
 	return self;
 }
 
+- (void)timerTick {
+	[self update:self];
+}
+
 - (void)resetTimer {
 	if(self.timer) {
 		[timer invalidate];
 	}
 	
 	NSTimeInterval seconds = [[[NSUserDefaults standardUserDefaults] valueForKey:@"updateFrequency"] doubleValue] * 60;
-	NSLog(@"-- timer reset with interval %f", seconds);
 	
-	if(seconds < 59.9) {
-		NSLog(@"-- seconds: %f", seconds);
-		return;
-	}
+	if(seconds < 59.9) seconds = 60.0;
 	
 	self.timer = [NSTimer scheduledTimerWithTimeInterval:seconds
 												  target:self
@@ -155,6 +157,10 @@
 	self.requestStatus = nil;
 	self.isConnecting = [NSNumber numberWithBool:YES];
 	NSString *requestID = [twitterEngine getFollowedTimelineFor:username since:[NSDate distantPast] startingAtPage:0];
+	
+	//NSString *requestID = [twitterEngine getUserTimelineFor:username since:[NSDate distantPast] startingAtPage:1 count:250];
+	//NSString *requestID = [twitterEngine getFollowedTimelineFor:username since:[NSDate distantPast] startingAtPage:3 count:250];
+	
 	NSLog(@"--2 %@", requestID);
 	[requestsIDs addObject:requestID];
 }
@@ -188,10 +194,15 @@
 	[self resetTimer];	
 }
 
-- (void)timerTick {
-	[self update:self];
+- (IBAction)markAllAsRead:(id)sender {
+	[[tweetArrayController arrangedObjects] setValue:[NSNumber numberWithBool:YES] forKey:@"isRead"];
+	[tweetArrayController rearrangeObjects];
 }
 
+- (IBAction)markAllAsUnread:(id)sender {
+	[[tweetArrayController arrangedObjects] setValue:[NSNumber numberWithBool:NO] forKey:@"isRead"];
+	//[tweetArrayController rearrangeObjects];
+}
 
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -233,7 +244,8 @@
 	[requestsIDs removeObject:identifier];
 	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
 
-	[Tweet saveTwittsFromDictionariesArray:statuses];
+	[Tweet saveTweetsFromDictionariesArray:statuses];
+	
 	[self updateTweetScores:self];
 }
 

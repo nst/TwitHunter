@@ -21,11 +21,9 @@
 @property (nonatomic, retain) NSDate * date;
 @property (nonatomic, retain) User * user;
 
-+ (Tweet *)twitFromDictionary:(NSDictionary *)d;
-+ (void)saveTwittsFromDictionariesArray:(NSArray *)a;
++ (Tweet *)tweetFromDictionary:(NSDictionary *)d;
++ (void)saveTweetsFromDictionariesArray:(NSArray *)a;
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword;
-
-//- (void)toggleIsRead;
 
 @end
 

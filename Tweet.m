@@ -20,15 +20,9 @@
 @dynamic user;
 @dynamic isRead;
 
-//- (void)toggleIsRead {
-//	self.isRead = [NSNumber numberWithBool:![self.isRead boolValue]];
-//	[self save];
-//	NSLog(@"-- %@ %@", self.uid, self.isRead);
-//}
-
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword {
 
-	NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
+	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:[self entity]];
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"text contains[c] %@" argumentArray:[NSArray arrayWithObject:keyword]];
 	[request setPredicate:p];
@@ -38,13 +32,15 @@
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	}
+	[request release];
 	return array;
 }
 
-+ (Tweet *)twitFromDictionary:(NSDictionary *)d {
++ (Tweet *)tweetFromDictionary:(NSDictionary *)d {
+	//NSLog(@"-- twitFromDictionary");
 	NSNumber *uid = [d objectForKey:@"id"];
 	
-	NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
+	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:[self entity]];
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"uid == %@", uid, nil];
 	[request setPredicate:p];
@@ -55,6 +51,7 @@
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	}
+	[request release];
 	
 	Tweet *tweet = [array lastObject];
 	
@@ -69,12 +66,15 @@
 	tweet.uid = [d objectForKey:@"id"];
 	tweet.date = [d objectForKey:@"created_at"];
 	tweet.user = user;
+	
 	return tweet;
 }
 
-+ (void)saveTwittsFromDictionariesArray:(NSArray *)a {
++ (void)saveTweetsFromDictionariesArray:(NSArray *)a {
+	NSUInteger count = 0;
 	for(NSDictionary *d in a) {
-		[self twitFromDictionary:d];
+		Tweet *t = [self tweetFromDictionary:d];
+		//[t save];
 	}
 	[[self moc] save:nil];	
 }
