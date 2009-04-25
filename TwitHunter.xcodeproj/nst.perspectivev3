@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>ActivePerspectiveName</key>
-	<string>Project</string>
+	<string>Debug</string>
 	<key>AllowedModules</key>
 	<array>
 		<dict>
@@ -326,8 +326,6 @@
 							<string>MainColumn</string>
 							<real>271</real>
 						</array>
-						<key>RubberWindowFrame</key>
-						<string>11 59 1317 819 0 0 1440 878 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -338,8 +336,6 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -357,11 +353,9 @@
 										<key>_historyCapacity</key>
 										<integer>10</integer>
 										<key>bookmark</key>
-										<string>036E50060FA2C62800403647</string>
+										<string>036E500F0FA2C9D100403647</string>
 										<key>history</key>
 										<array>
-											<string>036E4FDA0FA2C38800403647</string>
-											<string>036E4FDB0FA2C38800403647</string>
 											<string>036E4F8C0FA2BDAA00403647</string>
 											<string>036E4FC30FA2C0BA00403647</string>
 											<string>036E4FC70FA2C1B500403647</string>
@@ -369,13 +363,12 @@
 											<string>036E4FC90FA2C1B500403647</string>
 											<string>036E50010FA2C62800403647</string>
 											<string>036E50020FA2C62800403647</string>
-											<string>036E50030FA2C62800403647</string>
+											<string>036E4FE70FA2C3B000403647</string>
+											<string>036E4F5B0FA2BA9300403647</string>
+											<string>036E500D0FA2C9CB00403647</string>
 										</array>
 										<key>prevStack</key>
 										<array>
-											<string>036E4DEB0FA2148800403647</string>
-											<string>036E4FDF0FA2C38800403647</string>
-											<string>036E4FE00FA2C38800403647</string>
 											<string>036E4FA70FA2BF0900403647</string>
 											<string>036E4F8E0FA2BDAA00403647</string>
 											<string>036E4FA40FA2BF0900403647</string>
@@ -385,6 +378,7 @@
 											<string>036E4FA20FA2BF0900403647</string>
 											<string>036E50040FA2C62800403647</string>
 											<string>036E50050FA2C62800403647</string>
+											<string>036E4F9D0FA2BF0900403647</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -399,8 +393,6 @@
 							<dict>
 								<key>Frame</key>
 								<string>{{0, 0}, {1024, 627}}</string>
-								<key>RubberWindowFrame</key>
-								<string>11 59 1317 819 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -424,8 +416,6 @@
 									<dict>
 										<key>Frame</key>
 										<string>{{10, 27}, {1024, 119}}</string>
-										<key>RubberWindowFrame</key>
-										<string>11 59 1317 819 0 0 1440 878 </string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -556,6 +546,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXProjectModuleGUID</key>
@@ -567,6 +559,8 @@
 					<dict>
 						<key>Frame</key>
 						<string>{{0, 0}, {1317, 253}}</string>
+						<key>RubberWindowFrame</key>
+						<string>11 59 1317 819 0 0 1440 878 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugCLIModule</string>
@@ -641,7 +635,11 @@
 							</array>
 							<key>Frame</key>
 							<string>{{640, 0}, {677, 110}}</string>
+							<key>RubberWindowFrame</key>
+							<string>11 59 1317 819 0 0 1440 878 </string>
 						</dict>
+						<key>RubberWindowFrame</key>
+						<string>11 59 1317 819 0 0 1440 878 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugSessionModule</string>
@@ -686,7 +684,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>262325800.814244</real>
+	<real>262326737.15931201</real>
 	<key>ToolbarDisplayMode</key>
 	<integer>1</integer>
 	<key>ToolbarIsVisible</key>
@@ -701,6 +699,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>036E50100FA2C9D100403647</string>
 		<string>036E4E850FA2A79800403647</string>
 		<string>036E4E860FA2A79800403647</string>
 		<string>/Users/nst/Projects/twithunter/TwitHunter.xcodeproj</string>
