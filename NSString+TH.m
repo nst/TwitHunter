@@ -14,27 +14,26 @@
 - (NSAttributedString *)textWithURLs {
 	NSMutableAttributedString *as = [[NSMutableAttributedString alloc] initWithString:self];
 	
-	NSString *string = self;
-	NSRange searchRange = NSMakeRange(0, [string length]);
+	NSRange searchRange = NSMakeRange(0, [self length]);
 	NSRange foundRange;
 	
 	[as beginEditing];
 	do {
-		foundRange=[string rangeOfString:@"http://" options:0 range:searchRange];
+		foundRange=[self rangeOfString:@"http://" options:0 range:searchRange];
 		
 		if (foundRange.length > 0) {
 			searchRange.location = foundRange.location + foundRange.length;
-			searchRange.length = [string length] - searchRange.location;
+			searchRange.length = [self length] - searchRange.location;
 			
-			NSRange endOfURLRange = [string rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet] options:0 range:searchRange];
+			NSRange endOfURLRange = [self rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet] options:0 range:searchRange];
 			
 			if (endOfURLRange.length==0) {
-				endOfURLRange.location = [string length];
+				endOfURLRange.location = [self length];
 			}
 			
 			foundRange.length = endOfURLRange.location - foundRange.location;
 			
-			NSURL *url = [NSURL URLWithString:[string substringWithRange:foundRange]];
+			NSURL *url = [NSURL URLWithString:[self substringWithRange:foundRange]];
 			
 			NSDictionary *linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys:
 										   url, NSLinkAttributeName,

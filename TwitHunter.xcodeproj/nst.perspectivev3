@@ -311,7 +311,7 @@
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 209}, {271, 760}}</string>
+							<string>{{0, 107}, {271, 760}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -356,7 +356,7 @@
 										<key>_historyCapacity</key>
 										<integer>10</integer>
 										<key>bookmark</key>
-										<string>030F24DC0FB1C8670026C436</string>
+										<string>030F24F90FB208AC0026C436</string>
 										<key>history</key>
 										<array>
 											<string>030F23F80FB14BA40026C436</string>
@@ -368,7 +368,7 @@
 											<string>030F24270FB1BEE60026C436</string>
 											<string>030F24D40FB1C8480026C436</string>
 											<string>030F23CA0FB14AE40026C436</string>
-											<string>030F24DB0FB1C8650026C436</string>
+											<string>030F24F80FB208A90026C436</string>
 										</array>
 										<key>nextStack</key>
 										<array>
@@ -382,11 +382,8 @@
 											<string>030F24C20FB1C7BB0026C436</string>
 											<string>030F24C30FB1C7BB0026C436</string>
 											<string>030F24C40FB1C7BB0026C436</string>
-											<string>030F24CA0FB1C7D50026C436</string>
 											<string>030F20610FA9FC730026C436</string>
 											<string>030F23E10FB14B290026C436</string>
-											<string>030F24D60FB1C8480026C436</string>
-											<string>030F24D70FB1C8480026C436</string>
 											<string>030F208F0FA9FDD20026C436</string>
 										</array>
 									</dict>
@@ -426,7 +423,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1024, 205}}</string>
+										<string>{{10, 27}, {0, -27}}</string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -512,11 +509,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>030F23930FB147750026C436</string>
+				<string>030F24ED0FB206650026C436</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>030F23940FB147750026C436</string>
+				<string>030F24EE0FB206650026C436</string>
 				<string>033595050F9AAE900084F7BD</string>
-				<string>030F23950FB147750026C436</string>
+				<string>030F24EF0FB206650026C436</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
@@ -669,13 +666,13 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>030F239D0FB149180026C436</string>
+				<string>030F24F00FB206650026C436</string>
 				<string>1CCC7628064C1048000F2A68</string>
 				<string>1CCC7629064C1048000F2A68</string>
-				<string>030F239E0FB149180026C436</string>
-				<string>030F239F0FB149180026C436</string>
-				<string>030F23A00FB149180026C436</string>
-				<string>030F23A10FB149180026C436</string>
+				<string>030F24F10FB206650026C436</string>
+				<string>030F24F20FB206650026C436</string>
+				<string>030F24F30FB206650026C436</string>
+				<string>030F24F40FB206650026C436</string>
 				<string>033595050F9AAE900084F7BD</string>
 			</array>
 			<key>ToolbarConfiguration</key>
@@ -691,7 +688,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>263309415.58553499</real>
+	<real>263325868.995224</real>
 	<key>ToolbarDisplayMode</key>
 	<integer>1</integer>
 	<key>ToolbarIsVisible</key>
@@ -706,8 +703,8 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>030F23A30FB149180026C436</string>
-		<string>030F23A40FB149180026C436</string>
+		<string>030F24F60FB206650026C436</string>
+		<string>030F24F70FB206650026C436</string>
 		<string>/Users/nst/Projects/twithunter/TwitHunter.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
