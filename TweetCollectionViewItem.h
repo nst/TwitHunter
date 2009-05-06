@@ -10,7 +10,7 @@
 
 
 @interface TweetCollectionViewItem : NSCollectionViewItem {
-	
+	IBOutlet NSTextView *textView;
 }
 
 - (IBAction)openUserWebTimeline:(id)sender;

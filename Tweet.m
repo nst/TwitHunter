@@ -7,7 +7,7 @@
 //
 
 #import "NSManagedObject+TH.h"
-
+#import "NSString+TH.h"
 #import "Tweet.h"
 #import "User.h"
 
@@ -19,7 +19,51 @@
 @dynamic date;
 @dynamic user;
 @dynamic isRead;
+/*
+- (NSAttributedString *)textWithURLs {
 
+	NSMutableAttributedString *as = [[NSMutableAttributedString alloc] initWithString:self.text];
+	
+	NSString *string=self.text;
+	NSRange searchRange=NSMakeRange(0, [string length]);
+	NSRange foundRange;
+	
+	[as beginEditing];
+	do {
+		//We assume that all URLs start with http://
+		foundRange=[string rangeOfString:@"http://" options:0 range:searchRange];
+		
+		if (foundRange.length > 0) {
+			searchRange.location = foundRange.location + foundRange.length;
+			searchRange.length = [string length] - searchRange.location;
+			
+			//We assume the URL ends with whitespace
+			NSRange endOfURLRange = [string rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet] options:0 range:searchRange];
+			
+			//The URL could also end at the end of the text.  The next line fixes it in case it does
+			if (endOfURLRange.length==0) {
+				endOfURLRange.location = [string length];
+			}
+			
+			foundRange.length = endOfURLRange.location-foundRange.location;
+			
+			NSURL *theURL = [NSURL URLWithString:[string substringWithRange:foundRange]];
+			
+			NSDictionary *linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys:
+										   theURL, NSLinkAttributeName,
+										   [NSNumber numberWithInt:NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
+										   [NSColor blueColor], NSForegroundColorAttributeName,
+										   [NSCursor pointingHandCursor], NSCursorAttributeName, NULL];
+			
+			[as addAttributes:linkAttributes range:foundRange];
+		}
+		
+	} while (foundRange.length!=0);
+	
+	[as endEditing];
+	return [as autorelease];
+}
+*/
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword {
 
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -71,11 +115,11 @@
 }
 
 + (void)saveTweetsFromDictionariesArray:(NSArray *)a {
-	NSUInteger count = 0;
-	for(NSDictionary *d in a) {
-		Tweet *t = [self tweetFromDictionary:d];
-		//[t save];
-	}
+//	NSUInteger count = 0;
+//	for(NSDictionary *d in a) {
+//		Tweet *t = [self tweetFromDictionary:d];
+//		//[t save];
+//	}
 	[[self moc] save:nil];	
 }
 

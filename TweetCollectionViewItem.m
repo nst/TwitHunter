@@ -13,6 +13,11 @@
 
 @implementation TweetCollectionViewItem
 
+- (void)awakeFromNib {
+	NSLog(@"-- awakeFromNib");
+	//[textView setAutomaticLinkDetectionEnabled:YES];
+}
+
 - (IBAction)openUserWebTimeline:(id)sender {
 	Tweet *tweet = [self representedObject];
 
@@ -25,6 +30,15 @@
 	Tweet *tweet = [self representedObject];
 	NSLog(@"-- %@ %@", tweet.uid, tweet.isRead);
 	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"ReloadTweetsFilter" object:self]];
+}
+
+#pragma mark NSTextView delegate
+
+- (BOOL)textView:(NSTextView*)textView clickedOnLink:(id)link 
+		 atIndex:(unsigned)charIndex {
+	BOOL success;
+	success=[[NSWorkspace sharedWorkspace] openURL: link];
+	return success;
 }
 
 @end

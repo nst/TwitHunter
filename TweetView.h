@@ -10,7 +10,7 @@
 #import "Tweet.h"
 
 @interface TweetView : NSView {
-
+	
 }
 
 @end

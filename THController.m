@@ -11,6 +11,7 @@
 #import "User.h"
 #import "TextRule.h"
 #import "NSManagedObject+TH.h"
+#import "TweetCollectionViewItem.h"
 
 @implementation THController
 
@@ -245,6 +246,7 @@
 	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
 
 	[Tweet saveTweetsFromDictionariesArray:statuses];
+	//[[self moc] save:nil];
 	
 	[self updateTweetScores:self];
 }
