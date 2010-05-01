@@ -275,22 +275,6 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 								<reference key="NSTextColor" ref="453758274"/>
 							</object>
 						</object>
-						<object class="NSTextField" id="99869445">
-							<reference key="NSNextResponder" ref="823886803"/>
-							<int key="NSvFlags">297</int>
-							<string key="NSFrame">{{637, 113}, {38, 17}}</string>
-							<reference key="NSSuperview" ref="823886803"/>
-							<bool key="NSEnabled">YES</bool>
-							<object class="NSTextFieldCell" key="NSCell" id="423534970">
-								<int key="NSCellFlags">68288064</int>
-								<int key="NSCellFlags2">205521920</int>
-								<string key="NSContents">50</string>
-								<reference key="NSSupport" ref="14694"/>
-								<reference key="NSControlView" ref="99869445"/>
-								<reference key="NSBackgroundColor" ref="397982008"/>
-								<reference key="NSTextColor" ref="453758274"/>
-							</object>
-						</object>
 						<object class="NSTextField" id="29501587">
 							<reference key="NSNextResponder" ref="823886803"/>
 							<int key="NSvFlags">265</int>
@@ -559,18 +543,18 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 								<int key="NSPeriodicInterval">25</int>
 							</object>
 						</object>
-						<object class="NSButton" id="975792899">
+						<object class="NSButton" id="268037508">
 							<reference key="NSNextResponder" ref="823886803"/>
 							<int key="NSvFlags">265</int>
 							<string key="NSFrame">{{606, 280}, {91, 18}}</string>
 							<reference key="NSSuperview" ref="823886803"/>
 							<bool key="NSEnabled">YES</bool>
-							<object class="NSButtonCell" key="NSCell" id="608858530">
+							<object class="NSButtonCell" key="NSCell" id="839127201">
 								<int key="NSCellFlags">-2080244224</int>
 								<int key="NSCellFlags2">131072</int>
 								<string key="NSContents">Hide URLs</string>
 								<reference key="NSSupport" ref="26"/>
-								<reference key="NSControlView" ref="975792899"/>
+								<reference key="NSControlView" ref="268037508"/>
 								<int key="NSButtonFlags">1211912703</int>
 								<int key="NSButtonFlags2">2</int>
 								<reference key="NSNormalImage" ref="735943039"/>
@@ -4387,10 +4371,10 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
 						<string key="label">value: values.hideURLs</string>
-						<reference key="source" ref="975792899"/>
+						<reference key="source" ref="268037508"/>
 						<reference key="destination" ref="176729945"/>
 						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="975792899"/>
+							<reference key="NSSource" ref="268037508"/>
 							<reference key="NSDestination" ref="176729945"/>
 							<string key="NSLabel">value: values.hideURLs</string>
 							<string key="NSBinding">value</string>
@@ -4471,11 +4455,10 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<reference ref="678609160"/>
 							<reference ref="321491708"/>
 							<reference ref="43442720"/>
-							<reference ref="99869445"/>
 							<reference ref="287358027"/>
 							<reference ref="29501587"/>
 							<reference ref="245709714"/>
-							<reference ref="975792899"/>
+							<reference ref="268037508"/>
 						</object>
 						<reference key="parent" ref="483958638"/>
 					</object>
@@ -5621,20 +5604,6 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<reference key="parent" ref="182034112"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">536</int>
-						<reference key="object" ref="99869445"/>
-						<object class="NSMutableArray" key="children">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="423534970"/>
-						</object>
-						<reference key="parent" ref="823886803"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">537</int>
-						<reference key="object" ref="423534970"/>
-						<reference key="parent" ref="99869445"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">538</int>
 						<reference key="object" ref="29501587"/>
 						<object class="NSMutableArray" key="children">
@@ -6174,17 +6143,17 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">865</int>
-						<reference key="object" ref="975792899"/>
+						<reference key="object" ref="268037508"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="608858530"/>
+							<reference ref="839127201"/>
 						</object>
 						<reference key="parent" ref="823886803"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">866</int>
-						<reference key="object" ref="608858530"/>
-						<reference key="parent" ref="975792899"/>
+						<reference key="object" ref="839127201"/>
+						<reference key="parent" ref="268037508"/>
 					</object>
 				</object>
 			</object>
@@ -6431,8 +6400,6 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 					<string>533.IBPluginDependency</string>
 					<string>534.IBPluginDependency</string>
 					<string>535.IBPluginDependency</string>
-					<string>536.IBPluginDependency</string>
-					<string>537.IBPluginDependency</string>
 					<string>538.IBPluginDependency</string>
 					<string>539.IBPluginDependency</string>
 					<string>540.IBPluginDependency</string>
@@ -6647,9 +6614,9 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<integer value="1"/>
 					<integer value="1"/>
-					<string>{{61, 96}, {742, 422}}</string>
+					<string>{{43, 434}, {742, 422}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{61, 96}, {742, 422}}</string>
+					<string>{{43, 434}, {742, 422}}</string>
 					<integer value="1"/>
 					<integer value="1"/>
 					<boolean value="NO"/>
@@ -6778,8 +6745,6 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 					<boolean value="NO"/>
 					<string>{276, 190}</string>
 					<string>{276, 190}</string>
-					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -6949,7 +6914,6 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>hideURLs:</string>
 							<string>markAllAsRead:</string>
 							<string>markAllAsUnread:</string>
 							<string>tweet:</string>
@@ -6959,7 +6923,6 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
