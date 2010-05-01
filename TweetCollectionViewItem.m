@@ -29,6 +29,8 @@
 - (IBAction)reloadTweetsFilter:(id)sender {
 	Tweet *tweet = [self representedObject];
 	NSLog(@"-- %@ %@", tweet.uid, tweet.isRead);
+	BOOL success = [tweet save];
+	if(!success) NSLog(@"-- can't save tweet %@", tweet);
 	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"ReloadTweetsFilter" object:self]];
 }
 
