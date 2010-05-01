@@ -11,7 +11,7 @@
 
 @implementation NSString (TH)
 
-- (NSAttributedString *)textWithURLs {
+- (NSAttributedString *)attributedStringWithURLs {
 	NSMutableAttributedString *as = [[NSMutableAttributedString alloc] initWithString:self];
 	
 	NSRange searchRange = NSMakeRange(0, [self length]);

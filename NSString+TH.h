@@ -11,6 +11,6 @@
 
 @interface NSString (TH)
 
-- (NSAttributedString *)textWithURLs;
+- (NSAttributedString *)attributedStringWithURLs;
 
 @end

@@ -18,8 +18,9 @@
 + (NSFetchRequest *)allFetchRequest;
 + (NSArray *)allObjects;
 + (NSUInteger)allObjectsCount;
-
++ (id)create;
++ (BOOL)save;
 - (BOOL)save;
-- (BOOL)deleteObject;
+- (void)deleteObject;
 
 @end

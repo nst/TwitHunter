@@ -41,7 +41,7 @@
 	
 	if(!user) {
 		user = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:[self moc]];
-		user.uid = [d objectForKey:@"id"];
+		user.uid = [NSNumber numberWithInt:[(NSString *)[d objectForKey:@"id"] intValue]];
 		user.name = [d objectForKey:@"name"];
 	}
 	

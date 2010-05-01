@@ -80,10 +80,7 @@
 	return array;
 }
 
-+ (Tweet *)tweetFromDictionary:(NSDictionary *)d {
-	//NSLog(@"-- twitFromDictionary");
-	NSNumber *uid = [d objectForKey:@"id"];
-	
++ (Tweet *)tweetWithUid:(NSString *)uid {	
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:[self entity]];
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"uid == %@", uid, nil];
@@ -97,17 +94,22 @@
 	}
 	[request release];
 	
-	Tweet *tweet = [array lastObject];
+	return [array lastObject];
+}
+
++ (Tweet *)createTweetFromDictionary:(NSDictionary *)d {
+	//NSLog(@"-- twitFromDictionary");
 	
-	if(tweet) return tweet;
+	NSString *uid = [d objectForKey:@"uid"];
+	Tweet *tweet = [self tweetWithUid:uid];
+	if(tweet) return nil;
 	
 	NSDictionary *userDictionary = [d objectForKey:@"user"];
 	User *user = [User getOrCreateUserWithDictionary:userDictionary];
 	
-	tweet = [NSEntityDescription insertNewObjectForEntityForName:@"Tweet" inManagedObjectContext:[self moc]];
-
+	tweet = [Tweet create];
 	tweet.text = [d objectForKey:@"text"];
-	tweet.uid = [d objectForKey:@"id"];
+	tweet.uid = [NSNumber numberWithInteger:[[d objectForKey:@"id"] intValue]];
 	tweet.date = [d objectForKey:@"created_at"];
 	tweet.user = user;
 	
@@ -115,12 +117,13 @@
 }
 
 + (void)saveTweetsFromDictionariesArray:(NSArray *)a {
-//	NSUInteger count = 0;
-//	for(NSDictionary *d in a) {
-//		Tweet *t = [self tweetFromDictionary:d];
-//		//[t save];
-//	}
-	[[self moc] save:nil];	
+	for(NSDictionary *d in a) {
+		Tweet *t = [Tweet createTweetFromDictionary:d];
+		if(!t) NSLog(@"-- can't create tweet with dictionary: %@", d);
+		NSLog(@"++ %@", t.date);
+	}
+	BOOL success = [Tweet save];
+	if(!success) NSLog(@"-- can't save moc");
 }
 
 @end

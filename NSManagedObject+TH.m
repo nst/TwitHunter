@@ -11,6 +11,12 @@
 
 @implementation NSManagedObject (UniqueContext)
 
++ (id)create {
+	NSEntityDescription *entityDecription = [self entity];
+	NSString *name = [entityDecription name];
+	return [NSEntityDescription insertNewObjectForEntityForName:name inManagedObjectContext:[self moc]] ;
+}
+
 + (NSManagedObjectContext *)moc {
 	return [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
 }
@@ -41,13 +47,16 @@
 	return [[self moc] countForFetchRequest:[self allFetchRequest] error:nil];
 }
 
++ (BOOL)save {
+	return [[self moc] save:nil];	
+}
+
 - (BOOL)save {
 	return [[self moc] save:nil];	
 }
 
-- (BOOL)deleteObject {
+- (void)deleteObject {
 	[[self moc] deleteObject:self];
-	return [self save];
 }
 
 @end

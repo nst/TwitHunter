@@ -27,6 +27,7 @@
 	NSString *requestStatus;
 }
 
+@property (nonatomic, retain) MGTwitterEngine *twitterEngine;
 @property (nonatomic, retain) NSArray *tweetSortDescriptors;
 @property (nonatomic, retain) NSPredicate *tweetFilterPredicate;
 @property (nonatomic, retain) NSString *tweetText;

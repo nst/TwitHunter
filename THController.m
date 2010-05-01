@@ -22,6 +22,7 @@
 @synthesize isConnecting;
 @synthesize requestStatus;
 @synthesize timer;
+@synthesize twitterEngine;
 
 - (IBAction)updateTweetScores:(id)sender {
 	NSLog(@"-- update scores");
@@ -49,7 +50,7 @@
 	}
 	
 	NSError *error = nil;
-	[[[[NSApplication sharedApplication] delegate] managedObjectContext] save:&error];
+	[[Tweet moc] save:&error];
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	};
@@ -75,7 +76,7 @@
 
 - (id)init {
 	self = [super init];
-	NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
+	NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"uid" ascending:NO];
 	self.tweetSortDescriptors = [NSArray arrayWithObject:sd];
 	[sd release];
 
@@ -152,14 +153,17 @@
 
 - (IBAction)update:(id)sender {
 	NSLog(@"-- update");
-	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
-	//NSString *password = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.password"];
+//	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
+//	NSString *password = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.password"];
+//	[twitterEngine setUsername:username password:password];
 	
 	self.requestStatus = nil;
 	self.isConnecting = [NSNumber numberWithBool:YES];
-	NSString *requestID = [twitterEngine getFollowedTimelineFor:username since:[NSDate distantPast] startingAtPage:0];
 	
-	//NSString *requestID = [twitterEngine getUserTimelineFor:username since:[NSDate distantPast] startingAtPage:1 count:250];
+	//NSString *requestID = [twitterEngine getPublicTimeline];
+	//NSString *requestID = [twitterEngine getFollowedTimelineFor:username since:[NSDate distantPast] startingAtPage:0];
+	NSString *requestID = [twitterEngine getHomeTimelineSinceID:0 startingAtPage:0 count:0];
+
 	//NSString *requestID = [twitterEngine getFollowedTimelineFor:username since:[NSDate distantPast] startingAtPage:3 count:250];
 	
 	NSLog(@"--2 %@", requestID);
@@ -175,7 +179,10 @@
 	
 	[collectionView setMaxNumberOfColumns:1];
 	
-	twitterEngine = [[MGTwitterEngine alloc] initWithDelegate:self];
+	self.twitterEngine = [[[MGTwitterEngine alloc] initWithDelegate:self] autorelease];
+	
+	// Configure how the delegate methods are called to deliver results. See MGTwitterEngineDelegate.h for more info
+	//[twitterEngine setDeliveryOptions:MGTwitterEngineDeliveryIndividualResultsOption];
 
 	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
 	NSString *password = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.password"];
@@ -187,6 +194,7 @@
 	}
 	
     [twitterEngine setUsername:username password:password];
+	//NSString *s = [twitterEngine getHomeTimelineSinceID:0 startingAtPage:0 count:0];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTweetFilterPredicate) name:@"ReloadTweetsFilter" object:nil];
 	
@@ -246,7 +254,6 @@
 	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
 
 	[Tweet saveTweetsFromDictionariesArray:statuses];
-	//[[self moc] save:nil];
 	
 	[self updateTweetScores:self];
 }
