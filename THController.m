@@ -12,6 +12,7 @@
 #import "TextRule.h"
 #import "NSManagedObject+TH.h"
 #import "TweetCollectionViewItem.h"
+#import "MGTwitterEngine+TH.h"
 
 @implementation THController
 
@@ -58,7 +59,7 @@
 
 - (void)updateTweetFilterPredicate {
 	NSNumber *score = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
-	NSPredicate *p1 = [NSPredicate predicateWithFormat:@"score >= %@" argumentArray:[NSArray arrayWithObject:score]];
+	NSPredicate *p1 = [NSPredicate predicateWithFormat:@"score >= %@", score];
 	NSMutableArray *subPredicates = [NSMutableArray arrayWithObject:p1];
 
 	NSNumber *showRead = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.showRead"];
@@ -68,7 +69,7 @@
 	}
 	
 	NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:subPredicates];		
-	//NSLog(@"-- predicate: %@", predicate);
+
 	self.tweetFilterPredicate = predicate;
 	
 	[tweetArrayController rearrangeObjects];
@@ -153,37 +154,34 @@
 
 - (IBAction)update:(id)sender {
 	NSLog(@"-- update");
-//	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
-//	NSString *password = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.password"];
-//	[twitterEngine setUsername:username password:password];
 	
 	self.requestStatus = nil;
 	self.isConnecting = [NSNumber numberWithBool:YES];
 	
-	//NSString *requestID = [twitterEngine getPublicTimeline];
-	//NSString *requestID = [twitterEngine getFollowedTimelineFor:username since:[NSDate distantPast] startingAtPage:0];
-	NSString *requestID = [twitterEngine getHomeTimelineSinceID:0 startingAtPage:0 count:0];
-
-	//NSString *requestID = [twitterEngine getFollowedTimelineFor:username since:[NSDate distantPast] startingAtPage:3 count:250];
+	NSNumber *lastKnownID = [[NSUserDefaults standardUserDefaults] valueForKey:@"highestID"]; 
+	NSLog(@"-- found lastKnownID: %@", lastKnownID);
 	
-	NSLog(@"--2 %@", requestID);
-	[requestsIDs addObject:requestID];
+	if(lastKnownID && [lastKnownID unsignedLongLongValue] != 0) {
+		NSLog(@"-- fetch timeline since ID: %@", lastKnownID);
+		NSString *requestID = [twitterEngine getHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] withMaximumID:0 startingAtPage:0 count:100];
+		[requestsIDs addObject:requestID];
+	} else {
+		NSArray *requestIDs = [twitterEngine getHomeTimeline:500];
+		[requestsIDs addObjectsFromArray:requestIDs];		
+	}
 }
 
 - (void)awakeFromNib {
 	NSLog(@"awakeFromNib");
 	
-	[self updateTweetScores:self];
-
 	[self updateTweetFilterPredicate];
 	
+	[self updateTweetScores:self];
+
 	[collectionView setMaxNumberOfColumns:1];
 	
 	self.twitterEngine = [[[MGTwitterEngine alloc] initWithDelegate:self] autorelease];
 	
-	// Configure how the delegate methods are called to deliver results. See MGTwitterEngineDelegate.h for more info
-	//[twitterEngine setDeliveryOptions:MGTwitterEngineDeliveryIndividualResultsOption];
-
 	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
 	NSString *password = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.password"];
 	
@@ -210,12 +208,12 @@
 
 - (IBAction)markAllAsUnread:(id)sender {
 	[[tweetArrayController arrangedObjects] setValue:[NSNumber numberWithBool:NO] forKey:@"isRead"];
-	//[tweetArrayController rearrangeObjects];
+	[tweetArrayController rearrangeObjects];
 }
 
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-
+	
 	[twitterEngine release];
 	[timer release];
 	[tweetSortDescriptors release];
@@ -224,6 +222,7 @@
 	[requestsIDs release];
 	[isConnecting release];
 	[requestStatus release];
+	[requestsIDs release];
 	
 	[super dealloc];
 }
@@ -247,13 +246,20 @@
 }
 
 - (void)statusesReceived:(NSArray *)statuses forRequest:(NSString *)identifier {
-	//NSLog(@"statusesReceived:%@ forRequest:%@", statuses, identifier);
-
+	NSLog(@"-- statusesReceived: %d", [statuses count]);
+	
 	self.requestStatus = nil;
 	[requestsIDs removeObject:identifier];
 	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
-
-	[Tweet saveTweetsFromDictionariesArray:statuses];
+	
+	MGTwitterEngineID highestID = [Tweet saveTweetsFromDictionariesArray:statuses];
+	
+	NSNumber *highestKnownID = [NSNumber numberWithUnsignedLongLong:highestID];
+	
+	if(highestID != 0) {
+		[[NSUserDefaults standardUserDefaults] setObject:highestKnownID forKey:@"highestID"];
+		NSLog(@"-- stored highestID: %@", highestKnownID);
+	}
 	
 	[self updateTweetScores:self];
 }

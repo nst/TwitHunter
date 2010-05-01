@@ -14,7 +14,6 @@
 @implementation TweetCollectionViewItem
 
 - (void)awakeFromNib {
-	NSLog(@"-- awakeFromNib");
 	//[textView setAutomaticLinkDetectionEnabled:YES];
 }
 

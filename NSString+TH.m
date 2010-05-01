@@ -19,7 +19,7 @@
 	
 	[as beginEditing];
 	do {
-		foundRange=[self rangeOfString:@"http://" options:0 range:searchRange];
+		foundRange = [self rangeOfString:@"http://" options:0 range:searchRange];
 		
 		if (foundRange.length > 0) {
 			searchRange.location = foundRange.location + foundRange.length;
@@ -27,7 +27,7 @@
 			
 			NSRange endOfURLRange = [self rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet] options:0 range:searchRange];
 			
-			if (endOfURLRange.length==0) {
+			if (endOfURLRange.length == 0) {
 				endOfURLRange.location = [self length];
 			}
 			

@@ -22,8 +22,8 @@
 @property (nonatomic, retain) User * user;
 
 + (Tweet *)tweetWithUid:(NSString *)uid;
-+ (Tweet *)createTweetFromDictionary:(NSDictionary *)d;
-+ (void)saveTweetsFromDictionariesArray:(NSArray *)a;
++ (BOOL)createTweetFromDictionary:(NSDictionary *)d;
++ (unsigned long long)saveTweetsFromDictionariesArray:(NSArray *)a;
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword;
 
 @end
