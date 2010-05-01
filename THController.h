@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import "MGTwitterEngine.h"
 
+@class THSliderView;
+
 @interface THController : NSObject <MGTwitterEngineDelegate> {
     MGTwitterEngine *twitterEngine;
 	NSTimer *timer;
@@ -18,6 +20,7 @@
 	IBOutlet NSArrayController *keywordArrayController;
 	IBOutlet NSCollectionView *collectionView;
 	IBOutlet NSPanel *preferences;
+	IBOutlet THSliderView *sliderView;
 
 	NSArray *tweetSortDescriptors;
 	NSPredicate *tweetFilterPredicate;

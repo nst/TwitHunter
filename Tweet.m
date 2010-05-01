@@ -20,6 +20,30 @@
 @dynamic user;
 @dynamic isRead;
 
++ (NSUInteger)nbOfTweetsForScore:(NSNumber *)aScore {
+	NSFetchRequest *request = [[NSFetchRequest alloc] init];
+	[request setEntity:[self entity]];
+	NSPredicate *p = [NSPredicate predicateWithFormat:@"score == %@", aScore];
+	[request setPredicate:p];
+	
+	NSError *error = nil;
+	NSUInteger count = [[self moc] countForFetchRequest:request error:&error];
+	[request release];
+	if(error) {
+		NSLog(@"-- error:%@", error);
+	}
+	return count;
+	/*
+	NSError *error = nil;
+	NSArray *array = [[self moc] executeFetchRequest:request error:&error];
+	if(error) {
+		NSLog(@"-- error:%@", error);
+	}
+	[request release];
+	return [array count];
+	 */
+}
+
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword {
 
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -80,7 +104,6 @@
 		BOOL success = [Tweet createTweetFromDictionary:d];
 		if(success) {
 			unsigned long long currentID = [[d objectForKey:@"id"] longLongValue];
-			NSLog(@"-- %qi %qu", currentID, currentID);
 			biggestID = MAX(biggestID, currentID);
 		}
 	}

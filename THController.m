@@ -13,6 +13,7 @@
 #import "NSManagedObject+TH.h"
 #import "TweetCollectionViewItem.h"
 #import "MGTwitterEngine+TH.h"
+#import "THSliderView.h"
 
 @implementation THController
 
@@ -57,6 +58,20 @@
 	};
 }
 
+- (void)updateSliderView {
+	[sliderView setTweetsCount:[Tweet allObjectsCount]];
+	
+	for(NSUInteger i = 0; i < 100; i++) {
+		NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i]];
+		[sliderView setNumberOfTweets:nbTweets forScore:i];
+		if(nbTweets != 0) {
+			NSLog(@"-- %d | %d", i, nbTweets);
+		}
+	}
+	
+	[sliderView setNeedsDisplay:YES];
+}
+
 - (void)updateTweetFilterPredicate {
 	NSNumber *score = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
 	NSPredicate *p1 = [NSPredicate predicateWithFormat:@"score >= %@", score];
@@ -76,10 +91,12 @@
 	}
 	
 	NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:subPredicates];		
-
+	
 	self.tweetFilterPredicate = predicate;
 	
 	[tweetArrayController rearrangeObjects];
+	
+	[self updateSliderView];
 }
 
 - (id)init {

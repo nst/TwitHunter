@@ -25,6 +25,7 @@
 + (BOOL)createTweetFromDictionary:(NSDictionary *)d;
 + (unsigned long long)saveTweetsFromDictionariesArray:(NSArray *)a;
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword;
++ (NSUInteger)nbOfTweetsForScore:(NSNumber *)aScore;
 
 @end
 
