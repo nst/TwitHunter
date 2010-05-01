@@ -83,7 +83,8 @@
 + (Tweet *)tweetWithUid:(NSString *)uid {	
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:[self entity]];
-	NSPredicate *p = [NSPredicate predicateWithFormat:@"uid == %@", uid, nil];
+	NSNumber *uidNumber = [NSNumber numberWithUnsignedInteger:[uid longLongValue]];
+	NSPredicate *p = [NSPredicate predicateWithFormat:@"uid == %@", uidNumber, nil];
 	[request setPredicate:p];
 	[request setFetchLimit:1];
 	
@@ -100,7 +101,7 @@
 + (Tweet *)createTweetFromDictionary:(NSDictionary *)d {
 	//NSLog(@"-- twitFromDictionary");
 	
-	NSString *uid = [d objectForKey:@"uid"];
+	NSString *uid = [d objectForKey:@"id"];
 	Tweet *tweet = [self tweetWithUid:uid];
 	if(tweet) return nil;
 	
@@ -108,8 +109,8 @@
 	User *user = [User getOrCreateUserWithDictionary:userDictionary];
 	
 	tweet = [Tweet create];
+	tweet.uid = [NSNumber numberWithUnsignedInteger:[[d objectForKey:@"id"] longLongValue]];
 	tweet.text = [d objectForKey:@"text"];
-	tweet.uid = [NSNumber numberWithInteger:[[d objectForKey:@"id"] intValue]];
 	tweet.date = [d objectForKey:@"created_at"];
 	tweet.user = user;
 	
@@ -120,7 +121,6 @@
 	for(NSDictionary *d in a) {
 		Tweet *t = [Tweet createTweetFromDictionary:d];
 		if(!t) NSLog(@"-- can't create tweet with dictionary: %@", d);
-		NSLog(@"++ %@", t.date);
 	}
 	BOOL success = [Tweet save];
 	if(!success) NSLog(@"-- can't save moc");

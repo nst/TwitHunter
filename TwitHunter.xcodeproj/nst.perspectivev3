@@ -235,10 +235,10 @@
 						<key>_historyCapacity</key>
 						<integer>10</integer>
 						<key>bookmark</key>
-						<string>03F7F58B118C6FD900CE6E55</string>
+						<string>03F7F5FB118C732C00CE6E55</string>
 						<key>history</key>
 						<array>
-							<string>03F7F4D3118C67DE00CE6E55</string>
+							<string>03F7F5B0118C716100CE6E55</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -345,12 +345,13 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>51</integer>
-									<integer>43</integer>
+									<integer>24</integer>
+									<integer>15</integer>
+									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 277}, {271, 760}}</string>
+							<string>{{0, 294}, {271, 760}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -395,19 +396,19 @@
 										<key>_historyCapacity</key>
 										<integer>10</integer>
 										<key>bookmark</key>
-										<string>03F7F58A118C6FD900CE6E55</string>
+										<string>03F7F5FA118C732C00CE6E55</string>
 										<key>history</key>
 										<array>
-											<string>03F7F4F1118C6AA900CE6E55</string>
 											<string>03F7F4AD118C665900CE6E55</string>
 											<string>03F7F4FA118C6B0E00CE6E55</string>
 											<string>03F7F4FB118C6B0E00CE6E55</string>
 											<string>03F7F4FC118C6B0E00CE6E55</string>
 											<string>03F7F550118C6DF700CE6E55</string>
-											<string>03F7F4FE118C6B0E00CE6E55</string>
 											<string>03F7F4FF118C6B0E00CE6E55</string>
-											<string>03F7F574118C6EDB00CE6E55</string>
-											<string>03F7F584118C6FC300CE6E55</string>
+											<string>03F7F598118C70C500CE6E55</string>
+											<string>03F7F5A1118C70E700CE6E55</string>
+											<string>03F7F5D5118C723F00CE6E55</string>
+											<string>03F7F5F2118C731B00CE6E55</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -711,7 +712,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>294416345.48692298</real>
+	<real>294417196.23137599</real>
 	<key>ToolbarDisplayMode</key>
 	<integer>1</integer>
 	<key>ToolbarIsVisible</key>
@@ -726,7 +727,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>03F7F58C118C6FD900CE6E55</string>
+		<string>03F7F5FC118C732C00CE6E55</string>
 		<string>03F7F3BE118C5EC500CE6E55</string>
 		<string>03F7F3BF118C5EC500CE6E55</string>
 		<string>03F7F3C8118C5F0E00CE6E55</string>

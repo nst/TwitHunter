@@ -76,7 +76,7 @@
 
 - (id)init {
 	self = [super init];
-	NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"uid" ascending:NO];
+	NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
 	self.tweetSortDescriptors = [NSArray arrayWithObject:sd];
 	[sd release];
 
