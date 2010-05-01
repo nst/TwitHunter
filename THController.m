@@ -61,11 +61,18 @@
 	NSNumber *score = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
 	NSPredicate *p1 = [NSPredicate predicateWithFormat:@"score >= %@", score];
 	NSMutableArray *subPredicates = [NSMutableArray arrayWithObject:p1];
-
-	NSNumber *showRead = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.showRead"];
-	if(![showRead boolValue]) {
+	
+	NSNumber *hideRead = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideRead"];
+	if([hideRead boolValue]) {
 		NSPredicate *p2 = [NSPredicate predicateWithFormat:@"isRead == NO"];
 		[subPredicates addObject:p2];
+	}
+	
+	NSNumber *hideURLs = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideURLs"];
+	if([hideURLs boolValue]) {
+		NSPredicate *p3 = [NSPredicate predicateWithFormat:@"text CONTAINS %@", @"http://"];
+		NSPredicate *p4 = [NSCompoundPredicate notPredicateWithSubpredicate:p3]; 
+		[subPredicates addObject:p4];
 	}
 	
 	NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:subPredicates];		
@@ -76,21 +83,23 @@
 }
 
 - (id)init {
-	self = [super init];
-	NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
-	self.tweetSortDescriptors = [NSArray arrayWithObject:sd];
-	[sd release];
+	if (self = [super init]) {
+		NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
+		self.tweetSortDescriptors = [NSArray arrayWithObject:sd];
+		[sd release];
 
-	NSString *defaultsPath = [[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"];
-	NSDictionary *defaults = [NSDictionary dictionaryWithContentsOfFile:defaultsPath];
-	[[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
+		NSString *defaultsPath = [[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"];
+		NSDictionary *defaults = [NSDictionary dictionaryWithContentsOfFile:defaultsPath];
+		[[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
+		
+		self.requestsIDs = [NSMutableSet set];
+		
+		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.score" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
+		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.hideRead" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
+		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.hideURLs" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
+		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.updateFrequency" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
+	}
 	
-	self.requestsIDs = [NSMutableSet set];
-	
-	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.score" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
-	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.showRead" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
-	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.updateFrequency" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
-
 	return self;
 }
 
@@ -118,7 +127,7 @@
 	//NSLog(@"-- keyPath %@", keyPath);
 	
 	if(object == [NSUserDefaultsController sharedUserDefaultsController] &&
-	   [[NSArray arrayWithObjects:@"values.score", @"values.showRead", nil] containsObject:keyPath]) {
+	   [[NSArray arrayWithObjects:@"values.score", @"values.hideRead", @"values.hideURLs", nil] containsObject:keyPath]) {
 		[self updateTweetFilterPredicate];
 		return;
 	}
