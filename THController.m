@@ -32,9 +32,9 @@
 	for(NSUInteger i = 0; i < 100; i++) {
 		NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i]];
 		[sliderView setNumberOfTweets:nbTweets forScore:i];
-		if(nbTweets != 0) {
-			NSLog(@"-- %d | %d", i, nbTweets);
-		}
+//		if(nbTweets != 0) {
+//			NSLog(@"-- %d | %d", i, nbTweets);
+//		}
 	}
 	
 	[sliderView setNeedsDisplay:YES];

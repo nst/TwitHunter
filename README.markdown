@@ -14,4 +14,4 @@ TwitHunter is released into public domain.
 
 Includes [MGTwitterEngine](http://mattgemmell.com/2008/02/22/mgtwitterengine-twitter-from-cocoa) code by [Matt Gemmell](http://mattgemmell.com/).
 
-Nicolas Seriot, 2009-04-29
+Nicolas Seriot, 2009-04-29, 2010-05-01
