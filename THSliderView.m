@@ -11,6 +11,15 @@
 
 @implementation THSliderView
 
+static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor *color) {
+	NSColor *deviceColor = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
+
+	float components[4];
+	[deviceColor getRed:&components[0] green:&components[1] blue:&components[2] alpha: &components[3]];
+
+	return CGColorCreate (colorSpace, components);
+}
+
 - (void)setNumberOfTweets:(NSUInteger)nbOfTweets forScore:(NSUInteger)score {
 	if(score < 0 || score > 100) return;
 	
@@ -31,22 +40,52 @@
 
 - (void)drawRect:(NSRect)dirtyRect {
 
-	CGFloat heightFactor = [self bounds].size.height / 100.0;
-	CGFloat widthFactor = [self bounds].size.width / tweetsCount;
+	CGFloat height = [self bounds].size.height;
+	CGFloat width = [self bounds].size.width;
 	
-	NSGraphicsContext *gc =[NSGraphicsContext currentContext];
+	CGFloat heightFactor = height / 100.0;
+	CGFloat widthFactor = width / tweetsCount;
+	
+	NSGraphicsContext *gc = [NSGraphicsContext currentContext];
 	CGContextRef context = (CGContextRef)[gc graphicsPort];
+
+	/* set pen and colors */
+	
+	CGContextSetAllowsAntialiasing(context, false);
+	
+	CGContextSetLineWidth(context, 1.0);
+	
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+
+	CGColorRef cgColor1 = CGColorCreateFromNSColor(colorSpace, [NSColor colorForControlTint:NSBlueControlTint]);
+	CGContextSetFillColorWithColor(context, cgColor1);
+	CGColorRelease(cgColor1);
+
+	CGColorRef cgColor2 = CGColorCreateFromNSColor(colorSpace, [NSColor blackColor]);
+	CGContextSetStrokeColorWithColor(context, cgColor2);
+	CGColorRelease(cgColor2);
+
+	CGColorSpaceRelease(colorSpace);
+	
+	/* draw */
+	
 	CGContextBeginPath(context);
 	
-	CGContextMoveToPoint(context, 0.0, 100.0*heightFactor);
+	CGContextMoveToPoint(context, width, 100.0*heightFactor);
 	
 	NSUInteger total = 0;
-	for(NSUInteger i = 101; i > 0; i--) {
-		total += array[i-1];
-		CGContextAddLineToPoint(context, total*widthFactor, i*heightFactor);
+	for(NSUInteger i = 100; i > 0; i--) {
+		total += array[i];
+		CGContextAddLineToPoint(context, width - total*widthFactor, i*heightFactor);
 	}
 
-	CGContextDrawPath(context, kCGPathStroke);
+	CGContextAddLineToPoint(context, 0, 0);
+	CGContextAddLineToPoint(context, width-1, 0);
+	CGContextAddLineToPoint(context, width-1, height);
+	
+	CGContextDrawPath(context, kCGPathFillStroke);
+	
+	CGContextSetAllowsAntialiasing(context, true);
 }
 
 - (void)dealloc {

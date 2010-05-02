@@ -26,6 +26,20 @@
 @synthesize timer;
 @synthesize twitterEngine;
 
+- (void)updateSliderView {
+	[sliderView setTweetsCount:[Tweet allObjectsCount]];
+	
+	for(NSUInteger i = 0; i < 100; i++) {
+		NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i]];
+		[sliderView setNumberOfTweets:nbTweets forScore:i];
+		if(nbTweets != 0) {
+			NSLog(@"-- %d | %d", i, nbTweets);
+		}
+	}
+	
+	[sliderView setNeedsDisplay:YES];
+}
+
 - (IBAction)updateTweetScores:(id)sender {
 	NSLog(@"-- update scores");
 	
@@ -40,9 +54,7 @@
 	// text score
 	for(TextRule *rule in [TextRule allObjects]) {
 		NSArray *tweetsContainingKeyword = [Tweet tweetsContainingKeyword:rule.keyword];
-		//NSLog(@"-- %@ %d", rule.keyword, [tweetsContainingKeyword count]);
 		for(Tweet *t in tweetsContainingKeyword) {
-			//NSLog(@"-- %@ %@ %@", t.user.name, t.score, rule.score);
 			NSInteger score = [t.score intValue];
 			score += [rule.score intValue];
 			if(score < 0) score = 0;
@@ -55,21 +67,9 @@
 	[[Tweet moc] save:&error];
 	if(error) {
 		NSLog(@"-- error:%@", error);
-	};
-}
-
-- (void)updateSliderView {
-	[sliderView setTweetsCount:[Tweet allObjectsCount]];
-	
-	for(NSUInteger i = 0; i < 100; i++) {
-		NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i]];
-		[sliderView setNumberOfTweets:nbTweets forScore:i];
-		if(nbTweets != 0) {
-			NSLog(@"-- %d | %d", i, nbTweets);
-		}
 	}
 	
-	[sliderView setNeedsDisplay:YES];
+	[self updateSliderView];
 }
 
 - (void)updateTweetFilterPredicate {
@@ -95,8 +95,6 @@
 	self.tweetFilterPredicate = predicate;
 	
 	[tweetArrayController rearrangeObjects];
-	
-	[self updateSliderView];
 }
 
 - (id)init {
@@ -172,7 +170,6 @@
 	self.requestStatus = nil;
 	NSString *requestID = [twitterEngine sendUpdate:tweetText];
 	if(requestID) {
-		NSLog(@"--1 %@", requestID);
 		[requestsIDs addObject:requestID];
 	}
 	self.tweetText = nil;
@@ -192,6 +189,7 @@
 		NSString *requestID = [twitterEngine getHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] withMaximumID:0 startingAtPage:0 count:100];
 		[requestsIDs addObject:requestID];
 	} else {
+		NSLog(@"-- fetch timeline last 500");
 		NSArray *requestIDs = [twitterEngine getHomeTimeline:500];
 		[requestsIDs addObjectsFromArray:requestIDs];		
 	}
@@ -218,7 +216,6 @@
 	}
 	
     [twitterEngine setUsername:username password:password];
-	//NSString *s = [twitterEngine getHomeTimelineSinceID:0 startingAtPage:0 count:0];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTweetFilterPredicate) name:@"ReloadTweetsFilter" object:nil];
 	
