@@ -33,15 +33,6 @@
 		NSLog(@"-- error:%@", error);
 	}
 	return count;
-	/*
-	NSError *error = nil;
-	NSArray *array = [[self moc] executeFetchRequest:request error:&error];
-	if(error) {
-		NSLog(@"-- error:%@", error);
-	}
-	[request release];
-	return [array count];
-	 */
 }
 
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword {
@@ -63,7 +54,7 @@
 + (Tweet *)tweetWithUid:(NSString *)uid {
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:[self entity]];
-	NSNumber *uidNumber = [NSNumber numberWithUnsignedInteger:[uid unsignedLongLongValue]];
+	NSNumber *uidNumber = [NSNumber numberWithUnsignedLongLong:[uid unsignedLongLongValue]];
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"uid == %@", uidNumber, nil];
 	[request setPredicate:p];
 	[request setFetchLimit:1];
@@ -87,7 +78,7 @@
 	User *user = [User getOrCreateUserWithDictionary:userDictionary];
 	
 	tweet = [Tweet create];
-	tweet.uid = [NSNumber numberWithUnsignedLongLong:[[d objectForKey:@"id"] longLongValue]];
+	tweet.uid = [NSNumber numberWithUnsignedLongLong:[[d objectForKey:@"id"] unsignedLongLongValue]];
 	tweet.text = [d objectForKey:@"text"];
 	tweet.date = [d objectForKey:@"created_at"];
 	tweet.user = user;
@@ -103,7 +94,7 @@
 	for(NSDictionary *d in a) {
 		BOOL success = [Tweet createTweetFromDictionary:d];
 		if(success) {
-			unsigned long long currentID = [[d objectForKey:@"id"] longLongValue];
+			unsigned long long currentID = [[d objectForKey:@"id"] unsignedLongLongValue];
 			biggestID = MAX(biggestID, currentID);
 		}
 	}
