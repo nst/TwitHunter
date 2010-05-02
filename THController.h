@@ -8,19 +8,18 @@
 
 #import <Cocoa/Cocoa.h>
 #import "MGTwitterEngine.h"
+#import "CumulativeChartView.h"
 
-@class CumulativeChartView;
-
-@interface THController : NSObject <MGTwitterEngineDelegate> {
+@interface THController : NSObject <MGTwitterEngineDelegate, CumulativeChartViewDelegate> {
     MGTwitterEngine *twitterEngine;
 	NSTimer *timer;
-
+	
 	IBOutlet NSArrayController *tweetArrayController;
 	IBOutlet NSArrayController *userArrayController;
 	IBOutlet NSArrayController *keywordArrayController;
 	IBOutlet NSCollectionView *collectionView;
 	IBOutlet NSPanel *preferences;
-	IBOutlet CumulativeChartView *sliderView;
+	IBOutlet CumulativeChartView *cumulativeChartView;
 
 	NSArray *tweetSortDescriptors;
 	NSPredicate *tweetFilterPredicate;
@@ -28,6 +27,8 @@
 	NSMutableSet *requestsIDs;
 	NSNumber *isConnecting;
 	NSString *requestStatus;
+	
+	IBOutlet NSTextField *expectedNbTweetsLabel;
 }
 
 @property (nonatomic, retain) MGTwitterEngine *twitterEngine;

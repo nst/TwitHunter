@@ -10,6 +10,8 @@
 
 @implementation CumulativeChartView
 
+@synthesize delegate;
+
 static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor *color) {
 	NSColor *deviceColor = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
 
@@ -22,11 +24,11 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 - (void)setNumberOfTweets:(NSUInteger)nbOfTweets forScore:(NSUInteger)aScore {
 	if(aScore < 0 || aScore > MAX_COUNT) return;
 	
-	array[aScore] = nbOfTweets;
+	tweetsCountForScore[aScore] = nbOfTweets;
 }
 
 - (void)setTweetsCount:(NSUInteger)count {
-	tweetsCount = count;
+	totalTweets = count;
 }
 
 - (void)setScore:(NSUInteger)aScore {
@@ -51,13 +53,13 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 
 - (void)drawRect:(NSRect)dirtyRect {
 
-	if(tweetsCount == 0) return;
+	if(totalTweets == 0) return;
 	
 	CGFloat height = [self bounds].size.height;
 	CGFloat width = [self bounds].size.width;
 	
 	CGFloat heightFactor = height / (float)MAX_COUNT;
-	CGFloat widthFactor = width / tweetsCount;
+	CGFloat widthFactor = width / totalTweets;
 	
 	NSGraphicsContext *gc = [NSGraphicsContext currentContext];
 	CGContextRef context = (CGContextRef)[gc graphicsPort];
@@ -85,8 +87,10 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	CGContextMoveToPoint(context, width, MAX_COUNT*heightFactor);
 	
 	NSUInteger total = 0;
-	for(NSUInteger i = MAX_COUNT; i > score; i--) {
-		total += array[i];
+	for(NSUInteger i = MAX_COUNT; i >= score; i--) {
+		if(i == 0) break;
+		total += tweetsCountForScore[i];
+		culumatedTweetsForScore[i] = total;
 		CGContextAddLineToPoint(context, width - total*widthFactor, i*heightFactor);
 	}
 
@@ -103,11 +107,13 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	
 	CGContextBeginPath(context);
 	
-	CGContextMoveToPoint(context, width, (score+1)*heightFactor);
-	CGContextAddLineToPoint(context, width, score*heightFactor);
+	CGContextMoveToPoint(context, width, score*heightFactor);
+	CGContextAddLineToPoint(context, width - total*widthFactor, score*heightFactor);
 	
-	for(NSUInteger i = score; i > 0; i--) {
-		total += array[i];
+	for(NSUInteger i = score-1; i > 0; i--) {
+		if(score == 0) break;
+		total += tweetsCountForScore[i];
+		culumatedTweetsForScore[i] = total;
 		CGContextAddLineToPoint(context, width - total*widthFactor, i*heightFactor);
 	}
 
@@ -124,6 +130,7 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 }
 
 - (void)dealloc {
+	[delegate release];
 	[super dealloc];
 }
 
@@ -169,6 +176,7 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
                 /* Ignore any other kind of event. */
                 break;
         } 
+		[delegate didSlideToScore:score cumulatedTweetsCount:culumatedTweetsForScore[score]];
     }
 }
 

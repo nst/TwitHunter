@@ -13,7 +13,6 @@
 #import "NSManagedObject+TH.h"
 #import "TweetCollectionViewItem.h"
 #import "MGTwitterEngine+TH.h"
-#import "CumulativeChartView.h"
 
 @implementation THController
 
@@ -27,21 +26,21 @@
 @synthesize twitterEngine;
 
 - (IBAction)updateViewScore:(id)sender {
-	[sliderView setScore:[sender intValue]];
+	[cumulativeChartView setScore:[sender intValue]];
 }
 
 - (void)updateSliderView {
-	[sliderView setTweetsCount:[Tweet allObjectsCount]];
+	[cumulativeChartView setTweetsCount:[Tweet allObjectsCount]];
 	
-	for(NSUInteger i = 0; i < 100; i++) {
+	for(NSUInteger i = 0; i <= 100; i++) {
 		NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i]];
-		[sliderView setNumberOfTweets:nbTweets forScore:i];
+		[cumulativeChartView setNumberOfTweets:nbTweets forScore:i];
 //		if(nbTweets != 0) {
 //			NSLog(@"-- %d | %d", i, nbTweets);
 //		}
 	}
 	
-	[sliderView setNeedsDisplay:YES];
+	[cumulativeChartView setNeedsDisplay:YES];
 }
 
 - (IBAction)updateTweetScores:(id)sender {
@@ -202,8 +201,10 @@
 - (void)awakeFromNib {
 	NSLog(@"awakeFromNib");
 	
+	cumulativeChartView.delegate = self;
+	
 	NSNumber *currentScore = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
-	[sliderView setScore:[currentScore integerValue]];
+	[cumulativeChartView setScore:[currentScore integerValue]];
 	
 	[self updateTweetFilterPredicate];
 	
@@ -314,5 +315,11 @@
 	NSLog(@"imageReceived:%@ forRequest:%@", image, connectionIdentifier);
 }
 
+#pragma mark CumulativeChartViewDelegate
+
+- (void)didSlideToScore:(NSUInteger)aScore cumulatedTweetsCount:(NSUInteger)cumulatedTweetsCount {
+	NSLog(@"-- didSlideToScore:%d cumulatedTweetsCount:%d", aScore, cumulatedTweetsCount);
+	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%d", cumulatedTweetsCount]];
+}
 
 @end
