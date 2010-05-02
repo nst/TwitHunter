@@ -30,6 +30,12 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 }
 
 - (void)setScore:(NSUInteger)aScore {
+	if(aScore < 0) {
+		aScore = 0;
+	} else if (aScore > MAX_COUNT) {
+		aScore = MAX_COUNT;
+	}
+
 	score = aScore;
 	[self setNeedsDisplay:YES];
 }
@@ -37,7 +43,8 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-		//
+		[[self window] setAcceptsMouseMovedEvents:YES];
+		[self addTrackingRect:[self bounds] owner:self userData:nil assumeInside:NO];
     }
     return self;
 }
@@ -111,7 +118,6 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	CGContextDrawPath(context, kCGPathFillStroke);
 	
 	
-	
 	CGContextSetAllowsAntialiasing(context, true);
 	
 	CGColorSpaceRelease(colorSpace);
@@ -119,6 +125,61 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 
 - (void)dealloc {
 	[super dealloc];
+}
+
+#pragma mark mouse events
+
+- (BOOL)acceptsFirstResponder { 
+	return YES; 
+}
+
+- (void)setScoreFromPoint:(NSPoint)p {
+	CGFloat height = [self bounds].size.height;
+	CGFloat heightFactor = height / (float)MAX_COUNT;
+	NSUInteger theScore = p.y / heightFactor;
+	[self setScore:theScore];
+}
+
+- (void)mouseDown:(NSEvent *)theEvent {
+	NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+	[self setScoreFromPoint:p];
+	
+    BOOL keepOn = YES;
+    BOOL isInside = YES;
+    NSPoint mouseLoc;
+ 
+    while (keepOn) {
+        theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask | NSLeftMouseDraggedMask];
+        mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+        isInside = [self mouse:mouseLoc inRect:[self bounds]];
+ 
+        switch ([theEvent type]) {
+            case NSLeftMouseDragged:
+				[self setScoreFromPoint:mouseLoc];
+				break;
+            case NSLeftMouseUp:
+				if (isInside) {
+					[[NSUserDefaultsController sharedUserDefaultsController]
+					 setValue:[NSNumber numberWithUnsignedInteger:score]
+					 forKeyPath:@"values.score"];
+				}
+                keepOn = NO;
+                break;
+            default:
+                /* Ignore any other kind of event. */
+                break;
+        } 
+    }
+}
+
+- (void)mouseEntered:(NSEvent *)theEvent {
+	NSLog(@"-- mouseEntered");
+	[[NSCursor resizeUpDownCursor] set];
+}
+
+- (void)mouseExited:(NSEvent *)theEvent {
+	NSLog(@"-- mouseExited");
+	[[NSCursor arrowCursor] set];
 }
 
 @end

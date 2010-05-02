@@ -13,7 +13,7 @@
 #import "NSManagedObject+TH.h"
 #import "TweetCollectionViewItem.h"
 #import "MGTwitterEngine+TH.h"
-#import "THSliderView.h"
+#import "CumulativeChartView.h"
 
 @implementation THController
 
@@ -25,6 +25,10 @@
 @synthesize requestStatus;
 @synthesize timer;
 @synthesize twitterEngine;
+
+- (IBAction)updateViewScore:(id)sender {
+	[sliderView setScore:[sender intValue]];
+}
 
 - (void)updateSliderView {
 	[sliderView setTweetsCount:[Tweet allObjectsCount]];
@@ -197,6 +201,9 @@
 
 - (void)awakeFromNib {
 	NSLog(@"awakeFromNib");
+	
+	NSNumber *currentScore = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
+	[sliderView setScore:[currentScore integerValue]];
 	
 	[self updateTweetFilterPredicate];
 	

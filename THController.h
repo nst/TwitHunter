@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import "MGTwitterEngine.h"
 
-@class THSliderView;
+@class CumulativeChartView;
 
 @interface THController : NSObject <MGTwitterEngineDelegate> {
     MGTwitterEngine *twitterEngine;
@@ -20,7 +20,7 @@
 	IBOutlet NSArrayController *keywordArrayController;
 	IBOutlet NSCollectionView *collectionView;
 	IBOutlet NSPanel *preferences;
-	IBOutlet THSliderView *sliderView;
+	IBOutlet CumulativeChartView *sliderView;
 
 	NSArray *tweetSortDescriptors;
 	NSPredicate *tweetFilterPredicate;
@@ -43,6 +43,7 @@
 - (IBAction)tweet:(id)sender;
 - (IBAction)updateCredentials:(id)sender;
 - (IBAction)updateTweetScores:(id)sender;
+- (IBAction)updateViewScore:(id)sender;
 
 - (IBAction)markAllAsRead:(id)sender;
 - (IBAction)markAllAsUnread:(id)sender;

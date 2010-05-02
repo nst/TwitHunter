@@ -4,9 +4,11 @@ By scoring, I mean setting up rules that increase or descrease the score of indi
 
 You can then filter the tweets and display only the ones with the highest score.
 
-So far, it us just a quick hack, but it works :-)
+So far, it is just a quick hack, but it works :-)
 
 ![TwitHunter](http://seriot.ch/software/desktop/TwitHunter/TwitHunter_small.png)
+
+A nightly build can be found at http://seriot.ch/temp/TwitHunter.app.zip
 
 If the data model changes (and it will) delete <code>~/Library/Application Support/TwitHunter/TwitHunter.sqlite3</code> and relaunch.
 
