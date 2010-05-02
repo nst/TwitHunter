@@ -40,6 +40,8 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 
 - (void)drawRect:(NSRect)dirtyRect {
 
+	if(tweetsCount == 0) return;
+	
 	CGFloat height = [self bounds].size.height;
 	CGFloat width = [self bounds].size.width;
 	

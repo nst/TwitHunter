@@ -12,5 +12,6 @@
 @interface NSString (TH)
 
 - (NSAttributedString *)attributedStringWithURLs;
+- (unsigned long long)unsignedLongLongValue;
 
 @end

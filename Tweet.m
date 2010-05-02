@@ -60,10 +60,10 @@
 	return array;
 }
 
-+ (Tweet *)tweetWithUid:(NSString *)uid {	
++ (Tweet *)tweetWithUid:(NSString *)uid {
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:[self entity]];
-	NSNumber *uidNumber = [NSNumber numberWithUnsignedInteger:[uid longLongValue]];
+	NSNumber *uidNumber = [NSNumber numberWithUnsignedInteger:[uid unsignedLongLongValue]];
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"uid == %@", uidNumber, nil];
 	[request setPredicate:p];
 	[request setFetchLimit:1];

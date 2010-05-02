@@ -26,7 +26,6 @@
     return [basePath stringByAppendingPathComponent:@"TwitHunter"];
 }
 
-
 /**
     Creates, retains, and returns the managed object model for the application 
     by merging all of the models found in the application bundle.
@@ -39,7 +38,6 @@
     managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:nil] retain];    
     return managedObjectModel;
 }
-
 
 /**
     Returns the persistent store coordinator for the application.  This 
@@ -71,7 +69,7 @@
 		}
     }
     
-    NSURL *url = [NSURL fileURLWithPath: [applicationSupportDirectory stringByAppendingPathComponent: @"storedata"]];
+    NSURL *url = [NSURL fileURLWithPath: [applicationSupportDirectory stringByAppendingPathComponent: @"TwitHunter.sqlite3"]];
     persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: mom];
     if (![persistentStoreCoordinator addPersistentStoreWithType:NSXMLStoreType 
                                                 configuration:nil 
@@ -119,7 +117,6 @@
     return [[self managedObjectContext] undoManager];
 }
 
-
 /**
     Performs the save action for the application, which is to send the save:
     message to the application's managed object context.  Any encountered errors
@@ -138,7 +135,6 @@
         [[NSApplication sharedApplication] presentError:error];
     }
 }
-
 
 /**
     Implementation of the applicationShouldTerminate: method, used here to
@@ -187,19 +183,12 @@
         alert = nil;
         
         if (answer == NSAlertAlternateReturn) return NSTerminateCancel;
-
     }
 
     return NSTerminateNow;
 }
 
-
-/**
-    Implementation of dealloc, to release the retained variables.
- */
- 
 - (void)dealloc {
-
     [window release];
     [managedObjectContext release];
     [persistentStoreCoordinator release];
@@ -207,6 +196,5 @@
 	
     [super dealloc];
 }
-
 
 @end
