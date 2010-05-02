@@ -29,6 +29,7 @@
 	NSString *requestStatus;
 	
 	IBOutlet NSTextField *expectedNbTweetsLabel;
+	IBOutlet NSTextField *expectedScoreLabel;
 }
 
 @property (nonatomic, retain) MGTwitterEngine *twitterEngine;

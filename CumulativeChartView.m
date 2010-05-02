@@ -84,20 +84,27 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	
 	CGContextBeginPath(context);
 	
-	CGContextMoveToPoint(context, width, MAX_COUNT*heightFactor);
+	CGContextMoveToPoint(context, width, floorf(MAX_COUNT*heightFactor));
+	
+	//NSLog(@"--> %f", floorf(MAX_COUNT*heightFactor));
 	
 	NSUInteger total = 0;
 	for(NSUInteger i = MAX_COUNT; i >= score; i--) {
 		if(i == 0) break;
 		total += tweetsCountForScore[i];
 		culumatedTweetsForScore[i] = total;
-		CGContextAddLineToPoint(context, width - total*widthFactor, i*heightFactor);
+		CGContextAddLineToPoint(context, width - floorf(total*widthFactor), floorf(i*heightFactor));
+
+		//NSLog(@"--  %f %f", floorf(width - total*widthFactor), floorf(i*heightFactor));
 	}
 
-	CGContextAddLineToPoint(context, width - total*widthFactor, score*heightFactor);
+	CGContextAddLineToPoint(context, width - floor(total*widthFactor), score*heightFactor);
 	CGContextAddLineToPoint(context, width-1, score*heightFactor);
+	CGContextAddLineToPoint(context, width-1, 100*heightFactor-1);
+	CGContextAddLineToPoint(context, width - floor(tweetsCountForScore[MAX_COUNT]*widthFactor), 100*heightFactor-1);
 	
 	CGContextDrawPath(context, kCGPathFillStroke);
+	//CGContextClosePath(context);
 	
 	/* draw bottom */
 	
@@ -106,15 +113,23 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	CGColorRelease(fillColorBottom);
 	
 	CGContextBeginPath(context);
+		
+	CGContextMoveToPoint(context, width, floorf(score*heightFactor));
+	CGContextAddLineToPoint(context, width - floorf(total*widthFactor), floorf(score*heightFactor));
 	
-	CGContextMoveToPoint(context, width, score*heightFactor);
-	CGContextAddLineToPoint(context, width - total*widthFactor, score*heightFactor);
+	if(score == 100) {
+		CGContextAddLineToPoint(context, width - floorf(total*widthFactor), height+1);
+		CGContextAddLineToPoint(context, width, height+1);
+	}
 	
 	for(NSUInteger i = score-1; i > 0; i--) {
-		if(score == 0) break;
+		if(score == 0) {
+			culumatedTweetsForScore[0] = total;
+			break;
+		}
 		total += tweetsCountForScore[i];
 		culumatedTweetsForScore[i] = total;
-		CGContextAddLineToPoint(context, width - total*widthFactor, i*heightFactor);
+		CGContextAddLineToPoint(context, width - floorf(total*widthFactor), floorf(i*heightFactor));
 	}
 
 	CGContextAddLineToPoint(context, 0, 0);

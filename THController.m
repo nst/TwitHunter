@@ -35,9 +35,6 @@
 	for(NSUInteger i = 0; i <= 100; i++) {
 		NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i]];
 		[cumulativeChartView setNumberOfTweets:nbTweets forScore:i];
-//		if(nbTweets != 0) {
-//			NSLog(@"-- %d | %d", i, nbTweets);
-//		}
 	}
 	
 	[cumulativeChartView setNeedsDisplay:YES];
@@ -192,8 +189,8 @@
 		NSString *requestID = [twitterEngine getHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] withMaximumID:0 startingAtPage:0 count:100];
 		[requestsIDs addObject:requestID];
 	} else {
-		NSLog(@"-- fetch timeline last 500");
-		NSArray *requestIDs = [twitterEngine getHomeTimeline:500];
+		NSLog(@"-- fetch timeline last 50");
+		NSArray *requestIDs = [twitterEngine getHomeTimeline:50];
 		[requestsIDs addObjectsFromArray:requestIDs];		
 	}
 }
@@ -318,8 +315,9 @@
 #pragma mark CumulativeChartViewDelegate
 
 - (void)didSlideToScore:(NSUInteger)aScore cumulatedTweetsCount:(NSUInteger)cumulatedTweetsCount {
-	NSLog(@"-- didSlideToScore:%d cumulatedTweetsCount:%d", aScore, cumulatedTweetsCount);
+	//NSLog(@"-- didSlideToScore:%d cumulatedTweetsCount:%d", aScore, cumulatedTweetsCount);
 	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%d", cumulatedTweetsCount]];
+	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%d", aScore]];
 }
 
 @end
