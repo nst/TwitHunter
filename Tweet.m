@@ -80,6 +80,9 @@
 	tweet = [Tweet create];
 	tweet.uid = [NSNumber numberWithUnsignedLongLong:[[d objectForKey:@"id"] unsignedLongLongValue]];
 	tweet.text = [d objectForKey:@"text"];
+	
+	NSLog(@"-- %@ %@", [[d objectForKey:@"created_at"] className], [d objectForKey:@"created_at"]);
+	
 	tweet.date = [d objectForKey:@"created_at"];
 	tweet.user = user;
 	

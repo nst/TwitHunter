@@ -22,6 +22,8 @@
 	NSUInteger score;
 	
 	NSObject <CumulativeChartViewDelegate> *delegate;
+	
+	NSTrackingRectTag tag;
 }
 
 @property (nonatomic, retain) NSObject <CumulativeChartViewDelegate> *delegate;

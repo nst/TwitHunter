@@ -42,11 +42,17 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	[self setNeedsDisplay:YES];
 }
 
+- (void)resizeWithOldSuperviewSize:(NSSize)oldSize {
+	[self removeTrackingRect:tag];
+	tag = [self addTrackingRect:[self bounds] owner:self userData:nil assumeInside:NO];
+	[super resizeWithOldSuperviewSize:oldSize];
+}
+
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
 		[[self window] setAcceptsMouseMovedEvents:YES];
-		[self addTrackingRect:[self bounds] owner:self userData:nil assumeInside:NO];
+		tag = [self addTrackingRect:[self bounds] owner:self userData:nil assumeInside:NO];
     }
     return self;
 }
@@ -196,12 +202,12 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 }
 
 - (void)mouseEntered:(NSEvent *)theEvent {
-	NSLog(@"-- mouseEntered");
+	//NSLog(@"-- mouseEntered");
 	[[NSCursor resizeUpDownCursor] set];
 }
 
 - (void)mouseExited:(NSEvent *)theEvent {
-	NSLog(@"-- mouseExited");
+	//NSLog(@"-- mouseExited");
 	[[NSCursor arrowCursor] set];
 }
 
