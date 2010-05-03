@@ -204,6 +204,19 @@
 	}
 }
 
+- (void)didChangeTweetReadStatusNotification:(NSNotification *)aNotification {
+	Tweet *tweet = [[aNotification userInfo] objectForKey:@"Tweet"];
+	NSNumber *score = tweet.score;
+	
+	NSUInteger nbTweets = [Tweet nbOfTweetsForScore:score andSubpredicates:[self predicatesWithoutScore]];
+	
+	[cumulativeChartView setNumberOfTweets:nbTweets forScore:[score unsignedIntegerValue]];
+	[cumulativeChartView setNeedsDisplay:YES];
+	[cumulativeChartView sendValuesToDelegate];
+	
+	[tweetArrayController rearrangeObjects];	
+}
+
 - (void)awakeFromNib {
 	NSLog(@"awakeFromNib");
 	
@@ -231,7 +244,7 @@
 	
     [twitterEngine setUsername:username password:password];
 	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTweetFilterPredicate) name:@"ReloadTweetsFilter" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
 	
 	[self update:self];
 	

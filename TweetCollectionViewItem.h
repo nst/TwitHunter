@@ -14,6 +14,6 @@
 }
 
 - (IBAction)openUserWebTimeline:(id)sender;
-- (IBAction)reloadTweetsFilter:(id)sender;
+- (IBAction)changeReadState:(id)sender;
 
 @end
