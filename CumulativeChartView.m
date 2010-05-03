@@ -10,7 +10,7 @@
 
 @implementation CumulativeChartView
 
-@synthesize delegate, cursor;
+@synthesize delegate, dataSource;
 
 static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor *color) {
 	NSColor *deviceColor = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
@@ -19,16 +19,6 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	[deviceColor getRed:&components[0] green:&components[1] blue:&components[2] alpha: &components[3]];
 
 	return CGColorCreate (colorSpace, components);
-}
-
-- (void)setNumberOfTweets:(NSUInteger)nbOfTweets forScore:(NSUInteger)aScore {
-	if(aScore < 0 || aScore > MAX_COUNT) return;
-	
-	tweetsCountForScore[aScore] = nbOfTweets;
-}
-
-- (void)setTweetsCount:(NSUInteger)count {
-	totalTweets = count;
 }
 
 - (void)setScore:(NSUInteger)aScore {
@@ -46,13 +36,14 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	[self removeTrackingRect:tag];
 	tag = [self addTrackingRect:[self bounds] owner:self userData:nil assumeInside:NO];
 	
-   [self addCursorRect:[self frame] cursor:cursor];
+//   [self addCursorRect:[self frame] cursor:cursor];
 	[super resizeWithOldSuperviewSize:oldSize];
 }
 
 - (void)resetCursorRects {
 	[super resetCursorRects];
 	
+	NSCursor *cursor = [NSCursor resizeUpDownCursor];
 	[self addCursorRect:[self bounds] cursor:cursor];
 	[cursor setOnMouseEntered:YES];
 }
@@ -60,7 +51,6 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-		self.cursor = [NSCursor resizeUpDownCursor];
 		[[self window] setAcceptsMouseMovedEvents:YES];
 		tag = [self addTrackingRect:[self bounds] owner:self userData:nil assumeInside:NO];
     }
@@ -69,13 +59,13 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 
 - (void)drawRect:(NSRect)dirtyRect {
 
-	if(totalTweets == 0) return;
+	if([dataSource numberOfTweets] == 0) return;
 	
 	CGFloat height = [self bounds].size.height;
 	CGFloat width = [self bounds].size.width;
 	
 	CGFloat heightFactor = height / (float)MAX_COUNT;
-	CGFloat widthFactor = width / totalTweets;
+	CGFloat widthFactor = width / [dataSource numberOfTweets];
 	
 	NSGraphicsContext *gc = [NSGraphicsContext currentContext];
 	CGContextRef context = (CGContextRef)[gc graphicsPort];
@@ -107,9 +97,8 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	NSUInteger total = 0;
 	for(NSUInteger i = MAX_COUNT; i >= score; i--) {
 		if(i == 0) break;
-		total += tweetsCountForScore[i];
-		culumatedTweetsForScore[i] = total;
-		CGContextAddLineToPoint(context, width - floorf(total*widthFactor), floorf(i*heightFactor));
+		NSUInteger nbOfCumulatedTweets = [dataSource cumulatedTweetsForScore:i];
+		CGContextAddLineToPoint(context, width - floorf(nbOfCumulatedTweets*widthFactor), floorf(i*heightFactor));
 
 		//NSLog(@"--  %f %f", floorf(width - total*widthFactor), floorf(i*heightFactor));
 	}
@@ -117,7 +106,7 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	CGContextAddLineToPoint(context, width - floor(total*widthFactor), score*heightFactor);
 	CGContextAddLineToPoint(context, width-1, score*heightFactor);
 	CGContextAddLineToPoint(context, width-1, 100*heightFactor-1);
-	CGContextAddLineToPoint(context, width - floor(tweetsCountForScore[MAX_COUNT]*widthFactor), 100*heightFactor-1);
+	CGContextAddLineToPoint(context, width - floor([dataSource numberOfTweets]*widthFactor), 100*heightFactor-1);
 	
 	CGContextDrawPath(context, kCGPathFillStroke);
 	//CGContextClosePath(context);
@@ -140,11 +129,9 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	
 	for(NSUInteger i = score-1; i > 0; i--) {
 		if(score == 0) {
-			culumatedTweetsForScore[0] = total;
 			break;
 		}
-		total += tweetsCountForScore[i];
-		culumatedTweetsForScore[i] = total;
+		total = [dataSource cumulatedTweetsForScore:i];
 		CGContextAddLineToPoint(context, width - floorf(total*widthFactor), floorf(i*heightFactor));
 	}
 
@@ -161,7 +148,7 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 }
 
 - (void)dealloc {
-	[cursor release];
+	[dataSource release];
 	[delegate release];
 	[super dealloc];
 }
@@ -209,7 +196,7 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
                 /* Ignore any other kind of event. */
                 break;
         } 
-		[delegate didSlideToScore:score cumulatedTweetsCount:culumatedTweetsForScore[score]];
+		[delegate didSlideToScore:score];
     }
 }
 
@@ -222,7 +209,7 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 }
 
 - (void)sendValuesToDelegate {
-	[delegate didSlideToScore:score cumulatedTweetsCount:culumatedTweetsForScore[score]];
+	[delegate didSlideToScore:score];
 }
 
 @end

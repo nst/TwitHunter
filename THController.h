@@ -10,7 +10,9 @@
 #import "MGTwitterEngine.h"
 #import "CumulativeChartView.h"
 
-@interface THController : NSObject <MGTwitterEngineDelegate, CumulativeChartViewDelegate> {
+#define MAX_COUNT 100
+
+@interface THController : NSObject <MGTwitterEngineDelegate, CumulativeChartViewDelegate, CumulativeChartViewDataSource> {
     MGTwitterEngine *twitterEngine;
 	NSTimer *timer;
 	
@@ -30,6 +32,10 @@
 	
 	IBOutlet NSTextField *expectedNbTweetsLabel;
 	IBOutlet NSTextField *expectedScoreLabel;
+
+	NSUInteger tweetsCount;
+	NSUInteger numberOfTweetsForScore[MAX_COUNT+1];
+	NSUInteger cumulatedTweetsForScore[MAX_COUNT+1];
 }
 
 @property (nonatomic, retain) MGTwitterEngine *twitterEngine;

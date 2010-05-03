@@ -11,27 +11,26 @@
 #define MAX_COUNT 100
 
 @protocol CumulativeChartViewDelegate
-- (void)didSlideToScore:(NSUInteger)aScore cumulatedTweetsCount:(NSUInteger)cumulatedTweetsCount;
+- (void)didSlideToScore:(NSUInteger)aScore;
 @end
 
+@protocol CumulativeChartViewDataSource
+- (NSUInteger)numberOfTweets;
+- (NSUInteger)cumulatedTweetsForScore:(NSUInteger)aScore;
+@end
 
 @interface CumulativeChartView : NSView {
-	NSUInteger tweetsCountForScore[MAX_COUNT+1];
-	NSUInteger culumatedTweetsForScore[MAX_COUNT+1];
-	NSUInteger totalTweets;
 	NSUInteger score;
 	
-	NSObject <CumulativeChartViewDelegate> *delegate;
+	IBOutlet NSObject <CumulativeChartViewDelegate> *delegate;
+	IBOutlet NSObject <CumulativeChartViewDataSource> *dataSource;
 	
 	NSTrackingRectTag tag;
-	NSCursor *cursor;
 }
 
 @property (nonatomic, retain) NSObject <CumulativeChartViewDelegate> *delegate;
-@property (nonatomic, retain) NSCursor *cursor;
+@property (nonatomic, retain) NSObject <CumulativeChartViewDataSource> *dataSource;
 
-- (void)setNumberOfTweets:(NSUInteger)nbOfTweets forScore:(NSUInteger)aScore;
-- (void)setTweetsCount:(NSUInteger)count;
 - (void)setScore:(NSUInteger)aScore;
 - (void)sendValuesToDelegate;
 
