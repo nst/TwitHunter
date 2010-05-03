@@ -10,7 +10,7 @@
 
 @implementation CumulativeChartView
 
-@synthesize delegate;
+@synthesize delegate, cursor;
 
 static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor *color) {
 	NSColor *deviceColor = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
@@ -45,12 +45,22 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 - (void)resizeWithOldSuperviewSize:(NSSize)oldSize {
 	[self removeTrackingRect:tag];
 	tag = [self addTrackingRect:[self bounds] owner:self userData:nil assumeInside:NO];
+	
+   [self addCursorRect:[self frame] cursor:cursor];
 	[super resizeWithOldSuperviewSize:oldSize];
+}
+
+- (void)resetCursorRects {
+	[super resetCursorRects];
+	
+	[self addCursorRect:[self bounds] cursor:cursor];
+	[cursor setOnMouseEntered:YES];
 }
 
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
+		self.cursor = [NSCursor resizeUpDownCursor];
 		[[self window] setAcceptsMouseMovedEvents:YES];
 		tag = [self addTrackingRect:[self bounds] owner:self userData:nil assumeInside:NO];
     }
@@ -151,6 +161,7 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 }
 
 - (void)dealloc {
+	[cursor release];
 	[delegate release];
 	[super dealloc];
 }
@@ -169,6 +180,7 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 }
 
 - (void)mouseDown:(NSEvent *)theEvent {
+
 	NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 	[self setScoreFromPoint:p];
 	
@@ -192,7 +204,7 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 					 forKeyPath:@"values.score"];
 				}
                 keepOn = NO;
-                break;
+				break;
             default:
                 /* Ignore any other kind of event. */
                 break;
@@ -203,12 +215,10 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 
 - (void)mouseEntered:(NSEvent *)theEvent {
 	//NSLog(@"-- mouseEntered");
-	[[NSCursor resizeUpDownCursor] set];
 }
 
 - (void)mouseExited:(NSEvent *)theEvent {
 	//NSLog(@"-- mouseExited");
-	[[NSCursor arrowCursor] set];
 }
 
 @end

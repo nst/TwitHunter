@@ -24,9 +24,11 @@
 	NSObject <CumulativeChartViewDelegate> *delegate;
 	
 	NSTrackingRectTag tag;
+	NSCursor *cursor;
 }
 
 @property (nonatomic, retain) NSObject <CumulativeChartViewDelegate> *delegate;
+@property (nonatomic, retain) NSCursor *cursor;
 
 - (void)setNumberOfTweets:(NSUInteger)nbOfTweets forScore:(NSUInteger)aScore;
 - (void)setTweetsCount:(NSUInteger)count;
