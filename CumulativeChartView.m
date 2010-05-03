@@ -221,4 +221,8 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	//NSLog(@"-- mouseExited");
 }
 
+- (void)sendValuesToDelegate {
+	[delegate didSlideToScore:score cumulatedTweetsCount:culumatedTweetsForScore[score]];
+}
+
 @end

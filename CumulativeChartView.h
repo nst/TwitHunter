@@ -33,5 +33,6 @@
 - (void)setNumberOfTweets:(NSUInteger)nbOfTweets forScore:(NSUInteger)aScore;
 - (void)setTweetsCount:(NSUInteger)count;
 - (void)setScore:(NSUInteger)aScore;
+- (void)sendValuesToDelegate;
 
 @end

@@ -29,15 +29,35 @@
 	[cumulativeChartView setScore:[sender intValue]];
 }
 
+- (NSMutableArray *)predicatesWithoutScore {
+	NSMutableArray *a = [NSMutableArray array];
+	
+	NSNumber *hideRead = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideRead"];
+	if([hideRead boolValue]) {
+		NSPredicate *p2 = [NSPredicate predicateWithFormat:@"isRead == NO"];
+		[a addObject:p2];
+	}
+	
+	NSNumber *hideURLs = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideURLs"];
+	if([hideURLs boolValue]) {
+		NSPredicate *p3 = [NSPredicate predicateWithFormat:@"text CONTAINS %@", @"http://"];
+		NSPredicate *p4 = [NSCompoundPredicate notPredicateWithSubpredicate:p3]; 
+		[a addObject:p4];
+	}
+	
+	return a;
+}
+
 - (void)updateSliderView {
 	[cumulativeChartView setTweetsCount:[Tweet allObjectsCount]];
 	
 	for(NSUInteger i = 0; i <= 100; i++) {
-		NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i]];
+		NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andSubpredicates:[self predicatesWithoutScore]];
 		[cumulativeChartView setNumberOfTweets:nbTweets forScore:i];
 	}
 	
 	[cumulativeChartView setNeedsDisplay:YES];
+	[cumulativeChartView sendValuesToDelegate];
 }
 
 - (IBAction)updateTweetScores:(id)sender {
@@ -73,28 +93,17 @@
 }
 
 - (void)updateTweetFilterPredicate {
+	NSMutableArray *predicates = [self predicatesWithoutScore];
+
 	NSNumber *score = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
 	NSPredicate *p1 = [NSPredicate predicateWithFormat:@"score >= %@", score];
-	NSMutableArray *subPredicates = [NSMutableArray arrayWithObject:p1];
-	
-	NSNumber *hideRead = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideRead"];
-	if([hideRead boolValue]) {
-		NSPredicate *p2 = [NSPredicate predicateWithFormat:@"isRead == NO"];
-		[subPredicates addObject:p2];
-	}
-	
-	NSNumber *hideURLs = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideURLs"];
-	if([hideURLs boolValue]) {
-		NSPredicate *p3 = [NSPredicate predicateWithFormat:@"text CONTAINS %@", @"http://"];
-		NSPredicate *p4 = [NSCompoundPredicate notPredicateWithSubpredicate:p3]; 
-		[subPredicates addObject:p4];
-	}
-	
-	NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:subPredicates];		
-	
-	self.tweetFilterPredicate = predicate;
+	[predicates addObject:p1];
+		
+	self.tweetFilterPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
 	
 	[tweetArrayController rearrangeObjects];
+	
+	[self updateSliderView];
 }
 
 - (id)init {

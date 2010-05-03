@@ -20,10 +20,15 @@
 @dynamic user;
 @dynamic isRead;
 
-+ (NSUInteger)nbOfTweetsForScore:(NSNumber *)aScore {
++ (NSUInteger)nbOfTweetsForScore:(NSNumber *)aScore andSubpredicates:(NSArray *)subPredicates {
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:[self entity]];
-	NSPredicate *p = [NSPredicate predicateWithFormat:@"score == %@", aScore];
+	
+	NSPredicate *ps = [NSPredicate predicateWithFormat:@"score == %@", aScore];
+	
+	NSArray *predicates = [subPredicates arrayByAddingObject:ps];
+	
+	NSPredicate *p = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
 	[request setPredicate:p];
 	
 	NSError *error = nil;
