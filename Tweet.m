@@ -20,13 +20,9 @@
 @dynamic user;
 @dynamic isRead;
 
-+ (NSUInteger)nbOfTweetsForScore:(NSNumber *)aScore andSubpredicates:(NSArray *)subPredicates {
++ (NSUInteger)tweetsCountWithAndPredicates:(NSArray *)predicates {
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:[self entity]];
-	
-	NSPredicate *ps = [NSPredicate predicateWithFormat:@"score == %@", aScore];
-	
-	NSArray *predicates = [subPredicates arrayByAddingObject:ps];
 	
 	NSPredicate *p = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
 	[request setPredicate:p];
@@ -37,7 +33,14 @@
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	}
-	return count;
+	return count;	
+}
+
++ (NSUInteger)nbOfTweetsForScore:(NSNumber *)aScore andPredicates:(NSArray *)predicates {
+	NSPredicate *p = [NSPredicate predicateWithFormat:@"score == %@", aScore];
+	NSArray *ps = [predicates arrayByAddingObject:p];
+
+	return [self tweetsCountWithAndPredicates:ps];
 }
 
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword {

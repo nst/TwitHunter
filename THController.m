@@ -48,20 +48,21 @@
 	return a;
 }
 
-- (void)updateSliderView {
-	tweetsCount = [Tweet allObjectsCount];
+- (NSUInteger)tweetsCount {
+	return tweetsCount;	
+}
+
+- (void)updateCumulatedData {
+	tweetsCount = [Tweet tweetsCountWithAndPredicates:[self predicatesWithoutScore]];
 	
 	NSUInteger total = 0;
 	
-	for(NSUInteger i = 0; i <= 100; i++) {
-		NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andSubpredicates:[self predicatesWithoutScore]];
+	for(NSUInteger i = 101; i > 0; i--) {
+		NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andPredicates:[self predicatesWithoutScore]];
 		total += nbTweets;
 		numberOfTweetsForScore[i] = nbTweets;
 		cumulatedTweetsForScore[i] = total;
 	}
-		
-	[cumulativeChartView setNeedsDisplay:YES];
-	[cumulativeChartView sendValuesToDelegate];
 }
 
 - (IBAction)updateTweetScores:(id)sender {
@@ -93,7 +94,10 @@
 		NSLog(@"-- error:%@", error);
 	}
 	
-	[self updateSliderView];
+	[self updateCumulatedData];
+
+	[cumulativeChartView setNeedsDisplay:YES];
+	[cumulativeChartView sendValuesToDelegate];
 }
 
 - (void)updateTweetFilterPredicate {
@@ -107,7 +111,10 @@
 	
 	[tweetArrayController rearrangeObjects];
 	
-	[self updateSliderView];
+	[self updateCumulatedData];
+
+	[cumulativeChartView setNeedsDisplay:YES];
+	[cumulativeChartView sendValuesToDelegate];
 }
 
 - (id)init {
@@ -235,7 +242,7 @@
 - (void)awakeFromNib {
 	NSLog(@"awakeFromNib");
 	
-	cumulativeChartView.delegate = self;
+	[self updateCumulatedData];
 	
 	NSNumber *currentScore = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
 	[cumulativeChartView setScore:[currentScore integerValue]];
@@ -263,7 +270,7 @@
 	
 	[self update:self];
 	
-	[self resetTimer];	
+	[self resetTimer];
 }
 
 - (IBAction)markAllAsRead:(id)sender {
