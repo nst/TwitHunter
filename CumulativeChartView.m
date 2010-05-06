@@ -96,17 +96,25 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	
 	NSUInteger total = 0;
 	for(NSUInteger i = MAX_COUNT; i >= score; i--) {
-		if(i == 0) break;
-		NSUInteger nbOfCumulatedTweets = [dataSource cumulatedTweetsForScore:i];
+		NSUInteger nbOfCumulatedTweets;
+		if(i == 0) {
+			nbOfCumulatedTweets = [dataSource numberOfTweets];
+		} else {
+			nbOfCumulatedTweets = [dataSource cumulatedTweetsForScore:i];
+		}
+		
 		CGContextAddLineToPoint(context, width - floorf(nbOfCumulatedTweets*widthFactor), floorf(i*heightFactor));
 
+		if(i == 0) break;
 		//NSLog(@"--  %f %f", floorf(width - total*widthFactor), floorf(i*heightFactor));
 	}
-
+	
 	CGContextAddLineToPoint(context, width - floor(total*widthFactor), score*heightFactor);
-	CGContextAddLineToPoint(context, width-1, score*heightFactor);
-	CGContextAddLineToPoint(context, width-1, 100*heightFactor-1);
-	CGContextAddLineToPoint(context, width - floor([dataSource numberOfTweets]*widthFactor), 100*heightFactor-1);
+	CGContextAddLineToPoint(context, width-1, score*heightFactor); // TODO: -1 ?
+	CGContextAddLineToPoint(context, width-1, MAX_COUNT*heightFactor-1);
+	CGContextAddLineToPoint(context, width - floor([dataSource cumulatedTweetsForScore:MAX_COUNT]*widthFactor), MAX_COUNT*heightFactor-1);
+
+//	NSLog(@"-- %f %f");
 	
 	CGContextDrawPath(context, kCGPathFillStroke);
 	//CGContextClosePath(context);
@@ -127,20 +135,18 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 		CGContextAddLineToPoint(context, width, height+1);
 	}
 	
-	for(NSUInteger i = score-1; i > 0; i--) {
+	for(NSUInteger i = score; i > 0; i--) {
 		if(score == 0) {
 			break;
 		}
 		total = [dataSource cumulatedTweetsForScore:i];
 		CGContextAddLineToPoint(context, width - floorf(total*widthFactor), floorf(i*heightFactor));
 	}
-
+	
 	CGContextAddLineToPoint(context, 0, 0);
 	CGContextAddLineToPoint(context, width-1, 0);
 	CGContextAddLineToPoint(context, width-1, height);
-	
 	CGContextDrawPath(context, kCGPathFillStroke);
-	
 	
 	CGContextSetAllowsAntialiasing(context, true);
 	

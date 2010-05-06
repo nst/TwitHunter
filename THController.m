@@ -359,7 +359,9 @@
 #pragma mark CumulativeChartViewDelegate
 
 - (void)didSlideToScore:(NSUInteger)aScore {
-	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%d", cumulatedTweetsForScore[aScore]]];
+	NSUInteger totalTweets = (aScore == 0) ? [self tweetsCount] : cumulatedTweetsForScore[aScore];
+	
+	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%d", totalTweets]];
 	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%d", aScore]];
 }
 
