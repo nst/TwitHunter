@@ -178,24 +178,24 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	[self setScoreFromPoint:p];
 	
     BOOL keepOn = YES;
-    BOOL isInside = YES;
+//    BOOL isInside = YES;
     NSPoint mouseLoc;
  
     while (keepOn) {
         theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask | NSLeftMouseDraggedMask];
         mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-        isInside = [self mouse:mouseLoc inRect:[self bounds]];
+//        isInside = [self mouse:mouseLoc inRect:[self bounds]];
  
         switch ([theEvent type]) {
             case NSLeftMouseDragged:
 				[self setScoreFromPoint:mouseLoc];
 				break;
             case NSLeftMouseUp:
-				if (isInside) {
+//				if (isInside) {
 					[[NSUserDefaultsController sharedUserDefaultsController]
 					 setValue:[NSNumber numberWithUnsignedInteger:score]
 					 forKeyPath:@"values.score"];
-				}
+//				}
                 keepOn = NO;
 				break;
             default:
