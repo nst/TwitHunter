@@ -11,13 +11,17 @@
 
 @implementation NSColor (TH)
 
-- (CGColorRef)newCGColorInColorSpace:(CGColorSpaceRef)colorSpace {
+- (CGColorRef)copyAsCGColor {
 	NSColor *deviceColor = [self colorUsingColorSpaceName:NSDeviceRGBColorSpace];
 
 	float components[4];
 	[deviceColor getRed:&components[0] green:&components[1] blue:&components[2] alpha: &components[3]];
 
-	return CGColorCreate(colorSpace, components);
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+	CGColorRef cgColor = CGColorCreate(colorSpace, components);
+	CGColorSpaceRelease(colorSpace);
+
+	return cgColor;
 }
 
 @end

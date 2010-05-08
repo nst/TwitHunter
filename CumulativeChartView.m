@@ -68,16 +68,13 @@
 	
 	CGContextSetLineWidth(context, 1.0);
 	
-	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-
-	CGColorRef strokeColor = [[NSColor blackColor] newCGColorInColorSpace:colorSpace];
-
+	CGColorRef strokeColor = [[NSColor blackColor] copyAsCGColor];
 	CGContextSetStrokeColorWithColor(context, strokeColor);
 	CGColorRelease(strokeColor);
-	
+
 	/* draw top */
 	
-	CGColorRef fillColorTop = [[NSColor colorForControlTint:NSBlueControlTint] newCGColorInColorSpace:colorSpace];
+	CGColorRef fillColorTop = [[NSColor colorForControlTint:NSBlueControlTint] copyAsCGColor];
 	CGContextSetFillColorWithColor(context, fillColorTop);
 	CGColorRelease(fillColorTop);
 	
@@ -111,7 +108,7 @@
 	
 	/* draw bottom */
 		
-	CGColorRef fillColorBottom = [[NSColor colorForControlTint:NSGraphiteControlTint] newCGColorInColorSpace:colorSpace];
+	CGColorRef fillColorBottom = [[NSColor colorForControlTint:NSGraphiteControlTint] copyAsCGColor];
 	
 	CGContextSetFillColorWithColor(context, fillColorBottom);
 	CGColorRelease(fillColorBottom);
@@ -148,9 +145,7 @@
 	CGContextClosePath(context);
 #endif
 	
-	CGContextSetAllowsAntialiasing(context, true);
-	
-	CGColorSpaceRelease(colorSpace);
+	CGContextSetAllowsAntialiasing(context, true);	
 }
 
 - (void)dealloc {
