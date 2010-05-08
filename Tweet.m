@@ -28,7 +28,9 @@
 	[request setPredicate:p];
 	
 	NSError *error = nil;
+	
 	NSUInteger count = [[self moc] countForFetchRequest:request error:&error];
+	
 	[request release];
 	if(error) {
 		NSLog(@"-- error:%@", error);

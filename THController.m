@@ -25,10 +25,6 @@
 @synthesize timer;
 @synthesize twitterEngine;
 
-- (IBAction)updateViewScore:(id)sender {
-	//[cumulativeChartView setScore:[sender intValue]];
-}
-
 - (NSMutableArray *)predicatesWithoutScore {
 	NSMutableArray *a = [NSMutableArray array];
 	
@@ -62,6 +58,8 @@
 }
 
 - (void)updateCumulatedData {
+	NSDate *startDate = [NSDate date];
+	
 	tweetsCount = [Tweet tweetsCountWithAndPredicates:[self predicatesWithoutScore]];
 	
 	NSUInteger total = 0;
@@ -71,8 +69,12 @@
 		total += nbTweets;
 		numberOfTweetsForScore[i] = nbTweets;
 	}
+
+	NSLog(@"updateCumulatedData took %f seconds", [[NSDate date] timeIntervalSinceDate:startDate]);
 	
 	[self recomputeCumulatedTweetsForScore];
+	
+	[cumulativeChartView setNeedsDisplay:YES];
 }
 
 - (IBAction)updateTweetScores:(id)sender {
@@ -104,10 +106,11 @@
 		NSLog(@"-- error:%@", error);
 	}
 	
+	[tweetArrayController rearrangeObjects];
+	
 	[self updateCumulatedData];
 
 	[cumulativeChartView setNeedsDisplay:YES];
-//	[cumulativeChartView sendValuesToDelegate];
 }
 
 - (void)updateTweetFilterPredicate {
@@ -120,10 +123,10 @@
 	self.tweetFilterPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
 	
 	[tweetArrayController rearrangeObjects];
-	
-	[self updateCumulatedData];
 
-	[cumulativeChartView setNeedsDisplay:YES];
+	//[self updateCumulatedData];
+
+	//[cumulativeChartView setNeedsDisplay:YES];
 }
 
 - (id)init {
@@ -171,11 +174,18 @@
 	//NSLog(@"-- keyPath %@", keyPath);
 	
 	if(object == [NSUserDefaultsController sharedUserDefaultsController] &&
-	   [[NSArray arrayWithObjects:@"values.score", @"values.hideRead", @"values.hideURLs", nil] containsObject:keyPath]) {
+	   [[NSArray arrayWithObjects:@"values.score", nil] containsObject:keyPath]) {
 		[self updateTweetFilterPredicate];
 		return;
 	}
 
+	if(object == [NSUserDefaultsController sharedUserDefaultsController] &&
+	   [[NSArray arrayWithObjects:@"values.hideRead", @"values.hideURLs", nil] containsObject:keyPath]) {
+		[self updateTweetFilterPredicate];
+		[self updateCumulatedData];
+		return;
+	}
+	
 	if(object == [NSUserDefaultsController sharedUserDefaultsController] &&
 	   [[NSArray arrayWithObjects:@"values.updateFrequency", nil] containsObject:keyPath]) {
 		[self resetTimer];
@@ -243,7 +253,7 @@
 - (void)awakeFromNib {
 	NSLog(@"awakeFromNib");
 	
-	[self updateCumulatedData];
+	//[self updateCumulatedData];
 	
 	NSNumber *currentScore = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
 	[cumulativeChartView setScore:[currentScore integerValue]];
