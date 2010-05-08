@@ -70,14 +70,14 @@
 	
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
 
-	CGColorRef strokeColor = [[NSColor blackColor] createCGColorInColorSpace:colorSpace];
+	CGColorRef strokeColor = [[NSColor blackColor] newCGColorInColorSpace:colorSpace];
 
 	CGContextSetStrokeColorWithColor(context, strokeColor);
 	CGColorRelease(strokeColor);
 	
 	/* draw top */
 	
-	CGColorRef fillColorTop = [[NSColor colorForControlTint:NSBlueControlTint] createCGColorInColorSpace:colorSpace];
+	CGColorRef fillColorTop = [[NSColor colorForControlTint:NSBlueControlTint] newCGColorInColorSpace:colorSpace];
 	CGContextSetFillColorWithColor(context, fillColorTop);
 	CGColorRelease(fillColorTop);
 	
@@ -111,7 +111,7 @@
 	
 	/* draw bottom */
 		
-	CGColorRef fillColorBottom = [[NSColor colorForControlTint:NSGraphiteControlTint] createCGColorInColorSpace:colorSpace];
+	CGColorRef fillColorBottom = [[NSColor colorForControlTint:NSGraphiteControlTint] newCGColorInColorSpace:colorSpace];
 	
 	CGContextSetFillColorWithColor(context, fillColorBottom);
 	CGColorRelease(fillColorBottom);
@@ -175,7 +175,7 @@
 - (void)mouseDown:(NSEvent *)theEvent {
 
 	NSUInteger formerScore = score;
-	NSUInteger slidingScore = score;
+	NSUInteger slidingScore;
 	
 	NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 	[self setScoreFromPoint:p];

@@ -11,7 +11,7 @@
 
 @implementation NSColor (TH)
 
-- (CGColorRef)createCGColorInColorSpace:(CGColorSpaceRef)colorSpace {
+- (CGColorRef)newCGColorInColorSpace:(CGColorSpaceRef)colorSpace {
 	NSColor *deviceColor = [self colorUsingColorSpaceName:NSDeviceRGBColorSpace];
 
 	float components[4];

@@ -161,7 +161,7 @@
 	
 	NSTimeInterval seconds = [[[NSUserDefaults standardUserDefaults] valueForKey:@"updateFrequency"] doubleValue] * 60;
 	
-	if(seconds < 59.9) seconds = 60.0;
+	seconds = MAX(seconds, 60);
 	
 	self.timer = [NSTimer scheduledTimerWithTimeInterval:seconds
 												  target:self

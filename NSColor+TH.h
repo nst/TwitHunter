@@ -11,6 +11,6 @@
 
 @interface NSColor (TH)
 
-- (CGColorRef)createCGColorInColorSpace:(CGColorSpaceRef)colorSpace;
+- (CGColorRef)newCGColorInColorSpace:(CGColorSpaceRef)colorSpace;
 
 @end
