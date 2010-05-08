@@ -10,11 +10,18 @@
 #import "Tweet.h"
 #import "User.h"
 #import "NSManagedObject+TH.h"
+//#import "NSColor+TH.h"
 
 @implementation TweetCollectionViewItem
 
 - (void)awakeFromNib {
 	//[textView setAutomaticLinkDetectionEnabled:YES];
+
+//	CALayer *layer = [CALayer layer];
+//	CGColorRef color = [[NSColor redColor] copyAsCGColor];
+//	layer.backgroundColor = color;
+//	CGColorRelease(color);
+//	[[self view] setLayer:layer];
 }
 
 - (IBAction)openUserWebTimeline:(id)sender {
