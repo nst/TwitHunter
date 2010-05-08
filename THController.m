@@ -368,15 +368,16 @@
 - (void)didSlideToScore:(NSUInteger)aScore {
 	//NSLog(@"-- didSlideToScore:%d", aScore);
 	
-	NSUInteger totalTweets = cumulatedTweetsForScore[aScore];
-	
-	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%d", totalTweets]];
+	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%d", cumulatedTweetsForScore[aScore]]];
 	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%d", aScore]];	
 }
 
 - (void)didStopSlidingOnScore:(NSUInteger)aScore {
 	//NSLog(@"-- didStopSlidingOnScore:%d", aScore);
 	
+	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%d", cumulatedTweetsForScore[aScore]]];
+	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%d", aScore]];	
+
 	NSUInteger score = [[[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"] unsignedIntegerValue];
 	
 	if(aScore == score) return;
