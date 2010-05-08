@@ -197,9 +197,5 @@
     }
 	if(score != formerScore) [delegate didStopSlidingOnScore:score];
 }
-//
-//- (void)sendValuesToDelegate {
-//	[delegate didSlideToScore:score];
-//}
 
 @end

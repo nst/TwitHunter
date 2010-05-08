@@ -36,9 +36,8 @@
 	
 	NSNumber *hideURLs = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideURLs"];
 	if([hideURLs boolValue]) {
-		NSPredicate *p3 = [NSPredicate predicateWithFormat:@"text CONTAINS %@", @"http://"];
-		NSPredicate *p4 = [NSCompoundPredicate notPredicateWithSubpredicate:p3]; 
-		[a addObject:p4];
+		NSPredicate *p3 = [NSPredicate predicateWithFormat:@"containsURL == NO"];
+		[a addObject:p3];
 	}
 	
 	return a;
@@ -178,7 +177,7 @@
 		[self updateTweetFilterPredicate];
 		return;
 	}
-
+	
 	if(object == [NSUserDefaultsController sharedUserDefaultsController] &&
 	   [[NSArray arrayWithObjects:@"values.hideRead", @"values.hideURLs", nil] containsObject:keyPath]) {
 		[self updateTweetFilterPredicate];
@@ -245,15 +244,12 @@
 	
 	[cumulativeChartView setScore:[currentScore unsignedIntegerValue]];
 	[cumulativeChartView setNeedsDisplay:YES];
-//	[cumulativeChartView sendValuesToDelegate];
 	
 	[tweetArrayController rearrangeObjects];	
 }
 
 - (void)awakeFromNib {
 	NSLog(@"awakeFromNib");
-	
-	//[self updateCumulatedData];
 	
 	NSNumber *currentScore = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
 	[cumulativeChartView setScore:[currentScore integerValue]];

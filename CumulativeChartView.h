@@ -33,6 +33,5 @@
 @property (nonatomic, retain) NSObject <CumulativeChartViewDataSource> *dataSource;
 
 - (void)setScore:(NSUInteger)aScore;
-//- (void)sendValuesToDelegate;
 
 @end

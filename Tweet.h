@@ -18,6 +18,7 @@
 @property (nonatomic, retain) NSNumber * uid;
 @property (nonatomic, retain) NSNumber * score;
 @property (nonatomic, retain) NSNumber * isRead;
+@property (nonatomic, retain) NSNumber * containsURL;
 @property (nonatomic, retain) NSDate * date;
 @property (nonatomic, retain) User * user;
 

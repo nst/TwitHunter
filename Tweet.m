@@ -19,6 +19,7 @@
 @dynamic date;
 @dynamic user;
 @dynamic isRead;
+@dynamic containsURL;
 
 + (NSUInteger)tweetsCountWithAndPredicates:(NSArray *)predicates {
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -91,6 +92,9 @@
 	tweet.uid = [NSNumber numberWithUnsignedLongLong:[[d objectForKey:@"id"] unsignedLongLongValue]];
 	tweet.text = [d objectForKey:@"text"];
 	
+	BOOL doesContainURL = [tweet.text rangeOfString:@"http://"].location != NSNotFound;
+	tweet.containsURL = [NSNumber numberWithBool:doesContainURL];
+		
 	//NSLog(@"-- %@ %@", [[d objectForKey:@"created_at"] className], [d objectForKey:@"created_at"]);
 	
 	tweet.date = [d objectForKey:@"created_at"];
