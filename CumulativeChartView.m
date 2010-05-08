@@ -7,27 +7,20 @@
 //
 
 #import "CumulativeChartView.h"
+#import "NSColor+TH.h"
+
+#define DRAW_TOP
+#define DRAW_BOTTOM
 
 @implementation CumulativeChartView
 
 @synthesize delegate, dataSource;
 
-static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor *color) {
-	NSColor *deviceColor = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
-
-	float components[4];
-	[deviceColor getRed:&components[0] green:&components[1] blue:&components[2] alpha: &components[3]];
-
-	return CGColorCreate (colorSpace, components);
-}
-
 - (void)setScore:(NSUInteger)aScore {
-	if(aScore < 0) {
-		aScore = 0;
-	} else if (aScore > MAX_COUNT) {
-		aScore = MAX_COUNT;
-	}
-
+	
+	aScore = MIN(aScore, MAX_COUNT);
+	aScore = MAX(0, aScore);
+	
 	score = aScore;
 	[self setNeedsDisplay:YES];
 }
@@ -36,7 +29,6 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	[self removeTrackingRect:tag];
 	tag = [self addTrackingRect:[self bounds] owner:self userData:nil assumeInside:NO];
 	
-//   [self addCursorRect:[self frame] cursor:cursor];
 	[super resizeWithOldSuperviewSize:oldSize];
 }
 
@@ -78,13 +70,14 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
 
-	CGColorRef strokeColor = CGColorCreateFromNSColor(colorSpace, [NSColor blackColor]);
+	CGColorRef strokeColor = [[NSColor blackColor] createCGColorInColorSpace:colorSpace];
+
 	CGContextSetStrokeColorWithColor(context, strokeColor);
 	CGColorRelease(strokeColor);
 	
 	/* draw top */
 	
-	CGColorRef fillColorTop = CGColorCreateFromNSColor(colorSpace, [NSColor colorForControlTint:NSBlueControlTint]);
+	CGColorRef fillColorTop = [[NSColor colorForControlTint:NSBlueControlTint] createCGColorInColorSpace:colorSpace];
 	CGContextSetFillColorWithColor(context, fillColorTop);
 	CGColorRelease(fillColorTop);
 	
@@ -92,61 +85,68 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 	
 	CGContextMoveToPoint(context, width, floorf(MAX_COUNT*heightFactor));
 	
-	//NSLog(@"--> %f", floorf(MAX_COUNT*heightFactor));
+	NSUInteger totalFrom = 0;
+	NSUInteger totalTo = 0;
 	
-	NSUInteger total = 0;
 	for(NSUInteger i = MAX_COUNT; i >= score; i--) {
-		NSUInteger nbOfCumulatedTweets;
-		if(i == 0) {
-			nbOfCumulatedTweets = [dataSource numberOfTweets];
-		} else {
-			nbOfCumulatedTweets = [dataSource cumulatedTweetsForScore:i];
-		}
+		totalFrom = [dataSource cumulatedTweetsForScore:i];
+		totalTo = [dataSource cumulatedTweetsForScore:i-1];
 		
-		CGContextAddLineToPoint(context, width - floorf(nbOfCumulatedTweets*widthFactor), floorf(i*heightFactor));
-
+		CGContextAddLineToPoint(context, width - floorf(totalFrom*widthFactor), floorf(i*heightFactor));
+		CGContextAddLineToPoint(context, width - floorf(totalTo*widthFactor), floorf(i*heightFactor));
+		
 		if(i == 0) break;
-		//NSLog(@"--  %f %f", floorf(width - total*widthFactor), floorf(i*heightFactor));
 	}
 	
-	CGContextAddLineToPoint(context, width - floor(total*widthFactor), score*heightFactor);
-	CGContextAddLineToPoint(context, width-1, score*heightFactor); // TODO: -1 ?
+	CGContextAddLineToPoint(context, width - floor(totalTo*widthFactor), score*heightFactor);
+	CGContextAddLineToPoint(context, width-1, score*heightFactor);
 	CGContextAddLineToPoint(context, width-1, MAX_COUNT*heightFactor-1);
 	CGContextAddLineToPoint(context, width - floor([dataSource cumulatedTweetsForScore:MAX_COUNT]*widthFactor), MAX_COUNT*heightFactor-1);
-
-//	NSLog(@"-- %f %f");
 	
+#ifdef DRAW_TOP
 	CGContextDrawPath(context, kCGPathFillStroke);
-	//CGContextClosePath(context);
+#else
+	CGContextClosePath(context);
+#endif
 	
 	/* draw bottom */
+		
+	CGColorRef fillColorBottom = [[NSColor colorForControlTint:NSGraphiteControlTint] createCGColorInColorSpace:colorSpace];
 	
-	CGColorRef fillColorBottom = CGColorCreateFromNSColor(colorSpace, [NSColor colorForControlTint:NSGraphiteControlTint]);
 	CGContextSetFillColorWithColor(context, fillColorBottom);
 	CGColorRelease(fillColorBottom);
 	
 	CGContextBeginPath(context);
-		
+	
 	CGContextMoveToPoint(context, width, floorf(score*heightFactor));
-	CGContextAddLineToPoint(context, width - floorf(total*widthFactor), floorf(score*heightFactor));
+	CGContextAddLineToPoint(context, width - floorf(totalTo*widthFactor), floorf(score*heightFactor));
+	CGContextAddLineToPoint(context, width - floorf(totalTo*widthFactor), floorf(score*heightFactor));
 	
 	if(score == 100) {
-		CGContextAddLineToPoint(context, width - floorf(total*widthFactor), height+1);
-		CGContextAddLineToPoint(context, width, height+1);
+		// close the top line because top drawing didn't
+		CGContextAddLineToPoint(context, width - floorf(totalTo*widthFactor), height-1);
+		CGContextAddLineToPoint(context, width, height-1);
 	}
 	
 	for(NSUInteger i = score; i > 0; i--) {
 		if(score == 0) {
 			break;
 		}
-		total = [dataSource cumulatedTweetsForScore:i];
-		CGContextAddLineToPoint(context, width - floorf(total*widthFactor), floorf(i*heightFactor));
+		totalFrom = [dataSource cumulatedTweetsForScore:i];
+		totalTo = [dataSource cumulatedTweetsForScore:(i-1)];
+		CGContextAddLineToPoint(context, width - floorf(totalFrom*widthFactor), floorf(i*heightFactor));
+		CGContextAddLineToPoint(context, width - floorf(totalTo*widthFactor), floorf(i*heightFactor));
 	}
 	
 	CGContextAddLineToPoint(context, 0, 0);
 	CGContextAddLineToPoint(context, width-1, 0);
 	CGContextAddLineToPoint(context, width-1, height);
+
+#ifdef DRAW_BOTTOM
 	CGContextDrawPath(context, kCGPathFillStroke);
+#else
+	CGContextClosePath(context);
+#endif
 	
 	CGContextSetAllowsAntialiasing(context, true);
 	
@@ -174,48 +174,37 @@ static CGColorRef CGColorCreateFromNSColor (CGColorSpaceRef colorSpace, NSColor 
 
 - (void)mouseDown:(NSEvent *)theEvent {
 
+	NSUInteger formerScore = score;
+	NSUInteger slidingScore = score;
+	
 	NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 	[self setScoreFromPoint:p];
 	
     BOOL keepOn = YES;
-//    BOOL isInside = YES;
     NSPoint mouseLoc;
  
     while (keepOn) {
         theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask | NSLeftMouseDraggedMask];
         mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-//        isInside = [self mouse:mouseLoc inRect:[self bounds]];
  
         switch ([theEvent type]) {
             case NSLeftMouseDragged:
+				slidingScore = score;
 				[self setScoreFromPoint:mouseLoc];
+				if(score != slidingScore) [delegate didSlideToScore:score];
 				break;
             case NSLeftMouseUp:
-//				if (isInside) {
-					[[NSUserDefaultsController sharedUserDefaultsController]
-					 setValue:[NSNumber numberWithUnsignedInteger:score]
-					 forKeyPath:@"values.score"];
-//				}
                 keepOn = NO;
 				break;
             default:
-                /* Ignore any other kind of event. */
                 break;
         } 
-		[delegate didSlideToScore:score];
     }
+	if(score != formerScore) [delegate didStopSlidingOnScore:score];
 }
-
-- (void)mouseEntered:(NSEvent *)theEvent {
-	//NSLog(@"-- mouseEntered");
-}
-
-- (void)mouseExited:(NSEvent *)theEvent {
-	//NSLog(@"-- mouseExited");
-}
-
-- (void)sendValuesToDelegate {
-	[delegate didSlideToScore:score];
-}
+//
+//- (void)sendValuesToDelegate {
+//	[delegate didSlideToScore:score];
+//}
 
 @end

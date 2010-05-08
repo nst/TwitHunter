@@ -12,6 +12,7 @@
 
 @protocol CumulativeChartViewDelegate
 - (void)didSlideToScore:(NSUInteger)aScore;
+- (void)didStopSlidingOnScore:(NSUInteger)aScore;
 @end
 
 @protocol CumulativeChartViewDataSource
@@ -32,6 +33,6 @@
 @property (nonatomic, retain) NSObject <CumulativeChartViewDataSource> *dataSource;
 
 - (void)setScore:(NSUInteger)aScore;
-- (void)sendValuesToDelegate;
+//- (void)sendValuesToDelegate;
 
 @end

@@ -52,6 +52,15 @@
 	return tweetsCount;	
 }
 
+- (void)recomputeCumulatedTweetsForScore {
+	NSUInteger total = 0;
+	for(NSUInteger i = 100; i > 0; i--) {
+		total += numberOfTweetsForScore[i];
+		cumulatedTweetsForScore[i] = total;
+	}
+	cumulatedTweetsForScore[0] = tweetsCount;
+}
+
 - (void)updateCumulatedData {
 	tweetsCount = [Tweet tweetsCountWithAndPredicates:[self predicatesWithoutScore]];
 	
@@ -61,8 +70,9 @@
 		NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andPredicates:[self predicatesWithoutScore]];
 		total += nbTweets;
 		numberOfTweetsForScore[i] = nbTweets;
-		cumulatedTweetsForScore[i] = total;
 	}
+	
+	[self recomputeCumulatedTweetsForScore];
 }
 
 - (IBAction)updateTweetScores:(id)sender {
@@ -97,7 +107,7 @@
 	[self updateCumulatedData];
 
 	[cumulativeChartView setNeedsDisplay:YES];
-	[cumulativeChartView sendValuesToDelegate];
+//	[cumulativeChartView sendValuesToDelegate];
 }
 
 - (void)updateTweetFilterPredicate {
@@ -114,7 +124,6 @@
 	[self updateCumulatedData];
 
 	[cumulativeChartView setNeedsDisplay:YES];
-	[cumulativeChartView sendValuesToDelegate];
 }
 
 - (id)init {
@@ -215,14 +224,6 @@
 	}
 }
 
-- (void)recomputeCumulatedTweetsForScore {
-	NSUInteger total = 0;
-	for(NSUInteger i = 100; i > 0; i--) {
-		total += numberOfTweetsForScore[i];
-		cumulatedTweetsForScore[i] = total;
-	}
-}
-
 - (void)didChangeTweetReadStatusNotification:(NSNotification *)aNotification {
 	Tweet *tweet = [[aNotification userInfo] objectForKey:@"Tweet"];
 	NSUInteger tweetScore = [tweet.score unsignedIntegerValue];
@@ -234,7 +235,7 @@
 	
 	[cumulativeChartView setScore:[currentScore unsignedIntegerValue]];
 	[cumulativeChartView setNeedsDisplay:YES];
-	[cumulativeChartView sendValuesToDelegate];
+//	[cumulativeChartView sendValuesToDelegate];
 	
 	[tweetArrayController rearrangeObjects];	
 }
@@ -359,10 +360,22 @@
 #pragma mark CumulativeChartViewDelegate
 
 - (void)didSlideToScore:(NSUInteger)aScore {
-	NSUInteger totalTweets = (aScore == 0) ? [self tweetsCount] : cumulatedTweetsForScore[aScore];
+	//NSLog(@"-- didSlideToScore:%d", aScore);
+	
+	NSUInteger totalTweets = cumulatedTweetsForScore[aScore];
 	
 	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%d", totalTweets]];
-	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%d", aScore]];
+	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%d", aScore]];	
+}
+
+- (void)didStopSlidingOnScore:(NSUInteger)aScore {
+	//NSLog(@"-- didStopSlidingOnScore:%d", aScore);
+	
+	NSUInteger score = [[[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"] unsignedIntegerValue];
+	
+	if(aScore == score) return;
+	
+	[[NSUserDefaultsController sharedUserDefaultsController] setValue:[NSNumber numberWithUnsignedInteger:aScore] forKeyPath:@"values.score"];
 }
 
 #pragma mark CumulativeChartViewDataSource
