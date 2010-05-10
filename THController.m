@@ -275,9 +275,21 @@
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
 	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
+	
 	[self update:self];
 	
 	[self resetTimer];
+}
+
+- (void)setFavoriteFlagForTweet:(NSNotification *)aNotification {
+	Tweet *tweet = [aNotification object];
+	BOOL value = [[[aNotification userInfo] valueForKey:@"value"] boolValue];
+	
+	//NSLog(@"-- %d %@", value, tweet);
+	NSString *s = [twitterEngine markUpdate:[tweet.uid unsignedLongLongValue] asFavorite:value];
+	[requestsIDs addObject:s];
+	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
 }
 
 - (IBAction)markAllAsRead:(id)sender {

@@ -19,7 +19,24 @@
 @dynamic date;
 @dynamic user;
 @dynamic isRead;
+@dynamic isFavorite;
 @dynamic containsURL;
+
+- (NSNumber *)isFavoriteWrapper {
+	return self.isFavorite;
+}
+
+- (void)setIsFavoriteWrapper:(NSNumber *)n {
+	BOOL flag = [n boolValue];
+	NSLog(@"-- set %d", flag);
+	
+	NSDictionary *userInfo = [NSDictionary dictionaryWithObject:n forKey:@"value"];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SetFavoriteFlagForTweet" object:self userInfo:userInfo];
+	
+	self.isFavorite = n;
+	BOOL success = [self save];
+	if(!success) NSLog(@"-- can't save");
+}
 
 + (NSUInteger)tweetsCountWithAndPredicates:(NSArray *)predicates {
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -91,10 +108,13 @@
 	tweet = [Tweet create];
 	tweet.uid = [NSNumber numberWithUnsignedLongLong:[[d objectForKey:@"id"] unsignedLongLongValue]];
 	tweet.text = [d objectForKey:@"text"];
+	tweet.isFavorite = [NSNumber numberWithBool:[[d objectForKey:@"favorited"] isEqualToString:@"true"]];
+	
+	NSLog(@"-- %@ %@", tweet.isFavorite, [d objectForKey:@"favorited"]);
 	
 	BOOL doesContainURL = [tweet.text rangeOfString:@"http://"].location != NSNotFound;
 	tweet.containsURL = [NSNumber numberWithBool:doesContainURL];
-		
+	
 	//NSLog(@"-- %@ %@", [[d objectForKey:@"created_at"] className], [d objectForKey:@"created_at"]);
 	
 	tweet.date = [d objectForKey:@"created_at"];
