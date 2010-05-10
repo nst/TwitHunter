@@ -234,9 +234,14 @@
 }
 
 - (void)didChangeTweetReadStatusNotification:(NSNotification *)aNotification {
+	BOOL hideRead = [[[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideRead"] boolValue];
+	if(!hideRead) return;
+
 	Tweet *tweet = [[aNotification userInfo] objectForKey:@"Tweet"];
 	NSUInteger tweetScore = [tweet.score unsignedIntegerValue];
+
 	numberOfTweetsForScore[tweetScore] += [tweet.isRead boolValue] ? -1 : +1;
+	if([[tweet isRead] boolValue]) tweetsCount -= 1;
 	
 	[self recomputeCumulatedTweetsForScore];
 	
@@ -244,7 +249,7 @@
 	
 	[cumulativeChartView setScore:[currentScore unsignedIntegerValue]];
 	[cumulativeChartView setNeedsDisplay:YES];
-	
+		
 	[tweetArrayController rearrangeObjects];	
 }
 

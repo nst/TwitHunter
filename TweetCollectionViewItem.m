@@ -34,7 +34,7 @@
 
 - (IBAction)changeReadState:(id)sender {
 	Tweet *tweet = [self representedObject];
-	NSLog(@"-- %@ %@", tweet.uid, tweet.isRead);
+	//NSLog(@"-- %@ %@", tweet.uid, tweet.isRead);
 	BOOL success = [tweet save];
 	if(!success) NSLog(@"-- can't save tweet %@", tweet);
 	

@@ -110,7 +110,7 @@
 	tweet.text = [d objectForKey:@"text"];
 	tweet.isFavorite = [NSNumber numberWithBool:[[d objectForKey:@"favorited"] isEqualToString:@"true"]];
 	
-	NSLog(@"-- %@ %@", tweet.isFavorite, [d objectForKey:@"favorited"]);
+	//NSLog(@"-- %@ %@", tweet.isFavorite, [d objectForKey:@"favorited"]);
 	
 	BOOL doesContainURL = [tweet.text rangeOfString:@"http://"].location != NSNotFound;
 	tweet.containsURL = [NSNumber numberWithBool:doesContainURL];
