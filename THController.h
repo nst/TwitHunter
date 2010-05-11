@@ -48,6 +48,7 @@
 @property (nonatomic, retain) NSTimer *timer;
 
 - (IBAction)update:(id)sender;
+- (IBAction)synchronizeFavorites:(id)sender;
 - (IBAction)tweet:(id)sender;
 - (IBAction)updateCredentials:(id)sender;
 - (IBAction)updateTweetScores:(id)sender;

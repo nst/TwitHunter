@@ -253,6 +253,19 @@
 	[tweetArrayController rearrangeObjects];	
 }
 
+- (void)synchronizeFavoritesForUsername:(NSString *)aUsername {
+	self.requestStatus = @"Syncronizing Favorites";
+	self.isConnecting = [NSNumber numberWithBool:YES];
+
+	NSString *s = [twitterEngine getFavoriteUpdatesFor:(NSString *)aUsername startingAtPage:0];
+	[requestsIDs addObject:s];
+}
+
+- (IBAction)synchronizeFavorites:(id)sender {
+	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
+	[self synchronizeFavoritesForUsername:username];
+}
+
 - (void)awakeFromNib {
 	NSLog(@"awakeFromNib");
 	
@@ -283,6 +296,8 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
 	
 	[self update:self];
+	
+	//[self synchronizeFavoritesForUsername:username];
 	
 	[self resetTimer];
 }

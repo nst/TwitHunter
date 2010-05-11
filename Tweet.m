@@ -97,30 +97,28 @@
 	return [array lastObject];
 }
 
-+ (BOOL)createTweetFromDictionary:(NSDictionary *)d {	
++ (BOOL)updateOrCreateTweetFromDictionary:(NSDictionary *)d {	
 	NSString *uid = [d objectForKey:@"id"];
+	
 	Tweet *tweet = [self tweetWithUid:uid];
-	if(tweet) return NO;
-	
-	NSDictionary *userDictionary = [d objectForKey:@"user"];
-	User *user = [User getOrCreateUserWithDictionary:userDictionary];
-	
-	tweet = [Tweet create];
-	tweet.uid = [NSNumber numberWithUnsignedLongLong:[[d objectForKey:@"id"] unsignedLongLongValue]];
-	tweet.text = [d objectForKey:@"text"];
+	if(!tweet) {
+		tweet = [Tweet create];
+		tweet.uid = [NSNumber numberWithUnsignedLongLong:[[d objectForKey:@"id"] unsignedLongLongValue]];
+
+		NSDictionary *userDictionary = [d objectForKey:@"user"];
+		User *user = [User getOrCreateUserWithDictionary:userDictionary];
+		
+		tweet.text = [d objectForKey:@"text"];
+
+		BOOL doesContainURL = [tweet.text rangeOfString:@"http://"].location != NSNotFound;
+		tweet.containsURL = [NSNumber numberWithBool:doesContainURL];
+				
+		tweet.date = [d objectForKey:@"created_at"];
+		tweet.user = user;
+	}
 	tweet.isFavorite = [NSNumber numberWithBool:[[d objectForKey:@"favorited"] isEqualToString:@"true"]];
-	
-	//NSLog(@"-- %@ %@", tweet.isFavorite, [d objectForKey:@"favorited"]);
-	
-	BOOL doesContainURL = [tweet.text rangeOfString:@"http://"].location != NSNotFound;
-	tweet.containsURL = [NSNumber numberWithBool:doesContainURL];
-	
-	//NSLog(@"-- %@ %@", [[d objectForKey:@"created_at"] className], [d objectForKey:@"created_at"]);
-	
-	tweet.date = [d objectForKey:@"created_at"];
-	tweet.user = user;
-	
-	NSLog(@"** created %@", tweet.uid);
+
+	NSLog(@"** created %@ %@ %@", tweet.isFavorite, tweet.uid, tweet.user.screenName);
 	
 	return YES;
 }
@@ -129,7 +127,7 @@
 	unsigned long long biggestID = 0;
 
 	for(NSDictionary *d in a) {
-		BOOL success = [Tweet createTweetFromDictionary:d];
+		BOOL success = [Tweet updateOrCreateTweetFromDictionary:d];
 		if(success) {
 			unsigned long long currentID = [[d objectForKey:@"id"] unsignedLongLongValue];
 			biggestID = MAX(biggestID, currentID);
