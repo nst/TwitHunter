@@ -55,14 +55,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 0386F3BC119EFA5B00453B89 /* OAuthConsumer.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216 /* OAuthConsumer.framework */;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
 			remoteInfo = OAuthConsumer;
 		};
 		0386F3C7119EFA5B00453B89 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0386F3BC119EFA5B00453B89 /* OAuthConsumer.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = FCAAF0750CC95C5E00C52F82 /* OAuthConsumerTestSuite.octest */;
+			remoteGlobalIDString = FCAAF0750CC95C5E00C52F82;
 			remoteInfo = OAuthConsumerTestSuite;
 		};
 /* End PBXContainerItemProxy section */

@@ -153,8 +153,8 @@
 		User *user = [User getOrCreateUserWithDictionary:userDictionary];
 		
 		NSMutableString *s = [d objectForKey:@"text"];
-		[s replaceOccurrencesOfString:@"<" withString:@"&lt;" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
-		[s replaceOccurrencesOfString:@">" withString:@"&gt;" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
+		[s replaceOccurrencesOfString:@"&lt;" withString:@"<" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
+		[s replaceOccurrencesOfString:@"&gt;" withString:@">" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
 		tweet.text = s;
 		
 		BOOL doesContainURL = [tweet.text rangeOfString:@"http"].location != NSNotFound;
