@@ -186,7 +186,7 @@
             case NSLeftMouseDragged:
 				slidingScore = score;
 				[self setScoreFromPoint:mouseLoc];
-				if(score != slidingScore) [delegate didSlideToScore:score];
+				if(score != slidingScore) [delegate chartView:self didSlideToScore:score];
 				break;
             case NSLeftMouseUp:
                 keepOn = NO;
@@ -195,7 +195,7 @@
                 break;
         } 
     }
-	if(score != formerScore) [delegate didStopSlidingOnScore:score];
+	if(score != formerScore) [delegate chartView:self didStopSlidingOnScore:score];
 }
 
 @end

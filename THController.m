@@ -462,14 +462,14 @@
 
 #pragma mark CumulativeChartViewDelegate
 
-- (void)didSlideToScore:(NSUInteger)aScore {
+- (void)chartView:(CumulativeChartView *)aChartView didSlideToScore:(NSUInteger)aScore {
 	//NSLog(@"-- didSlideToScore:%d", aScore);
 	
 	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%d", cumulatedTweetsForScore[aScore]]];
 	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%d", aScore]];	
 }
 
-- (void)didStopSlidingOnScore:(NSUInteger)aScore {
+- (void)chartView:(CumulativeChartView *)aChartView didStopSlidingOnScore:(NSUInteger)aScore {
 	//NSLog(@"-- didStopSlidingOnScore:%d", aScore);
 	
 	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%d", cumulatedTweetsForScore[aScore]]];

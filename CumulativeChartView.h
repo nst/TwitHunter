@@ -10,9 +10,11 @@
 
 #define MAX_COUNT 100
 
+@class CumulativeChartView;
+
 @protocol CumulativeChartViewDelegate
-- (void)didSlideToScore:(NSUInteger)aScore;
-- (void)didStopSlidingOnScore:(NSUInteger)aScore;
+- (void)chartView:(CumulativeChartView *)aChartView didSlideToScore:(NSUInteger)aScore;
+- (void)chartView:(CumulativeChartView *)aChartView didStopSlidingOnScore:(NSUInteger)aScore;
 @end
 
 @protocol CumulativeChartViewDataSource
