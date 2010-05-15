@@ -37,6 +37,8 @@
 	NSUInteger tweetsCount;
 	NSUInteger numberOfTweetsForScore[MAX_COUNT+1];
 	NSUInteger cumulatedTweetsForScore[MAX_COUNT+1];
+	
+	NSDate *latestTimeUpdateCulumatedDataWasAsked;
 }
 
 @property (nonatomic, retain) MGTwitterEngine *twitterEngine;

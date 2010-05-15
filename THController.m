@@ -60,19 +60,46 @@
 }
 
 - (void)updateCumulatedData {
-	NSDate *startDate = [NSDate date];
-	
 	tweetsCount = [Tweet tweetsCountWithAndPredicates:[self predicatesWithoutScore]];
 	
-	NSUInteger total = 0;
+	[latestTimeUpdateCulumatedDataWasAsked release];
+	latestTimeUpdateCulumatedDataWasAsked = [[NSDate date] retain];
 	
-	for(NSUInteger i = 101; i > 0; i--) {
+	[NSThread detachNewThreadSelector:@selector(updateCulumatedDataInSeparateThread) toTarget:self withObject:nil];
+}
+
+- (void)updateCulumatedDataInSeparateThread {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	NSDate *startDate = [[latestTimeUpdateCulumatedDataWasAsked copy] autorelease];
+
+	NSLog(@"--> %@", latestTimeUpdateCulumatedDataWasAsked);
+	NSLog(@"--> %@", startDate);
+	
+	NSMutableArray *tweetsForScores = [NSMutableArray arrayWithCapacity:101];
+	for(NSUInteger i = 0; i < 101; i++) {
 		NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andPredicates:[self predicatesWithoutScore]];
-		total += nbTweets;
-		numberOfTweetsForScore[i] = nbTweets;
+		[tweetsForScores addObject:[NSNumber numberWithInt:nbTweets]];
+		
+		BOOL requestOutdated = [startDate compare:latestTimeUpdateCulumatedDataWasAsked] == NSOrderedAscending;
+		if(requestOutdated) {
+			[pool release];
+			return;
+		}
 	}
+	
+	[self performSelectorOnMainThread:@selector(didFinishUpdatingCumulatedData:) withObject:tweetsForScores waitUntilDone:YES];
 
 	NSLog(@"updateCumulatedData took %f seconds", [[NSDate date] timeIntervalSinceDate:startDate]);
+
+	[pool release];
+}
+
+- (void)didFinishUpdatingCumulatedData:(NSArray *)tweetsForScores {
+	
+	for(NSUInteger i = 0; i < [tweetsForScores count]; i++) {
+		numberOfTweetsForScore[i] = [[tweetsForScores objectAtIndex:i] intValue];
+	}
 	
 	[self recomputeCumulatedTweetsForScore];
 	
