@@ -8,12 +8,12 @@ So far, it is just a quick hack, but it works :-)
 
 ![TwitHunter](http://seriot.ch/software/desktop/TwitHunter/TwitHunter_small.png)
 
-A nightly build can be found at http://seriot.ch/temp/TwitHunter.app.zip
+A "nightly build" can be found at [http://seriot.ch/temp/TwitHunter.app.zip](http://seriot.ch/temp/TwitHunter.app.zip)
 
 If the data model changes (and it will) delete <code>~/Library/Application Support/TwitHunter/TwitHunter.sqlite3</code> and relaunch.
 
-TwitHunter is released into public domain.
+TwitHunter is released into public domain. Do not hesitate to fork and patch.
 
 Includes [MGTwitterEngine](http://mattgemmell.com/2008/02/22/mgtwitterengine-twitter-from-cocoa) code by [Matt Gemmell](http://mattgemmell.com/).
 
-Nicolas Seriot, 2009-04-29, 2010-05-01
+Nicolas Seriot, 2009-04 - 2010-05
