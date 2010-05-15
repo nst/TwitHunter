@@ -23,7 +23,7 @@
 	
 	[as beginEditing];
 	do {
-		foundRange = [self rangeOfString:@"http://" options:0 range:searchRange];
+		foundRange = [self rangeOfString:@"http" options:0 range:searchRange];
 		
 		if (foundRange.length > 0) {
 			searchRange.location = foundRange.location + foundRange.length;

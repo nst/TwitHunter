@@ -13,6 +13,8 @@
 #import "NSManagedObject+TH.h"
 #import "TweetCollectionViewItem.h"
 #import "MGTwitterEngine+TH.h"
+#import "NSArray+Functional.h"
+#import "NSString+TH.h"
 
 @implementation THController
 
@@ -20,6 +22,7 @@
 @synthesize tweetFilterPredicate;
 @synthesize tweetText;
 @synthesize requestsIDs;
+@synthesize favoritesRequestsIDs;
 @synthesize isConnecting;
 @synthesize requestStatus;
 @synthesize timer;
@@ -76,11 +79,12 @@
 	[cumulativeChartView setNeedsDisplay:YES];
 }
 
-- (IBAction)updateTweetScores:(id)sender {
-	NSLog(@"-- update scores");
+- (void)updateScoresForTweets:(NSArray *)tweets {
+
+	NSLog(@"-- updating scores for %d tweets", [tweets count]);
 	
 	// user score
-	for(Tweet *t in [Tweet allObjects]) {
+	for(Tweet *t in tweets) {
 		NSInteger score = 50 + [t.user.score intValue];
 		if(score < 0) score = 0;
 		if(score > 100) score = 100;		
@@ -112,6 +116,12 @@
 	[cumulativeChartView setNeedsDisplay:YES];
 }
 
+- (IBAction)updateTweetScores:(id)sender {
+	NSLog(@"-- update scores");
+	
+	[self updateScoresForTweets:[Tweet allObjects]];
+}
+
 - (void)updateTweetFilterPredicate {
 	NSMutableArray *predicates = [self predicatesWithoutScore];
 
@@ -139,6 +149,7 @@
 		[[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
 		
 		self.requestsIDs = [NSMutableSet set];
+		self.favoritesRequestsIDs = [NSMutableSet set];
 		
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.score" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.hideRead" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
@@ -259,6 +270,7 @@
 
 	NSString *s = [twitterEngine getFavoriteUpdatesFor:(NSString *)aUsername startingAtPage:0];
 	[requestsIDs addObject:s];
+	[favoritesRequestsIDs addObject:s];
 }
 
 - (IBAction)synchronizeFavorites:(id)sender {
@@ -274,7 +286,7 @@
 	
 	[self updateTweetFilterPredicate];
 	
-	[self updateTweetScores:self];
+	//[self updateTweetScores:self];
 
 	[collectionView setMaxNumberOfColumns:1];
 	
@@ -331,6 +343,7 @@
 	[tweetFilterPredicate release];
 	[tweetText release];
 	[requestsIDs release];
+	[favoritesRequestsIDs release];
 	[isConnecting release];
 	[requestStatus release];
 	[requestsIDs release];
@@ -362,17 +375,36 @@
 	self.requestStatus = nil;
 	[requestsIDs removeObject:identifier];
 	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
+
+	if([statuses count] == 0) return;
 	
-	MGTwitterEngineID highestID = [Tweet saveTweetsFromDictionariesArray:statuses];
+	BOOL isFavoritesRequest = [favoritesRequestsIDs containsObject:identifier];
 	
-	NSNumber *highestKnownID = [NSNumber numberWithUnsignedLongLong:highestID];
+	if(isFavoritesRequest) {
+		// statuses are assumed to be ordered by DESC id
+		NSArray *statusesIds = [statuses valueForKeyPath:@"id"];
+		NSString *minIdString = [statusesIds lastObject];
+		NSString *maxIdString = [statusesIds objectAtIndex:0];
+		
+		NSNumber *unfavorMinId = [NSNumber numberWithUnsignedLongLong:[minIdString unsignedLongLongValue]];
+		NSNumber *unfavorMaxId = [NSNumber numberWithUnsignedLongLong:[maxIdString unsignedLongLongValue]];
+		
+		[Tweet unfavorFavoritesBetweenMinId:unfavorMinId maxId:unfavorMaxId];
+	}
+		
+	NSDictionary *boundingIds = [Tweet saveTweetsFromDictionariesArray:statuses];
 	
-	if(highestID != 0) {
-		[[NSUserDefaults standardUserDefaults] setObject:highestKnownID forKey:@"highestID"];
-		NSLog(@"-- stored highestID: %@", highestKnownID);
+	NSNumber *lowestId = [boundingIds valueForKey:@"lowestId"];
+	NSNumber *higestId = [boundingIds valueForKey:@"higestId"];
+	
+	if(higestId) {
+		[[NSUserDefaults standardUserDefaults] setObject:higestId forKey:@"highestID"];
+		NSLog(@"-- stored highestID: %@", higestId);
 	}
 	
-	[self updateTweetScores:self];
+	[self updateScoresForTweets:[Tweet tweetsWithIdGreaterOrEqualTo:lowestId]];
+	
+	[self updateTweetFilterPredicate];
 }
 
 - (void)directMessagesReceived:(NSArray *)messages forRequest:(NSString *)identifier {

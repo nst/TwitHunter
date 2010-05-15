@@ -16,6 +16,7 @@
 		03359D1A0F9D09190084F7BD /* TweetCollectionViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 03359D190F9D09190084F7BD /* TweetCollectionViewItem.m */; };
 		03359F1C0F9D412A0084F7BD /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03359F1B0F9D412A0084F7BD /* Defaults.plist */; };
 		03359F790F9D48F20084F7BD /* TextRule.m in Sources */ = {isa = PBXBuildFile; fileRef = 03359F760F9D48F20084F7BD /* TextRule.m */; };
+		0386EA70119E13C400453B89 /* NSArray+Functional.m in Sources */ = {isa = PBXBuildFile; fileRef = 0386EA6F119E13C400453B89 /* NSArray+Functional.m */; };
 		039B77EB0F9F2C99009A0C57 /* Tweet.m in Sources */ = {isa = PBXBuildFile; fileRef = 039B77EA0F9F2C99009A0C57 /* Tweet.m */; };
 		03BEB9091194F44B001E7311 /* NSColor+TH.m in Sources */ = {isa = PBXBuildFile; fileRef = 03BEB9081194F44B001E7311 /* NSColor+TH.m */; };
 		03BEBC51119521BE001E7311 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BEBC50119521BE001E7311 /* QuartzCore.framework */; };
@@ -63,6 +64,8 @@
 		03359F1B0F9D412A0084F7BD /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
 		03359F750F9D48F20084F7BD /* TextRule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextRule.h; sourceTree = "<group>"; };
 		03359F760F9D48F20084F7BD /* TextRule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextRule.m; sourceTree = "<group>"; };
+		0386EA6E119E13C400453B89 /* NSArray+Functional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Functional.h"; sourceTree = "<group>"; };
+		0386EA6F119E13C400453B89 /* NSArray+Functional.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Functional.m"; sourceTree = "<group>"; };
 		039B77E90F9F2C99009A0C57 /* Tweet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tweet.h; sourceTree = "<group>"; };
 		039B77EA0F9F2C99009A0C57 /* Tweet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tweet.m; sourceTree = "<group>"; };
 		03BEB9071194F44B001E7311 /* NSColor+TH.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor+TH.h"; sourceTree = "<group>"; };
@@ -206,6 +209,8 @@
 				03F7F6E0118C99C800CE6E55 /* MGTwitterEngine+TH.m */,
 				03BEB9071194F44B001E7311 /* NSColor+TH.h */,
 				03BEB9081194F44B001E7311 /* NSColor+TH.m */,
+				0386EA6E119E13C400453B89 /* NSArray+Functional.h */,
+				0386EA6F119E13C400453B89 /* NSArray+Functional.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -392,6 +397,7 @@
 				03F7F6E1118C99C800CE6E55 /* MGTwitterEngine+TH.m in Sources */,
 				03F7F995118CC86A00CE6E55 /* CumulativeChartView.m in Sources */,
 				03BEB9091194F44B001E7311 /* NSColor+TH.m in Sources */,
+				0386EA70119E13C400453B89 /* NSArray+Functional.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

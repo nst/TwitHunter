@@ -27,6 +27,7 @@
 	NSPredicate *tweetFilterPredicate;
 	NSString *tweetText;
 	NSMutableSet *requestsIDs;
+	NSMutableSet *favoritesRequestsIDs;
 	NSNumber *isConnecting;
 	NSString *requestStatus;
 	
@@ -43,6 +44,7 @@
 @property (nonatomic, retain) NSPredicate *tweetFilterPredicate;
 @property (nonatomic, retain) NSString *tweetText;
 @property (nonatomic, retain) NSMutableSet *requestsIDs;
+@property (nonatomic, retain) NSMutableSet *favoritesRequestsIDs;
 @property (nonatomic, retain) NSNumber *isConnecting;
 @property (nonatomic, retain) NSString *requestStatus;
 @property (nonatomic, retain) NSTimer *timer;

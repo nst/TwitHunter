@@ -97,20 +97,67 @@
 	return [array lastObject];
 }
 
-+ (BOOL)updateOrCreateTweetFromDictionary:(NSDictionary *)d {	
++ (NSArray *)tweetsWithIdGreaterOrEqualTo:(NSNumber *)anId {
+	NSFetchRequest *request = [[NSFetchRequest alloc] init];
+	[request setEntity:[self entity]];
+	NSPredicate *p = [NSPredicate predicateWithFormat:@"uid >= %@", anId, nil];
+	[request setPredicate:p];
+	
+	NSError *error = nil;
+	NSArray *array = [[self moc] executeFetchRequest:request error:&error];
+	if(error) {
+		NSLog(@"-- error:%@", error);
+	}
+	[request release];
+	
+	return [array lastObject];
+}
+
++ (void)unfavorFavoritesBetweenMinId:(NSNumber *)unfavorMinId maxId:(NSNumber *)unfavorMaxId {
+	if([unfavorMinId isGreaterThanOrEqualTo:unfavorMaxId]) {
+		NSLog(@"-- can't unfavor ids, given maxId is smaller than minId");
+		return;
+	}
+	
+	NSFetchRequest *request = [[NSFetchRequest alloc] init];
+	[request setEntity:[self entity]];
+	NSPredicate *p = [NSPredicate predicateWithFormat:@"isFavorite == YES AND uid <= %@ AND uid >= %@", unfavorMaxId, unfavorMinId, nil];
+	[request setPredicate:p];
+	
+	NSError *error = nil;
+	NSArray *array = [[self moc] executeFetchRequest:request error:&error];
+	if(error) {
+		NSLog(@"-- error:%@", error);
+	}
+	[request release];
+	
+	for(Tweet *t in array) {
+		t.isFavorite = [NSNumber numberWithBool:NO];
+		NSLog(@"** unfavor %@", t.user.screenName);
+	}
+}
+
++ (BOOL)updateOrCreateTweetFromDictionary:(NSDictionary *)d {
+	// TODO: keep lower and bigger uids and if request was favorites, then un-favorite the ones out of bounds..
+	
 	NSString *uid = [d objectForKey:@"id"];
 	
+	BOOL wasCreated = NO;
 	Tweet *tweet = [self tweetWithUid:uid];
 	if(!tweet) {
 		tweet = [Tweet create];
+		wasCreated = YES;
 		tweet.uid = [NSNumber numberWithUnsignedLongLong:[[d objectForKey:@"id"] unsignedLongLongValue]];
 
 		NSDictionary *userDictionary = [d objectForKey:@"user"];
 		User *user = [User getOrCreateUserWithDictionary:userDictionary];
 		
-		tweet.text = [d objectForKey:@"text"];
-
-		BOOL doesContainURL = [tweet.text rangeOfString:@"http://"].location != NSNotFound;
+		NSMutableString *s = [d objectForKey:@"text"];
+		[s replaceOccurrencesOfString:@"<" withString:@"&lt;" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
+		[s replaceOccurrencesOfString:@">" withString:@"&gt;" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
+		tweet.text = s;
+		
+		BOOL doesContainURL = [tweet.text rangeOfString:@"http"].location != NSNotFound;
 		tweet.containsURL = [NSNumber numberWithBool:doesContainURL];
 				
 		tweet.date = [d objectForKey:@"created_at"];
@@ -118,20 +165,23 @@
 	}
 	tweet.isFavorite = [NSNumber numberWithBool:[[d objectForKey:@"favorited"] isEqualToString:@"true"]];
 
-	NSLog(@"** created %@ %@ %@", tweet.isFavorite, tweet.uid, tweet.user.screenName);
+	NSLog(@"** created %d favorite %@ %@ %@ %@", wasCreated, tweet.isFavorite, tweet.uid, tweet.user.screenName, [tweet.text substringToIndex:10]);
 	
 	return YES;
 }
 
-+ (unsigned long long)saveTweetsFromDictionariesArray:(NSArray *)a {
-	unsigned long long biggestID = 0;
-
++ (NSDictionary *)saveTweetsFromDictionariesArray:(NSArray *)a {
+	// TODO: remove non-favorites between new favorites bounds
+	
+	unsigned long long lowestID = 0;
+	unsigned long long highestID = 0;
+		
 	for(NSDictionary *d in a) {
-		BOOL success = [Tweet updateOrCreateTweetFromDictionary:d];
-		if(success) {
-			unsigned long long currentID = [[d objectForKey:@"id"] unsignedLongLongValue];
-			biggestID = MAX(biggestID, currentID);
-		}
+		[Tweet updateOrCreateTweetFromDictionary:d];
+		
+		unsigned long long currentID = [[d objectForKey:@"id"] unsignedLongLongValue];
+		highestID = MAX(highestID, currentID);
+		lowestID = MIN(lowestID, currentID);
 	}
 	
 	BOOL success = [Tweet save];
@@ -140,7 +190,9 @@
 		return 0;
 	}
 	
-	return biggestID;
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+			[NSNumber numberWithUnsignedLongLong:lowestID], @"lowestID",
+			[NSNumber numberWithUnsignedLongLong:highestID], @"higestId", nil];
 }
 
 @end
