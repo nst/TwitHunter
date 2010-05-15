@@ -17,6 +17,8 @@
 		03359F1C0F9D412A0084F7BD /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03359F1B0F9D412A0084F7BD /* Defaults.plist */; };
 		03359F790F9D48F20084F7BD /* TextRule.m in Sources */ = {isa = PBXBuildFile; fileRef = 03359F760F9D48F20084F7BD /* TextRule.m */; };
 		0386ED87119E422A00453B89 /* OAuthConsumer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0386ED86119E422A00453B89 /* OAuthConsumer.framework */; };
+		0386F3C9119EFA7200453B89 /* OAuthConsumer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0386F3C6119EFA5B00453B89 /* OAuthConsumer.framework */; };
+		0386F40F119EFCD000453B89 /* OAuthConsumer.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0386ED86119E422A00453B89 /* OAuthConsumer.framework */; };
 		039B77EB0F9F2C99009A0C57 /* Tweet.m in Sources */ = {isa = PBXBuildFile; fileRef = 039B77EA0F9F2C99009A0C57 /* Tweet.m */; };
 		03BEB9091194F44B001E7311 /* NSColor+TH.m in Sources */ = {isa = PBXBuildFile; fileRef = 03BEB9081194F44B001E7311 /* NSColor+TH.m */; };
 		03BEBC51119521BE001E7311 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BEBC50119521BE001E7311 /* QuartzCore.framework */; };
@@ -48,6 +50,36 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		0386F3C5119EFA5B00453B89 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0386F3BC119EFA5B00453B89 /* OAuthConsumer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216 /* OAuthConsumer.framework */;
+			remoteInfo = OAuthConsumer;
+		};
+		0386F3C7119EFA5B00453B89 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0386F3BC119EFA5B00453B89 /* OAuthConsumer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FCAAF0750CC95C5E00C52F82 /* OAuthConsumerTestSuite.octest */;
+			remoteInfo = OAuthConsumerTestSuite;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0386F3F9119EFB7100453B89 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				0386F40F119EFCD000453B89 /* OAuthConsumer.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		030F20520FA9FB7F0026C436 /* README.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.markdown; sourceTree = "<group>"; };
 		030F24AE0FB1C6CF0026C436 /* NSString+TH.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TH.h"; sourceTree = "<group>"; };
@@ -67,6 +99,7 @@
 		0386EA6E119E13C400453B89 /* NSArray+Functional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Functional.h"; sourceTree = "<group>"; };
 		0386EA6F119E13C400453B89 /* NSArray+Functional.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Functional.m"; sourceTree = "<group>"; };
 		0386ED86119E422A00453B89 /* OAuthConsumer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OAuthConsumer.framework; path = /Library/XcodeBuilds/Debug/OAuthConsumer.framework; sourceTree = "<absolute>"; };
+		0386F3BC119EFA5B00453B89 /* OAuthConsumer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OAuthConsumer.xcodeproj; path = ../OAuthConsumer/OAuthConsumer.xcodeproj; sourceTree = SOURCE_ROOT; };
 		039B77E90F9F2C99009A0C57 /* Tweet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tweet.h; sourceTree = "<group>"; };
 		039B77EA0F9F2C99009A0C57 /* Tweet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tweet.m; sourceTree = "<group>"; };
 		03BEB9071194F44B001E7311 /* NSColor+TH.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor+TH.h"; sourceTree = "<group>"; };
@@ -138,6 +171,7 @@
 				033595590F9AAF430084F7BD /* libxml2.dylib in Frameworks */,
 				03BEBC51119521BE001E7311 /* QuartzCore.framework in Frameworks */,
 				0386ED87119E422A00453B89 /* OAuthConsumer.framework in Frameworks */,
+				0386F3C9119EFA7200453B89 /* OAuthConsumer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,6 +187,15 @@
 				03F7F994118CC86A00CE6E55 /* CumulativeChartView.m */,
 			);
 			name = View;
+			sourceTree = "<group>";
+		};
+		0386F3BD119EFA5B00453B89 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0386F3C6119EFA5B00453B89 /* OAuthConsumer.framework */,
+				0386F3C8119EFA5B00453B89 /* OAuthConsumerTestSuite.octest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		03F7F332118C5D2C00CE6E55 /* MGTwitterEngine */ = {
@@ -249,6 +292,7 @@
 		29B97314FDCFA39411CA2CEA /* TwitHunter */ = {
 			isa = PBXGroup;
 			children = (
+				0386F3BC119EFA5B00453B89 /* OAuthConsumer.xcodeproj */,
 				030F20520FA9FB7F0026C436 /* README.markdown */,
 				03F7F332118C5D2C00CE6E55 /* MGTwitterEngine */,
 				033599490F9CC3A80084F7BD /* View */,
@@ -317,6 +361,7 @@
 			buildConfigurationList = 26FC0A840875C7B200E6366F /* Build configuration list for PBXNativeTarget "TwitHunter" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
+				0386F3F9119EFB7100453B89 /* CopyFiles */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
 			);
@@ -343,12 +388,35 @@
 			hasScannedForEncodings = 1;
 			mainGroup = 29B97314FDCFA39411CA2CEA /* TwitHunter */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 0386F3BD119EFA5B00453B89 /* Products */;
+					ProjectRef = 0386F3BC119EFA5B00453B89 /* OAuthConsumer.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				8D1107260486CEB800E47090 /* TwitHunter */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		0386F3C6119EFA5B00453B89 /* OAuthConsumer.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = OAuthConsumer.framework;
+			remoteRef = 0386F3C5119EFA5B00453B89 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0386F3C8119EFA5B00453B89 /* OAuthConsumerTestSuite.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = OAuthConsumerTestSuite.octest;
+			remoteRef = 0386F3C7119EFA5B00453B89 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		8D1107290486CEB800E47090 /* Resources */ = {
