@@ -60,21 +60,23 @@
 }
 
 - (void)updateCumulatedData {
-	tweetsCount = [Tweet tweetsCountWithAndPredicates:[self predicatesWithoutScore]];
-	
 	[latestTimeUpdateCulumatedDataWasAsked release];
 	latestTimeUpdateCulumatedDataWasAsked = [[NSDate date] retain];
 	
 	[NSThread detachNewThreadSelector:@selector(updateCulumatedDataInSeparateThread) toTarget:self withObject:nil];
 }
 
+- (void)setTweetsCount:(NSNumber *)n {
+	tweetsCount = [n unsignedIntegerValue];
+}
+
 - (void)updateCulumatedDataInSeparateThread {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	NSDate *startDate = [[latestTimeUpdateCulumatedDataWasAsked copy] autorelease];
-
-	NSLog(@"--> %@", latestTimeUpdateCulumatedDataWasAsked);
-	NSLog(@"--> %@", startDate);
+	
+	NSUInteger totalTweetsCount = [Tweet tweetsCountWithAndPredicates:[self predicatesWithoutScore]];
+	[self performSelectorOnMainThread:@selector(setTweetsCount:) withObject:[NSNumber numberWithUnsignedInteger:totalTweetsCount] waitUntilDone:YES];
 	
 	NSMutableArray *tweetsForScores = [NSMutableArray arrayWithCapacity:101];
 	for(NSUInteger i = 0; i < 101; i++) {
@@ -83,6 +85,8 @@
 		
 		BOOL requestOutdated = [startDate compare:latestTimeUpdateCulumatedDataWasAsked] == NSOrderedAscending;
 		if(requestOutdated) {
+			NSLog(@"updateCumulatedData was cancelled by a newer request");
+			
 			[pool release];
 			return;
 		}
@@ -140,13 +144,13 @@
 	
 	[self updateCumulatedData];
 
-	[cumulativeChartView setNeedsDisplay:YES];
+	//[cumulativeChartView setNeedsDisplay:YES];
 }
 
 - (IBAction)updateTweetScores:(id)sender {
 	NSLog(@"-- update scores");
 	
-	[self updateScoresForTweets:[Tweet allObjects]];
+	[self updateScoresForTweets:[Tweet allObjects]]; // TODO: optimize..
 }
 
 - (void)updateTweetFilterPredicate {
@@ -336,7 +340,9 @@
 	
 	[self update:self];
 	
-	//[self synchronizeFavoritesForUsername:username];
+	[self updateCumulatedData];
+	
+	[self synchronizeFavoritesForUsername:username];
 	
 	[self resetTimer];
 }
