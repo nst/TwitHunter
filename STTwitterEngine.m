@@ -20,6 +20,23 @@
     return twitterAccount.username;
 }
 
+- (void)requestAccessWithCompletionBlock:(void(^)())completionBlock errorBlock:(void(^)(NSError *))errorBlock {
+    
+    ACAccountStore *accountStore = [[ACAccountStore alloc] init];
+    ACAccountType *accountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+
+    [accountStore requestAccessToAccountsWithType:accountType options:nil completion:^(BOOL granted, NSError *error) {
+
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if(granted) {
+                completionBlock();
+            } else {
+                errorBlock(error);
+            }
+        }];
+        
+    }];
+}
 
 - (void)getFavoritesWithParameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
     

@@ -13,6 +13,8 @@ typedef void (^STTE_errorBlock_t)(NSError *error);
 
 }
 
+- (void)requestAccessWithCompletionBlock:(void(^)())completionBlock errorBlock:(void(^)(NSError *))errorBlock;
+
 - (NSString *)username;
 
 - (void)getHomeTimeline:(NSUInteger)nbTweets
