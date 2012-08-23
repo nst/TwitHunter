@@ -10,7 +10,7 @@ TwitHunter also demontrates how simple it is to write a Twitter client on OS X 1
 
 ![TwitHunter](https://github.com/nst/TwitHunter/raw/master/art/twithunter.png "Screenshot")
 
-A "nightly build" can be found at [http://seriot.ch/temp/TwitHunter.app.zip](http://seriot.ch/temp/TwitHunter.app.zip)
+A signed "nightly build" can be found at [http://seriot.ch/temp/TwitHunter.app.zip](http://seriot.ch/temp/TwitHunter.app.zip)
 
 If the data model changes (and it will) delete <code>~/Library/Application Support/TwitHunter/TwitHunter.sqlite3</code> and relaunch.
 
