@@ -21,8 +21,8 @@
 @synthesize tweetSortDescriptors;
 @synthesize tweetFilterPredicate;
 @synthesize tweetText;
-@synthesize requestsIDs;
-@synthesize favoritesRequestsIDs;
+//@synthesize requestsIDs;
+//@synthesize favoritesRequestsIDs;
 @synthesize isConnecting;
 @synthesize requestStatus;
 @synthesize timer;
@@ -179,8 +179,8 @@
 		NSDictionary *defaults = [NSDictionary dictionaryWithContentsOfFile:defaultsPath];
 		[[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
 		
-		self.requestsIDs = [NSMutableSet set];
-		self.favoritesRequestsIDs = [NSMutableSet set];
+//		self.requestsIDs = [NSMutableSet set];
+//		self.favoritesRequestsIDs = [NSMutableSet set];
 		
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.score" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.hideRead" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
@@ -239,20 +239,24 @@
 - (IBAction)updateCredentials:(id)sender {
 	[preferences close];
 	
-	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
-	NSString *password = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.password"];
-	[twitterEngine setUsername:username password:password];
+//	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
+//	NSString *password = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.password"];
+//	[twitterEngine setUsername:username password:password];
 	
 	[self update:self];
 }
 
 - (IBAction)tweet:(id)sender {
+    
+    if(tweetText == nil) return;
+    
 	self.requestStatus = nil;
-	NSString *requestID = [twitterEngine sendUpdate:tweetText];
-	if(requestID) {
-		[requestsIDs addObject:requestID];
-	}
-	self.tweetText = nil;
+
+    NSSharingService *service = [NSSharingService sharingServiceNamed:NSSharingServiceNamePostOnTwitter];
+    service.delegate = self;
+    [service performWithItems:@[tweetText]];
+
+    self.tweetText = nil;
 }
 
 - (IBAction)update:(id)sender {
@@ -266,12 +270,22 @@
 	
 	if(lastKnownID && [lastKnownID unsignedLongLongValue] != 0) {
 		NSLog(@"-- fetch timeline since ID: %@", lastKnownID);
-		NSString *requestID = [twitterEngine getHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] withMaximumID:0 startingAtPage:0 count:100];
-		[requestsIDs addObject:requestID];
+		[twitterEngine getHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] count:100];
+//		[requestsIDs addObject:requestID];
 	} else {
 		NSLog(@"-- fetch timeline last 50");
-		NSArray *requestIDs = [twitterEngine getHomeTimeline:50];
-		[requestsIDs addObjectsFromArray:requestIDs];		
+
+        [twitterEngine getHomeTimeline:50 completionBlock:^(NSArray *statuses) {
+            
+            [self statusesReceived:statuses];
+            
+        } errorBlock:^(NSError *error) {
+            NSLog(@"-- error: %@", [error localizedDescription]);
+        }];
+
+        
+//        NSArray *requestIDs = [twitterEngine getHomeTimeline:50];
+//		[requestsIDs addObjectsFromArray:requestIDs];
 	}
 }
 
@@ -296,12 +310,24 @@
 }
 
 - (void)synchronizeFavoritesForUsername:(NSString *)aUsername {
+    
+    return; // FIXME
+    
 	self.requestStatus = @"Syncronizing Favorites";
 	self.isConnecting = [NSNumber numberWithBool:YES];
 
-	NSString *s = [twitterEngine getFavoriteUpdatesFor:(NSString *)aUsername startingAtPage:0];
-	[requestsIDs addObject:s];
-	[favoritesRequestsIDs addObject:s];
+	[twitterEngine getFavoriteUpdatesForUsername:aUsername completionBlock:^(NSArray *statuses) {
+        
+        [self statusesReceived:statuses];
+        
+    } errorBlock:^(NSError *error) {
+        
+        NSLog(@"-- error: %@", [error localizedDescription]);
+        
+    }];
+    
+//	[requestsIDs addObject:s];
+//	[favoritesRequestsIDs addObject:s];
 }
 
 - (IBAction)synchronizeFavorites:(id)sender {
@@ -323,14 +349,14 @@
 	
 	self.twitterEngine = [[[STTwitterEngine alloc] init] autorelease];
 	
-	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
-	NSString *password = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.password"];
-	
-	if([username length] == 0 || [password length] == 0) {
-        NSLog(@"You forgot to specify your username/password!");
-		[preferences makeKeyAndOrderFront:self];
-		return;
-	}
+//	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
+//	NSString *password = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.password"];
+//	
+//	if([username length] == 0 || [password length] == 0) {
+//        NSLog(@"You forgot to specify your username/password!");
+//		[preferences makeKeyAndOrderFront:self];
+//		return;
+//	}
 	
 //    [twitterEngine setUsername:username password:password];
 	
@@ -342,6 +368,8 @@
 	
 	[self updateCumulatedData];
 	
+    NSString *username = [twitterEngine username];
+    
 	[self synchronizeFavoritesForUsername:username];
 	
 	[self resetTimer];
@@ -353,8 +381,8 @@
 	
 	//NSLog(@"-- %d %@", value, tweet);
 	NSString *s = [twitterEngine markUpdate:[tweet.uid unsignedLongLongValue] asFavorite:value];
-	[requestsIDs addObject:s];
-	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
+//	[requestsIDs addObject:s];
+//	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
 }
 
 - (IBAction)markAllAsRead:(id)sender {
@@ -375,11 +403,11 @@
 	[tweetSortDescriptors release];
 	[tweetFilterPredicate release];
 	[tweetText release];
-	[requestsIDs release];
-	[favoritesRequestsIDs release];
+//	[requestsIDs release];
+//	[favoritesRequestsIDs release];
 	[isConnecting release];
 	[requestStatus release];
-	[requestsIDs release];
+//	[requestsIDs release];
 	
 	[super dealloc];
 }
@@ -390,28 +418,28 @@
 	NSLog(@"requestSucceeded:%@", requestIdentifier);
 
 	self.requestStatus = nil;
-	[requestsIDs removeObject:requestIdentifier];
-	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
+//	[requestsIDs removeObject:requestIdentifier];
+//	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
 }
 
 - (void)requestFailed:(NSString *)requestIdentifier withError:(NSError *)error {
 	NSLog(@"requestFailed:%@ withError:%@", requestIdentifier, [error localizedDescription]);
 
 	self.requestStatus = [error localizedDescription];
-	[requestsIDs removeObject:requestIdentifier];
-	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
+//	[requestsIDs removeObject:requestIdentifier];
+//	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
 }
 
-- (void)statusesReceived:(NSArray *)statuses forRequest:(NSString *)identifier {
+- (void)statusesReceived:(NSArray *)statuses {
 	NSLog(@"-- statusesReceived: %ld", [statuses count]);
 	
 	self.requestStatus = nil;
-	[requestsIDs removeObject:identifier];
-	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
+//	[requestsIDs removeObject:identifier];
+//	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
 
 	if([statuses count] == 0) return;
 	
-	BOOL isFavoritesRequest = [favoritesRequestsIDs containsObject:identifier];
+	BOOL isFavoritesRequest = NO; // TODO: sometimes YES
 	
 	if(isFavoritesRequest) {
 		// statuses are assumed to be ordered by DESC id
@@ -491,5 +519,17 @@
 - (NSUInteger)cumulatedTweetsForScore:(NSUInteger)aScore {
 	return cumulatedTweetsForScore[aScore];
 }
+
+#pragma mark NSSharingServiceDelegate
+
+//- (void)sharingService:(NSSharingService *)sharingService willShareItems:(NSArray *)items;
+//- (void)sharingService:(NSSharingService *)sharingService didFailToShareItems:(NSArray *)items error:(NSError *)error;
+//- (void)sharingService:(NSSharingService *)sharingService didShareItems:(NSArray *)items;
+//
+///* The following methods are invoked when the service is performed and the sharing window pops up, to present a transition between the original items and the sharing window.
+// */
+//- (NSRect)sharingService:(NSSharingService *)sharingService sourceFrameOnScreenForShareItem:(id <NSPasteboardWriting>)item;
+//- (NSImage *)sharingService:(NSSharingService *)sharingService transitionImageForShareItem:(id <NSPasteboardWriting>)item contentRect:(NSRect *)contentRect;
+//- (NSWindow *)sharingService:(NSSharingService *)sharingService sourceWindowForShareItems:(NSArray *)items sharingContentScope:(NSSharingContentScope *)sharingContentScope;
 
 @end

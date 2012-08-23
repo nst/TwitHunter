@@ -22,6 +22,24 @@
 @dynamic isFavorite;
 @dynamic containsURL;
 
+static NSDateFormatter *createdAtDateFormatter = nil;
+
+- (NSDateFormatter *)createdAtDateFormatter {
+        
+    if (createdAtDateFormatter == nil) {
+        createdAtDateFormatter = [[NSDateFormatter alloc] init];
+        
+        NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+        [createdAtDateFormatter setLocale:usLocale];
+        [usLocale release];
+        [createdAtDateFormatter setDateStyle:NSDateFormatterLongStyle];
+        [createdAtDateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
+        [createdAtDateFormatter setDateFormat: @"EEE MMM dd HH:mm:ss Z yyyy"];
+    }
+
+    return createdAtDateFormatter;
+}
+
 - (NSNumber *)isFavoriteWrapper {
 	return self.isFavorite;
 }
@@ -83,13 +101,18 @@
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:[self entity]];
 	NSNumber *uidNumber = [NSNumber numberWithUnsignedLongLong:[uid unsignedLongLongValue]];
+    
+    //NSLog(@"--> %@", uidNumber);
+    
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"uid == %@", uidNumber, nil];
 	[request setPredicate:p];
 	[request setFetchLimit:1];
 	
 	NSError *error = nil;
-	NSArray *array = [[self moc] executeFetchRequest:request error:&error];
-	if(error) {
+
+	NSManagedObjectContext *moc = [self moc];
+    NSArray *array = [moc executeFetchRequest:request error:&error];
+	if(array == nil) {
 		NSLog(@"-- error:%@", error);
 	}
 	[request release];
@@ -152,7 +175,7 @@
 		NSDictionary *userDictionary = [d objectForKey:@"user"];
 		User *user = [User getOrCreateUserWithDictionary:userDictionary];
 		
-		NSMutableString *s = [d objectForKey:@"text"];
+		NSMutableString *s = [NSMutableString stringWithString:[d objectForKey:@"text"]];
 		[s replaceOccurrencesOfString:@"&lt;" withString:@"<" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
 		[s replaceOccurrencesOfString:@"&gt;" withString:@">" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
 		tweet.text = s;
@@ -160,10 +183,10 @@
 		BOOL doesContainURL = [tweet.text rangeOfString:@"http"].location != NSNotFound;
 		tweet.containsURL = [NSNumber numberWithBool:doesContainURL];
 				
-		tweet.date = [d objectForKey:@"created_at"];
+		tweet.date = [[tweet createdAtDateFormatter] dateFromString:[d objectForKey:@"created_at"]];
 		tweet.user = user;
 	}
-	tweet.isFavorite = [NSNumber numberWithBool:[[d objectForKey:@"favorited"] isEqualToString:@"true"]];
+	tweet.isFavorite = [d objectForKey:@"favorited"];
 
 	NSLog(@"** created %d favorite %@ %@ %@ %@", wasCreated, tweet.isFavorite, tweet.uid, tweet.user.screenName, tweet.text);
 	
@@ -187,7 +210,7 @@
 	BOOL success = [Tweet save];
 	if(!success) {
 		NSLog(@"-- can't save moc");
-		return 0;
+		return nil;
 	}
 	
 	return [NSDictionary dictionaryWithObjectsAndKeys:

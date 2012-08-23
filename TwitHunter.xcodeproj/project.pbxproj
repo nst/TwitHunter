@@ -101,14 +101,14 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				03F7F6DF118C99C800CE6E55 /* STTwitterEngine.h */,
+				03F7F6E0118C99C800CE6E55 /* STTwitterEngine.m */,
 				77C8280B06725ACE000B614F /* TwitHunter_AppDelegate.h */,
 				77C8280C06725ACE000B614F /* TwitHunter_AppDelegate.m */,
 				030F24AE0FB1C6CF0026C436 /* NSString+TH.h */,
 				030F24AF0FB1C6CF0026C436 /* NSString+TH.m */,
 				033595900F9AB5180084F7BD /* THController.h */,
 				033595910F9AB5180084F7BD /* THController.m */,
-				03F7F6DF118C99C800CE6E55 /* STTwitterEngine.h */,
-				03F7F6E0118C99C800CE6E55 /* STTwitterEngine.m */,
 				0386EA6E119E13C400453B89 /* NSArray+Functional.h */,
 				0386EA6F119E13C400453B89 /* NSArray+Functional.m */,
 			);
