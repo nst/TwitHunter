@@ -21,12 +21,9 @@
 @synthesize tweetSortDescriptors;
 @synthesize tweetFilterPredicate;
 @synthesize tweetText;
-//@synthesize requestsIDs;
-//@synthesize favoritesRequestsIDs;
 @synthesize isConnecting;
 @synthesize requestStatus;
 @synthesize timer;
-@synthesize twitterEngine;
 
 - (NSMutableArray *)predicatesWithoutScore {
 	NSMutableArray *a = [NSMutableArray array];
@@ -243,10 +240,6 @@
 - (IBAction)updateCredentials:(id)sender {
 	[preferences close];
 	
-//	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
-//	NSString *password = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.password"];
-//	[twitterEngine setUsername:username password:password];
-	
 	[self update:self];
 }
 
@@ -267,7 +260,7 @@
 	NSLog(@"-- update");
 	
 	self.requestStatus = nil;
-	self.isConnecting = [NSNumber numberWithBool:YES];
+	self.isConnecting = @YES;
 	
 	NSNumber *lastKnownID = [[NSUserDefaults standardUserDefaults] valueForKey:@"highestID"]; 
 	NSLog(@"-- found lastKnownID: %@", lastKnownID);
@@ -275,29 +268,34 @@
 	if(lastKnownID && [lastKnownID unsignedLongLongValue] != 0) {
 		NSLog(@"-- fetch timeline since ID: %@", lastKnownID);
 
-        [twitterEngine getHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] count:100 completionBlock:^(NSArray *statuses) {
-            
+        self.requestStatus = @"";
+        
+        self.isConnecting = @YES;
+        
+        [_twitterEngine getHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] count:100 completionBlock:^(NSArray *statuses) {
+            self.isConnecting = @NO;
             [self statusesReceived:statuses];
-            
         } errorBlock:^(NSError *error) {
+            self.isConnecting = @NO;
             NSLog(@"-- error: %@", [error localizedDescription]);
+            self.requestStatus = [error localizedDescription];
         }];
 
-//		[requestsIDs addObject:requestID];
 	} else {
 		NSLog(@"-- fetch timeline last 50");
 
-        [twitterEngine getHomeTimeline:50 completionBlock:^(NSArray *statuses) {
-            
+        self.requestStatus = @"";
+
+        self.isConnecting = @YES;
+
+        [_twitterEngine getHomeTimeline:50 completionBlock:^(NSArray *statuses) {
+            self.isConnecting = @NO;
             [self statusesReceived:statuses];
-            
         } errorBlock:^(NSError *error) {
             NSLog(@"-- error: %@", [error localizedDescription]);
+            self.isConnecting = @NO;
+            self.requestStatus = [error localizedDescription];
         }];
-
-        
-//        NSArray *requestIDs = [twitterEngine getHomeTimeline:50];
-//		[requestsIDs addObjectsFromArray:requestIDs];
 	}
 }
 
@@ -326,15 +324,17 @@
     return; // FIXME
     
 	self.requestStatus = @"Syncronizing Favorites";
-	self.isConnecting = [NSNumber numberWithBool:YES];
+	self.isConnecting = @YES;
 
-	[twitterEngine getFavoriteUpdatesForUsername:aUsername completionBlock:^(NSArray *statuses) {
-        
+    self.requestStatus = @"";
+    
+	[_twitterEngine getFavoriteUpdatesForUsername:aUsername completionBlock:^(NSArray *statuses) {
+        self.isConnecting = @NO;
         [self statusesReceived:statuses];
-        
     } errorBlock:^(NSError *error) {
-        
         NSLog(@"-- error: %@", [error localizedDescription]);
+        self.isConnecting = @NO;
+        self.requestStatus = [error localizedDescription];
         
     }];
     
@@ -360,18 +360,7 @@
 	[collectionView setMaxNumberOfColumns:1];
 	
 	self.twitterEngine = [[[STTwitterEngine alloc] init] autorelease];
-	
-//	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
-//	NSString *password = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.password"];
-//	
-//	if([username length] == 0 || [password length] == 0) {
-//        NSLog(@"You forgot to specify your username/password!");
-//		[preferences makeKeyAndOrderFront:self];
-//		return;
-//	}
-	
-//    [twitterEngine setUsername:username password:password];
-	
+		
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
@@ -380,7 +369,7 @@
 	
 	[self updateCumulatedData];
 	
-    NSString *username = [twitterEngine username];
+    NSString *username = [_twitterEngine username];
     
 	[self synchronizeFavoritesForUsername:username];
 	
@@ -392,55 +381,49 @@
 	BOOL value = [[[aNotification userInfo] valueForKey:@"value"] boolValue];
 	
 	//NSLog(@"-- %d %@", value, tweet);
-	NSString *s = [twitterEngine markUpdate:[tweet.uid unsignedLongLongValue] asFavorite:value];
+	NSString *s = [_twitterEngine markUpdate:[tweet.uid unsignedLongLongValue] asFavorite:value];
 //	[requestsIDs addObject:s];
 //	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
 }
 
 - (IBAction)markAllAsRead:(id)sender {
-	[[tweetArrayController arrangedObjects] setValue:[NSNumber numberWithBool:YES] forKey:@"isRead"];
+	[[tweetArrayController arrangedObjects] setValue:@YES forKey:@"isRead"];
 	[tweetArrayController rearrangeObjects];
 }
 
 - (IBAction)markAllAsUnread:(id)sender {
-	[[tweetArrayController arrangedObjects] setValue:[NSNumber numberWithBool:NO] forKey:@"isRead"];
+	[[tweetArrayController arrangedObjects] setValue:@NO forKey:@"isRead"];
 	[tweetArrayController rearrangeObjects];
 }
 
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
-	[twitterEngine release];
+	[_twitterEngine release];
 	[timer release];
 	[tweetSortDescriptors release];
 	[tweetFilterPredicate release];
 	[tweetText release];
-//	[requestsIDs release];
-//	[favoritesRequestsIDs release];
 	[isConnecting release];
-	[requestStatus release];
-//	[requestsIDs release];
-	
+	[requestStatus release];	
 	[super dealloc];
 }
 
-#pragma mark MGTwitterEngineDelegate
-
-- (void)requestSucceeded:(NSString *)requestIdentifier {
-	NSLog(@"requestSucceeded:%@", requestIdentifier);
-
-	self.requestStatus = nil;
-//	[requestsIDs removeObject:requestIdentifier];
-//	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
-}
-
-- (void)requestFailed:(NSString *)requestIdentifier withError:(NSError *)error {
-	NSLog(@"requestFailed:%@ withError:%@", requestIdentifier, [error localizedDescription]);
-
-	self.requestStatus = [error localizedDescription];
-//	[requestsIDs removeObject:requestIdentifier];
-//	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
-}
+//- (void)requestSucceeded:(NSString *)requestIdentifier {
+//	NSLog(@"requestSucceeded:%@", requestIdentifier);
+//
+//	self.requestStatus = nil;
+////	[requestsIDs removeObject:requestIdentifier];
+////	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
+//}
+//
+//- (void)requestFailed:(NSString *)requestIdentifier withError:(NSError *)error {
+//	NSLog(@"requestFailed:%@ withError:%@", requestIdentifier, [error localizedDescription]);
+//
+//	self.requestStatus = [error localizedDescription];
+////	[requestsIDs removeObject:requestIdentifier];
+////	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
+//}
 
 - (void)statusesReceived:(NSArray *)statuses {
 	NSLog(@"-- statusesReceived: %ld", [statuses count]);
@@ -478,26 +461,6 @@
 	[self updateScoresForTweets:[Tweet tweetsWithIdGreaterOrEqualTo:lowestId]];
 	
 	[self updateTweetFilterPredicate];
-}
-
-- (void)directMessagesReceived:(NSArray *)messages forRequest:(NSString *)identifier {
-	NSLog(@"directMessagesReceived:%@ forRequest:%@", messages, identifier);
-}
-
-- (void)userInfoReceived:(NSArray *)userInfo forRequest:(NSString *)identifier {
-	NSLog(@"userInfoReceived:%@ forRequest:%@", userInfo, identifier);
-}
-
-- (void)connectionFinished {
-	NSLog(@"connectionFinished");
-}
-
-- (void)miscInfoReceived:(NSArray *)miscInfo forRequest:(NSString *)connectionIdentifier {
-	NSLog(@"miscInfoReceived:%@ forRequest:%@", miscInfo, connectionIdentifier);
-}
-
-- (void)imageReceived:(NSImage *)image forRequest:(NSString *)connectionIdentifier {
-	NSLog(@"imageReceived:%@ forRequest:%@", image, connectionIdentifier);
 }
 
 #pragma mark CumulativeChartViewDelegate
