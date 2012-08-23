@@ -15,7 +15,7 @@ typedef void (^STTE_errorBlock_t)(NSError *error);
 
 }
 
-- (void)requestAccessWithCompletionBlock:(void(^)(ACAccount *twitterAccount))completionBlock errorBlock:(void(^)(NSError *))errorBlock;
+- (void)requestAccessWithCompletionBlock:(void(^)(ACAccount *twitterAccount))completionBlock errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (NSString *)username;
 
