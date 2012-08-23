@@ -262,18 +262,19 @@
 	self.requestStatus = nil;
 	self.isConnecting = @YES;
 	
-	NSNumber *lastKnownID = [[NSUserDefaults standardUserDefaults] valueForKey:@"highestID"]; 
+	NSNumber *lastKnownID = [[NSUserDefaults standardUserDefaults] valueForKey:@"highestID"]; // TODO: get it programatically
 	NSLog(@"-- found lastKnownID: %@", lastKnownID);
 	
 	if(lastKnownID && [lastKnownID unsignedLongLongValue] != 0) {
 		NSLog(@"-- fetch timeline since ID: %@", lastKnownID);
 
-        self.requestStatus = @"";
+        self.requestStatus = @"fetching timeline since last known ID";
         
         self.isConnecting = @YES;
         
         [_twitterEngine fetchHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] count:100 completionBlock:^(NSArray *statuses) {
             self.isConnecting = @NO;
+            self.requestStatus = @"";
             [self statusesReceived:statuses];
         } errorBlock:^(NSError *error) {
             self.isConnecting = @NO;
@@ -284,12 +285,13 @@
 	} else {
 		NSLog(@"-- fetch timeline last 50");
 
-        self.requestStatus = @"";
+        self.requestStatus = @"fetching last 50 statuses";
 
         self.isConnecting = @YES;
 
         [_twitterEngine fetchHomeTimeline:50 completionBlock:^(NSArray *statuses) {
             self.isConnecting = @NO;
+            self.requestStatus = @"";
             [self statusesReceived:statuses];
         } errorBlock:^(NSError *error) {
             NSLog(@"-- error: %@", [error localizedDescription]);
@@ -323,6 +325,8 @@
     
     NSLog(@"-- %@", aUsername);
         
+    return; // FIXME
+    
 	self.requestStatus = @"Syncronizing Favorites";
 	self.isConnecting = @YES;
 

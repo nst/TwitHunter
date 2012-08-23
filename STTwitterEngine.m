@@ -47,55 +47,14 @@
 
 - (void)fetchFavoritesWithParameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
     
-    [self requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
-        NSURL *url = [NSURL URLWithString:@"https://api.twitter.com/1/statuses/favorites.json"];
-        SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodGET URL:url parameters:params];
-        request.account = twitterAccount;
-        
-        [request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
-            NSString *output = [NSString stringWithFormat:@"HTTP response status: %ld", [urlResponse statusCode]];
-            NSLog(@"%@", output);
-            
-            NSError *jsonError = nil;
-            NSJSONSerialization *json = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableLeaves error:&jsonError];
-            NSLog(@"-- json: %@", json);
-            NSLog(@"-- error: %@", [jsonError localizedDescription]);
-            
-            NSArray *jsonErrors = [json valueForKey:@"errors"];
-            
-            if([jsonErrors count] > 0) {
-                NSDictionary *jsonErrorDictionary = [jsonErrors lastObject];
-                NSString *message = jsonErrorDictionary[@"message"];
-                NSInteger code = [jsonErrorDictionary[@"code"] intValue];
-                NSDictionary *userInfo = [NSDictionary dictionaryWithObject:message forKey:NSLocalizedDescriptionKey];
-                NSError *jsonErrorFromResponse = [NSError errorWithDomain:NSStringFromClass([self class]) code:code userInfo:userInfo];
-                
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    errorBlock(jsonErrorFromResponse);
-                }];
-                
-                return;
-            }
-            
-            if(json) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    completionBlock((NSArray *)json);
-                }];
-            } else {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    errorBlock(jsonError);
-                }];
-            }
-        }];
-    } errorBlock:^(NSError *error) {
-        errorBlock(error);
-    }];    
+    [self fetchTwitterAPIv1Resource:@"/statuses/favorites.json" parameters:params completionBlock:completionBlock errorBlock:errorBlock];
 }
 
-- (void)fetchHomeTimelineWithParameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
+- (void)fetchTwitterAPIv1Resource:(NSString *)resource parameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
     
     [self requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
-        NSURL *url = [NSURL URLWithString:@"https://api.twitter.com/1/statuses/home_timeline.json"];
+        NSString *urlString = [@"https://api.twitter.com/1" stringByAppendingString:resource];
+        NSURL *url = [NSURL URLWithString:urlString];
         SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodGET URL:url parameters:params];
         request.account = twitterAccount;
         
@@ -114,6 +73,27 @@
             NSJSONSerialization *json = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableLeaves error:&jsonError];
             NSLog(@"-- json: %@", json);
             NSLog(@"-- error: %@", [jsonError localizedDescription]);
+
+            /**/
+            
+            NSArray *jsonErrors = [json valueForKey:@"errors"];
+            
+            if([jsonErrors count] > 0 && [[jsonErrors lastObject] isEqualTo:[NSNull null]] == NO) {
+                
+                NSDictionary *jsonErrorDictionary = [jsonErrors lastObject];
+                NSString *message = jsonErrorDictionary[@"message"];
+                NSInteger code = [jsonErrorDictionary[@"code"] intValue];
+                NSDictionary *userInfo = [NSDictionary dictionaryWithObject:message forKey:NSLocalizedDescriptionKey];
+                NSError *jsonErrorFromResponse = [NSError errorWithDomain:NSStringFromClass([self class]) code:code userInfo:userInfo];
+                
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    errorBlock(jsonErrorFromResponse);
+                }];
+                
+                return;
+            }
+
+            /**/
             
             if(json) {
                 
@@ -132,6 +112,10 @@
     } errorBlock:^(NSError *error) {
         errorBlock(error);
     }];
+}
+
+- (void)fetchHomeTimelineWithParameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
+    [self fetchTwitterAPIv1Resource:@"/statuses/home_timeline.json" parameters:params completionBlock:completionBlock errorBlock:errorBlock];
 }
 
 - (void)fetchHomeTimelineSinceID:(unsigned long long)sinceID count:(NSUInteger)nbTweets completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
