@@ -83,6 +83,8 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword {
 
+    NSAssert(keyword != nil, @"keyword should not be nil");
+    
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:[self entity]];
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"text contains[c] %@" argumentArray:[NSArray arrayWithObject:keyword]];

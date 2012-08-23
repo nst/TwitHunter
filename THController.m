@@ -62,41 +62,45 @@
 - (void)updateCumulatedData {
 	[latestTimeUpdateCulumatedDataWasAsked release];
 	latestTimeUpdateCulumatedDataWasAsked = [[NSDate date] retain];
-	
-	[NSThread detachNewThreadSelector:@selector(updateCulumatedDataInSeparateThread) toTarget:self withObject:nil];
+	    
+    NSOperationQueue *queue = [[[NSOperationQueue alloc] init] autorelease];
+    
+    [queue addOperationWithBlock:^{
+        
+        NSDate *startDate = [[latestTimeUpdateCulumatedDataWasAsked copy] autorelease];
+        
+        NSUInteger totalTweetsCount = [Tweet tweetsCountWithAndPredicates:[self predicatesWithoutScore]];
+        
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self setTweetsCount:totalTweetsCount];
+        }];
+    	
+        NSMutableArray *tweetsForScores = [NSMutableArray arrayWithCapacity:101];
+        for(NSUInteger i = 0; i < 101; i++) {
+            NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andPredicates:[self predicatesWithoutScore]];
+            [tweetsForScores addObject:[NSNumber numberWithInt:nbTweets]];
+            
+            BOOL requestOutdated = [startDate compare:latestTimeUpdateCulumatedDataWasAsked] == NSOrderedAscending;
+            if(requestOutdated) {
+                NSLog(@"updateCumulatedData was cancelled by a newer request");
+                return;
+            }
+        }
+        
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self didFinishUpdatingCumulatedData:tweetsForScores];
+        }];
+        
+        NSLog(@"updateCumulatedData took %f seconds", [[NSDate date] timeIntervalSinceDate:startDate]);
+
+    }];
+    
 }
 
-- (void)setTweetsCount:(NSNumber *)n {
-	tweetsCount = [n unsignedIntegerValue];
-}
-
-- (void)updateCulumatedDataInSeparateThread {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
-	NSDate *startDate = [[latestTimeUpdateCulumatedDataWasAsked copy] autorelease];
-	
-	NSUInteger totalTweetsCount = [Tweet tweetsCountWithAndPredicates:[self predicatesWithoutScore]];
-	[self performSelectorOnMainThread:@selector(setTweetsCount:) withObject:[NSNumber numberWithUnsignedInteger:totalTweetsCount] waitUntilDone:YES];
-	
-	NSMutableArray *tweetsForScores = [NSMutableArray arrayWithCapacity:101];
-	for(NSUInteger i = 0; i < 101; i++) {
-		NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andPredicates:[self predicatesWithoutScore]];
-		[tweetsForScores addObject:[NSNumber numberWithInt:nbTweets]];
-		
-		BOOL requestOutdated = [startDate compare:latestTimeUpdateCulumatedDataWasAsked] == NSOrderedAscending;
-		if(requestOutdated) {
-			NSLog(@"updateCumulatedData was cancelled by a newer request");
-			
-			[pool release];
-			return;
-		}
-	}
-	
-	[self performSelectorOnMainThread:@selector(didFinishUpdatingCumulatedData:) withObject:tweetsForScores waitUntilDone:YES];
-
-	NSLog(@"updateCumulatedData took %f seconds", [[NSDate date] timeIntervalSinceDate:startDate]);
-
-	[pool release];
+- (void)setTweetsCount:(NSUInteger)count {
+	tweetsCount = count;
+    
+    [cumulativeChartView setNeedsDisplay:YES];
 }
 
 - (void)didFinishUpdatingCumulatedData:(NSArray *)tweetsForScores {
@@ -270,7 +274,15 @@
 	
 	if(lastKnownID && [lastKnownID unsignedLongLongValue] != 0) {
 		NSLog(@"-- fetch timeline since ID: %@", lastKnownID);
-		[twitterEngine getHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] count:100];
+
+        [twitterEngine getHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] count:100 completionBlock:^(NSArray *statuses) {
+            
+            [self statusesReceived:statuses];
+            
+        } errorBlock:^(NSError *error) {
+            NSLog(@"-- error: %@", [error localizedDescription]);
+        }];
+
 //		[requestsIDs addObject:requestID];
 	} else {
 		NSLog(@"-- fetch timeline last 50");

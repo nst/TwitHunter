@@ -69,13 +69,11 @@
 	
 	CGColorRef strokeColor = [NSColor blackColor].CGColor;
 	CGContextSetStrokeColorWithColor(context, strokeColor);
-	CGColorRelease(strokeColor);
 
 	/* draw top */
 	
 	CGColorRef fillColorTop = [NSColor colorForControlTint:NSBlueControlTint].CGColor;
 	CGContextSetFillColorWithColor(context, fillColorTop);
-	CGColorRelease(fillColorTop);
 	
 	CGContextBeginPath(context);
 	
@@ -110,7 +108,6 @@
 	CGColorRef fillColorBottom = [NSColor colorForControlTint:NSGraphiteControlTint].CGColor;
 	
 	CGContextSetFillColorWithColor(context, fillColorBottom);
-	CGColorRelease(fillColorBottom);
 	
 	CGContextBeginPath(context);
 	
