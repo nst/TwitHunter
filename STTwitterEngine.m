@@ -16,25 +16,32 @@
     ACAccountStore *accountStore = [[ACAccountStore alloc] init];
     ACAccountType *accountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
     NSArray *accounts = [accountStore accountsWithAccountType:accountType];
+    NSAssert([accounts count] == 1, @"");
     ACAccount *twitterAccount = [accounts objectAtIndex:0];
     return twitterAccount.username;
 }
 
-- (void)requestAccessWithCompletionBlock:(void(^)())completionBlock errorBlock:(void(^)(NSError *))errorBlock {
+- (void)requestAccessWithCompletionBlock:(void(^)(ACAccount *twitterAccount))completionBlock errorBlock:(void(^)(NSError *))errorBlock {
     
     ACAccountStore *accountStore = [[ACAccountStore alloc] init];
     ACAccountType *accountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
-
+    
     [accountStore requestAccessToAccountsWithType:accountType options:nil completion:^(BOOL granted, NSError *error) {
-
+        
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if(granted) {
-                completionBlock();
+                
+                NSArray *accounts = [accountStore accountsWithAccountType:accountType];
+                
+                NSAssert([accounts count] == 1, @"");
+                
+                ACAccount *twitterAccount = [accounts objectAtIndex:0];
+                
+                completionBlock(twitterAccount);
             } else {
                 errorBlock(error);
             }
         }];
-        
     }];
 }
 
@@ -77,7 +84,7 @@
             NSLog(@"-- error: %@", [jsonError localizedDescription]);
             
             if(json) {
-                completionBlock(json);
+                completionBlock((NSArray *)json);
             } else {
                 errorBlock(jsonError);
             }
@@ -89,7 +96,7 @@
 }
 
 - (void)fetchFavoriteUpdatesForUsername:(NSString *)aUsername completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
-
+    
     NSAssert(aUsername != nil, @"no username");
     
     NSDictionary *params = @{@"screen_name":aUsername, @"count":@"200"};
@@ -98,26 +105,8 @@
 }
 
 - (void)fetchHomeTimelineWithParameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
-
-//    [self requestAccessWithCompletionBlock:^{
-//        <#code#>
-//    } errorBlock:^(NSError *) {
-//        <#code#>
-//    }];
     
-    ACAccountStore *accountStore = [[ACAccountStore alloc] init];
-    ACAccountType *accountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
-    [accountStore requestAccessToAccountsWithType:accountType options:nil completion:^(BOOL granted, NSError *error) {
-        NSLog(@"-- granted: %d, error %@", granted, [error localizedDescription]);
-        
-        if(granted == NO) return;
-        
-        NSArray *accounts = [accountStore accountsWithAccountType:accountType];
-        
-        if ([accounts count] != 1) return;
-        
-        ACAccount *twitterAccount = [accounts objectAtIndex:0];
-        
+    [self requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
         NSURL *url = [NSURL URLWithString:@"https://api.twitter.com/1/statuses/home_timeline.json"];
         SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodGET URL:url parameters:params];
         request.account = twitterAccount;
@@ -151,8 +140,12 @@
                 }];
             }
         }];
+        
+    } errorBlock:^(NSError *error) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            errorBlock(error);
+        }];
     }];
-    
 }
 
 - (void)fetchHomeTimelineSinceID:(unsigned long long)sinceID count:(NSUInteger)nbTweets completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
@@ -163,9 +156,9 @@
 }
 
 - (void)fetchHomeTimeline:(NSUInteger)nbTweets completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
-
+    
     NSDictionary *params = @{@"include_entities":@"0"};
-
+    
     [self fetchHomeTimelineWithParameters:params completionBlock:completionBlock errorBlock:errorBlock];
 }
 
