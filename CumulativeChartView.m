@@ -7,7 +7,6 @@
 //
 
 #import "CumulativeChartView.h"
-#import "NSColor+TH.h"
 
 #define DRAW_TOP
 #define DRAW_BOTTOM
@@ -68,13 +67,13 @@
 	
 	CGContextSetLineWidth(context, 1.0);
 	
-	CGColorRef strokeColor = [[NSColor blackColor] copyAsCGColor];
+	CGColorRef strokeColor = [NSColor blackColor].CGColor;
 	CGContextSetStrokeColorWithColor(context, strokeColor);
 	CGColorRelease(strokeColor);
 
 	/* draw top */
 	
-	CGColorRef fillColorTop = [[NSColor colorForControlTint:NSBlueControlTint] copyAsCGColor];
+	CGColorRef fillColorTop = [NSColor colorForControlTint:NSBlueControlTint].CGColor;
 	CGContextSetFillColorWithColor(context, fillColorTop);
 	CGColorRelease(fillColorTop);
 	
@@ -108,7 +107,7 @@
 	
 	/* draw bottom */
 		
-	CGColorRef fillColorBottom = [[NSColor colorForControlTint:NSGraphiteControlTint] copyAsCGColor];
+	CGColorRef fillColorBottom = [NSColor colorForControlTint:NSGraphiteControlTint].CGColor;
 	
 	CGContextSetFillColorWithColor(context, fillColorBottom);
 	CGColorRelease(fillColorBottom);

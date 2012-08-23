@@ -7,13 +7,13 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "MGTwitterEngine.h"
+#import "STTwitterEngine.h"
 #import "CumulativeChartView.h"
 
 #define MAX_COUNT 100
 
-@interface THController : NSObject <MGTwitterEngineDelegate, CumulativeChartViewDelegate, CumulativeChartViewDataSource> {
-    MGTwitterEngine *twitterEngine;
+@interface THController : NSObject <CumulativeChartViewDelegate, CumulativeChartViewDataSource> {
+    STTwitterEngine *twitterEngine;
 	NSTimer *timer;
 	
 	IBOutlet NSArrayController *tweetArrayController;
@@ -41,7 +41,7 @@
 	NSDate *latestTimeUpdateCulumatedDataWasAsked;
 }
 
-@property (nonatomic, retain) MGTwitterEngine *twitterEngine;
+@property (nonatomic, retain) STTwitterEngine *twitterEngine;
 @property (nonatomic, retain) NSArray *tweetSortDescriptors;
 @property (nonatomic, retain) NSPredicate *tweetFilterPredicate;
 @property (nonatomic, retain) NSString *tweetText;

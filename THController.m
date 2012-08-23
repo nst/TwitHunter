@@ -12,7 +12,7 @@
 #import "TextRule.h"
 #import "NSManagedObject+TH.h"
 #import "TweetCollectionViewItem.h"
-#import "MGTwitterEngine+TH.h"
+#import "STTwitterEngine.h"
 #import "NSArray+Functional.h"
 #import "NSString+TH.h"
 
@@ -112,7 +112,7 @@
 
 - (void)updateScoresForTweets:(NSArray *)tweets {
 
-	NSLog(@"-- updating scores for %d tweets", [tweets count]);
+	NSLog(@"-- updating scores for %lu tweets", [tweets count]);
 	
 	// user score
 	for(Tweet *t in tweets) {
@@ -321,7 +321,7 @@
 
 	[collectionView setMaxNumberOfColumns:1];
 	
-	self.twitterEngine = [[[MGTwitterEngine alloc] initWithDelegate:self] autorelease];
+	self.twitterEngine = [[[STTwitterEngine alloc] init] autorelease];
 	
 	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
 	NSString *password = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.password"];
@@ -332,7 +332,7 @@
 		return;
 	}
 	
-    [twitterEngine setUsername:username password:password];
+//    [twitterEngine setUsername:username password:password];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
 	
@@ -403,7 +403,7 @@
 }
 
 - (void)statusesReceived:(NSArray *)statuses forRequest:(NSString *)identifier {
-	NSLog(@"-- statusesReceived: %d", [statuses count]);
+	NSLog(@"-- statusesReceived: %ld", [statuses count]);
 	
 	self.requestStatus = nil;
 	[requestsIDs removeObject:identifier];
@@ -441,11 +441,11 @@
 }
 
 - (void)directMessagesReceived:(NSArray *)messages forRequest:(NSString *)identifier {
-	NSLog(@"directMessagesReceived:%@ forRequest:", messages, identifier);
+	NSLog(@"directMessagesReceived:%@ forRequest:%@", messages, identifier);
 }
 
 - (void)userInfoReceived:(NSArray *)userInfo forRequest:(NSString *)identifier {
-	NSLog(@"userInfoReceived:%@ forRequest:", userInfo, identifier);
+	NSLog(@"userInfoReceived:%@ forRequest:%@", userInfo, identifier);
 }
 
 - (void)connectionFinished {
@@ -465,15 +465,15 @@
 - (void)chartView:(CumulativeChartView *)aChartView didSlideToScore:(NSUInteger)aScore {
 	//NSLog(@"-- didSlideToScore:%d", aScore);
 	
-	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%d", cumulatedTweetsForScore[aScore]]];
-	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%d", aScore]];	
+	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%ld", cumulatedTweetsForScore[aScore]]];
+	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%ld", aScore]];	
 }
 
 - (void)chartView:(CumulativeChartView *)aChartView didStopSlidingOnScore:(NSUInteger)aScore {
 	//NSLog(@"-- didStopSlidingOnScore:%d", aScore);
 	
-	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%d", cumulatedTweetsForScore[aScore]]];
-	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%d", aScore]];	
+	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%ld", cumulatedTweetsForScore[aScore]]];
+	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%ld", aScore]];
 
 	NSUInteger score = [[[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"] unsignedIntegerValue];
 	
