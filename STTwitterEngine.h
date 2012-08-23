@@ -17,16 +17,16 @@ typedef void (^STTE_errorBlock_t)(NSError *error);
 
 - (NSString *)username;
 
-- (void)getHomeTimeline:(NSUInteger)nbTweets
+- (void)fetchHomeTimeline:(NSUInteger)nbTweets
         completionBlock:(STTE_completionBlock_t)completionBlock
              errorBlock:(STTE_errorBlock_t)errorBlock;
 
-- (void)getHomeTimelineSinceID:(unsigned long long)sinceID
+- (void)fetchHomeTimelineSinceID:(unsigned long long)sinceID
                          count:(NSUInteger)nbTweets
                completionBlock:(STTE_completionBlock_t)completionBlock
                     errorBlock:(STTE_errorBlock_t)errorBlock;
 
-- (void)getFavoriteUpdatesForUsername:(NSString *)aUsername completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock;
+- (void)fetchFavoriteUpdatesForUsername:(NSString *)aUsername completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock;
 
 //- (NSArray *)getHomeTimelineSinceID:(NSUInteger)since_id count:(NSUInteger)count;
 //

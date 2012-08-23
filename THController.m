@@ -272,7 +272,7 @@
         
         self.isConnecting = @YES;
         
-        [_twitterEngine getHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] count:100 completionBlock:^(NSArray *statuses) {
+        [_twitterEngine fetchHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] count:100 completionBlock:^(NSArray *statuses) {
             self.isConnecting = @NO;
             [self statusesReceived:statuses];
         } errorBlock:^(NSError *error) {
@@ -288,7 +288,7 @@
 
         self.isConnecting = @YES;
 
-        [_twitterEngine getHomeTimeline:50 completionBlock:^(NSArray *statuses) {
+        [_twitterEngine fetchHomeTimeline:50 completionBlock:^(NSArray *statuses) {
             self.isConnecting = @NO;
             [self statusesReceived:statuses];
         } errorBlock:^(NSError *error) {
@@ -328,7 +328,7 @@
 
     self.requestStatus = @"";
     
-	[_twitterEngine getFavoriteUpdatesForUsername:aUsername completionBlock:^(NSArray *statuses) {
+	[_twitterEngine fetchFavoriteUpdatesForUsername:aUsername completionBlock:^(NSArray *statuses) {
         self.isConnecting = @NO;
         [self statusesReceived:statuses];
     } errorBlock:^(NSError *error) {
@@ -380,6 +380,7 @@
         [self synchronizeFavoritesForUsername:username];
         
         [self resetTimer];
+        
     } errorBlock:^(NSError *error) {
         NSLog(@"-- %@", [error localizedDescription]);
         self.requestStatus = [error localizedDescription];

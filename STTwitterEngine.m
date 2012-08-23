@@ -88,17 +88,23 @@
     
 }
 
-- (void)getFavoriteUpdatesForUsername:(NSString *)aUsername completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
+- (void)fetchFavoriteUpdatesForUsername:(NSString *)aUsername completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
 
     NSAssert(aUsername != nil, @"no username");
     
     NSDictionary *params = @{@"screen_name":aUsername, @"count":@"200"};
     
-    [self getFavoritesWithParameters:params completionBlock:completionBlock errorBlock:errorBlock];
+    [self fetchHomeTimelineWithParameters:params completionBlock:completionBlock errorBlock:errorBlock];
 }
 
-- (void)getHomeTimelineWithParameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
+- (void)fetchHomeTimelineWithParameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
 
+//    [self requestAccessWithCompletionBlock:^{
+//        <#code#>
+//    } errorBlock:^(NSError *) {
+//        <#code#>
+//    }];
+    
     ACAccountStore *accountStore = [[ACAccountStore alloc] init];
     ACAccountType *accountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
     [accountStore requestAccessToAccountsWithType:accountType options:nil completion:^(BOOL granted, NSError *error) {
@@ -135,7 +141,7 @@
             if(json) {
                 
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    completionBlock(json);
+                    completionBlock((NSArray *)json);
                 }];
                 
             } else {
@@ -149,18 +155,18 @@
     
 }
 
-- (void)getHomeTimelineSinceID:(unsigned long long)sinceID count:(NSUInteger)nbTweets completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
+- (void)fetchHomeTimelineSinceID:(unsigned long long)sinceID count:(NSUInteger)nbTweets completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
     
     NSDictionary *params = @{@"include_entities":@"1", @"since_id":[@(sinceID) description]};
     
-    [self getHomeTimelineWithParameters:params completionBlock:completionBlock errorBlock:errorBlock];
+    [self fetchHomeTimelineWithParameters:params completionBlock:completionBlock errorBlock:errorBlock];
 }
 
-- (void)getHomeTimeline:(NSUInteger)nbTweets completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
+- (void)fetchHomeTimeline:(NSUInteger)nbTweets completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
 
     NSDictionary *params = @{@"include_entities":@"0"};
 
-    [self getFavoritesWithParameters:params completionBlock:completionBlock errorBlock:errorBlock];
+    [self fetchHomeTimelineWithParameters:params completionBlock:completionBlock errorBlock:errorBlock];
 }
 
 //        NSURL *url = [NSURL URLWithString:@"https://api.twitter.com/1/statuses/update.json"];
