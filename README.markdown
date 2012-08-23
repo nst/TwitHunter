@@ -6,7 +6,9 @@ You can then filter the tweets and display only the ones with the highest score.
 
 So far, it is just a quick hack, but it works :-)
 
-![TwitHunter](http://seriot.ch/software/desktop/TwitHunter/TwitHunter_small.png)
+TwitHunter also demontrates how simple it is to write a Twitter client on OS X 10.8 without using any third party library.
+
+![TwitHunter](https://github.com/nst/TwitHunter/raw/master/art/twithunter.png "Screenshot")
 
 A "nightly build" can be found at [http://seriot.ch/temp/TwitHunter.app.zip](http://seriot.ch/temp/TwitHunter.app.zip)
 
@@ -14,15 +16,13 @@ If the data model changes (and it will) delete <code>~/Library/Application Suppo
 
 TwitHunter is released into public domain. Do not hesitate to fork and patch.
 
-Includes [MGTwitterEngine](http://mattgemmell.com/2008/02/22/mgtwitterengine-twitter-from-cocoa) code by [Matt Gemmell](http://mattgemmell.com/).
-
-Nicolas Seriot, 2009-04 - 2010-05
+Nicolas Seriot, 2009-04 - 2010-05 - 2012-08
 
 ---
 
 #### Motivation
 
-I follow one hundred persons on Twitter, and keeping up gets increasingly time consuming.
+I follow more than one hundred persons on Twitter, and keeping up gets increasingly time consuming.
 
 I could just unfollow some of them but I don't want to because sometimes I actually have enough time to read them.
 
@@ -40,15 +40,11 @@ TwitHunter is an attempt to see how scoring could be useful in a Twitter client.
 
 So far, it is just a quick hack (ca 8 hours work), but it works :-)
 
-<a href="http://seriot.ch/software/desktop/TwitHunter/TwitHunter.png"><img src="http://seriot.ch/software/desktop/TwitHunter/TwitHunter_small.png"></a>
-
 Basically every tweet gets 50 points. The score is then changed according to simple rules, per user or per keyword.
 
 For instance, on the screenshot, Sebastien's tweet has 50+15 points for mentioning iPhone (keyword rule) and Fraser's one got 50+10 (user rule).
 
 The slider is set on 53, so only tweets with 53 points or more are displayed.
-
-TwitHunter is build on top of Matt Gemmel's [MGTwitterEngine](http://mattgemmell.com/2008/02/22/mgtwitterengine-twitter-from-cocoa).
 
 Disclaimer: the data model is subject to change at anytime, so don't rely on it to store your data for now.
 
@@ -56,7 +52,7 @@ Disclaimer: the data model is subject to change at anytime, so don't rely on it 
 
 I have neigher time nor interest to write a "real" Cocoa Twitter client.
 
-Instead, I would like the scoring approach, if considered useful, to be added to full featured clients. Maybe someone will take it into [Canari](http://www.canaryapp.com/)?
+Instead, I would like the scoring approach, if considered useful, to be added to full featured clients.
 
 I would also like to try out baysian filtering when I have time.
 
