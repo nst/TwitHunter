@@ -9,11 +9,13 @@
 typedef void (^STTE_completionBlock_t)(NSArray *statuses);
 typedef void (^STTE_errorBlock_t)(NSError *error);
 
+@class ACAccount;
+
 @interface STTwitterEngine : NSObject {
 
 }
 
-- (void)requestAccessWithCompletionBlock:(void(^)())completionBlock errorBlock:(void(^)(NSError *))errorBlock;
+- (void)requestAccessWithCompletionBlock:(void(^)(ACAccount *twitterAccount))completionBlock errorBlock:(void(^)(NSError *))errorBlock;
 
 - (NSString *)username;
 

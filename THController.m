@@ -321,8 +321,8 @@
 
 - (void)synchronizeFavoritesForUsername:(NSString *)aUsername {
     
-    return; // FIXME
-    
+    NSLog(@"-- %@", aUsername);
+        
 	self.requestStatus = @"Syncronizing Favorites";
 	self.isConnecting = @YES;
 
@@ -363,9 +363,9 @@
     
     self.requestStatus = @"requesting access";
     
-    [_twitterEngine requestAccessWithCompletionBlock:^{
+    [_twitterEngine requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
 
-        self.requestStatus = @"access granted";
+        self.requestStatus = [NSString stringWithFormat:@"access granted for %@", twitterAccount];
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
         
