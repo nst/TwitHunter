@@ -360,20 +360,31 @@
 	[collectionView setMaxNumberOfColumns:1];
 	
 	self.twitterEngine = [[[STTwitterEngine alloc] init] autorelease];
-		
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
-	
-	[self update:self];
-	
-	[self updateCumulatedData];
-	
-    NSString *username = [_twitterEngine username];
     
-	[self synchronizeFavoritesForUsername:username];
-	
-	[self resetTimer];
+    self.requestStatus = @"requesting access";
+    
+    [_twitterEngine requestAccessWithCompletionBlock:^{
+
+        self.requestStatus = @"access granted";
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
+        
+        [self update:self];
+        
+        [self updateCumulatedData];
+        
+        NSString *username = [_twitterEngine username];
+        
+        [self synchronizeFavoritesForUsername:username];
+        
+        [self resetTimer];
+    } errorBlock:^(NSError *error) {
+        NSLog(@"-- %@", [error localizedDescription]);
+        self.requestStatus = [error localizedDescription];
+    }];
+		
 }
 
 - (void)setFavoriteFlagForTweet:(NSNotification *)aNotification {

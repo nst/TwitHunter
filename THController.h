@@ -7,8 +7,8 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "STTwitterEngine.h"
 #import "CumulativeChartView.h"
+#import "STTwitterEngine.h"
 
 #define MAX_COUNT 100
 
