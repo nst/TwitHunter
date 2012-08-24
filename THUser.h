@@ -7,6 +7,7 @@
 //
 
 #import <CoreData/CoreData.h>
+#import <AppKit/AppKit.h>
 
 @class THTweet;
 

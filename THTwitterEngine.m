@@ -76,6 +76,21 @@
 
             /**/
             
+            if([json isKindOfClass:[NSArray class]] == NO && [json valueForKey:@"error"]) {
+                
+                NSString *message = [json valueForKey:@"error"];
+                NSDictionary *userInfo = [NSDictionary dictionaryWithObject:message forKey:NSLocalizedDescriptionKey];
+                NSError *jsonErrorFromResponse = [NSError errorWithDomain:NSStringFromClass([self class]) code:0 userInfo:userInfo];
+                
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    errorBlock(jsonErrorFromResponse);
+                }];
+                
+                return;
+            }
+            
+            /**/
+            
             NSArray *jsonErrors = [json valueForKey:@"errors"];
             
             if([jsonErrors count] > 0 && [[jsonErrors lastObject] isEqualTo:[NSNull null]] == NO) {
@@ -111,6 +126,88 @@
         
     } errorBlock:^(NSError *error) {
         errorBlock(error);
+    }];
+}
+
+- (void)sendFavorite:(BOOL)favorite forStatus:(NSNumber *)statusUid completionBlock:(void(^)(BOOL favorite))completionBlock errorBlock:(void(^)(NSError *error))errorBlock {
+    // https://api.twitter.com/1/favorites/create/132256714090229760.json
+    // https://api.twitter.com/1/favorites/destroy/132256714090229760.json
+
+#warning FIXME: we always get the error: "Could not authenticate with OAuth."
+
+    [self requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
+        
+        NSString *createOrDestroy = favorite ? @"create" : @"destroy";
+        
+        NSString *urlString = [NSString stringWithFormat:@"https://api.twitter.com/1/favorites/%@/%@.json", createOrDestroy, statusUid];
+        NSLog(@"-- %@", urlString);
+        NSURL *url = [NSURL URLWithString:urlString];
+        SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodPOST URL:url parameters:@{}];
+        request.account = twitterAccount;
+                
+        [request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+            NSString *output = [NSString stringWithFormat:@"HTTP response status: %ld", [urlResponse statusCode]];
+            NSLog(@"---------------> %@", output);
+            
+            if(responseData == nil) {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    errorBlock(nil);
+                }];
+                return;
+            }
+            
+            NSError *jsonError = nil;
+            NSJSONSerialization *json = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableLeaves error:&jsonError];
+            NSLog(@"-- json: %@", json);
+            NSLog(@"-- error: %@", [jsonError localizedDescription]);
+            
+            /**/
+            
+            if([json valueForKey:@"error"]) {
+                
+                NSString *message = [json valueForKey:@"error"];
+                NSDictionary *userInfo = [NSDictionary dictionaryWithObject:message forKey:NSLocalizedDescriptionKey];
+                NSError *jsonErrorFromResponse = [NSError errorWithDomain:NSStringFromClass([self class]) code:0 userInfo:userInfo];
+                
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    errorBlock(jsonErrorFromResponse);
+                }];
+                
+                return;
+            }
+            
+            /**/
+            
+            NSArray *jsonErrors = [json valueForKey:@"errors"];
+            
+            if([jsonErrors count] > 0 && [[jsonErrors lastObject] isEqualTo:[NSNull null]] == NO) {
+                
+                NSDictionary *jsonErrorDictionary = [jsonErrors lastObject];
+                NSString *message = jsonErrorDictionary[@"message"];
+                NSInteger code = [jsonErrorDictionary[@"code"] intValue];
+                NSDictionary *userInfo = [NSDictionary dictionaryWithObject:message forKey:NSLocalizedDescriptionKey];
+                NSError *jsonErrorFromResponse = [NSError errorWithDomain:NSStringFromClass([self class]) code:code userInfo:userInfo];
+                
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    errorBlock(jsonErrorFromResponse);
+                }];
+                
+                return;
+            }
+                        
+            NSNumber *isFavoriteNumber = [json valueForKey:@"isFavorite"];
+            BOOL isFavorite = [isFavoriteNumber boolValue];
+            
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                completionBlock(isFavorite);
+            }];
+            
+        }];
+        
+    } errorBlock:^(NSError *error) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            errorBlock(error);
+        }];
     }];
 }
 

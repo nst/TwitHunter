@@ -7,7 +7,7 @@
 //
 
 #import "NSString+TH.h"
-
+#import <AppKit/AppKit.h>
 
 @implementation NSString (TH)
 

@@ -23,6 +23,7 @@
 @property (nonatomic, retain) NSDate * date;
 @property (nonatomic, retain) THUser * user;
 
++ (THTweet *)tweetWithHighestUid;
 + (THTweet *)tweetWithUid:(NSString *)uid;
 + (void)unfavorFavoritesBetweenMinId:(NSNumber *)unfavorMinId maxId:(NSNumber *)unfavorMaxId;
 + (BOOL)updateOrCreateTweetFromDictionary:(NSDictionary *)d;

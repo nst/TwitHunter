@@ -10,7 +10,7 @@
 #import "THTweet.h"
 #import "THUser.h"
 #import "THTextRule.h"
-#import "NSManagedObject+UniqueContext.h"
+#import "NSManagedObject+SingleContext.h"
 #import "THTweetCollectionViewItem.h"
 #import "THTwitterEngine.h"
 #import "NSString+TH.h"
@@ -43,7 +43,7 @@
 }
 
 - (NSUInteger)tweetsCount {
-	return tweetsCount;	
+	return tweetsCount;
 }
 
 - (void)recomputeCumulatedTweetsForScore {
@@ -71,10 +71,9 @@
         NSLog(@"-- total number of tweets: %lu", totalTweetsCount);
         
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            
             [self setTweetsCount:totalTweetsCount];
         }];
-    	
+        
         NSMutableArray *tweetsForScores = [NSMutableArray arrayWithCapacity:101];
         for(NSUInteger i = 0; i < 101; i++) {
             NSUInteger nbTweets = [THTweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andPredicates:[self predicatesWithoutScore]];
@@ -92,7 +91,7 @@
         }];
         
         NSLog(@"updateCumulatedData took %f seconds", [[NSDate date] timeIntervalSinceDate:startDate]);
-
+        
     }];
     
 }
@@ -115,17 +114,17 @@
 }
 
 - (void)updateScoresForTweets:(NSArray *)tweets {
-
+    
 	NSLog(@"-- updating scores for %lu tweets", [tweets count]);
 	
 	// user score
 	for(THTweet *t in tweets) {
 		NSInteger score = 50 + [t.user.score intValue];
 		if(score < 0) score = 0;
-		if(score > 100) score = 100;		
+		if(score > 100) score = 100;
 		t.score = [NSNumber numberWithInt:score];
 	}
-
+    
 	// text score
 	for(THTextRule *rule in [THTextRule allObjects]) {
 		NSArray *tweetsContainingKeyword = [THTweet tweetsContainingKeyword:rule.keyword];
@@ -147,7 +146,7 @@
 	[tweetArrayController rearrangeObjects];
 	
 	[self updateCumulatedData];
-
+    
 	//[cumulativeChartView setNeedsDisplay:YES];
 }
 
@@ -159,17 +158,17 @@
 
 - (void)updateTweetFilterPredicate {
 	NSMutableArray *predicates = [self predicatesWithoutScore];
-
+    
 	NSNumber *score = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
 	NSPredicate *p1 = [NSPredicate predicateWithFormat:@"score >= %@", score];
 	[predicates addObject:p1];
-		
+    
 	self.tweetFilterPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
 	
 	[tweetArrayController rearrangeObjects];
-
+    
 	//[self updateCumulatedData];
-
+    
 	//[cumulativeChartView setNeedsDisplay:YES];
 }
 
@@ -178,13 +177,13 @@
 		NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
 		self.tweetSortDescriptors = [NSArray arrayWithObject:sd];
 		[sd release];
-
+        
 		NSString *defaultsPath = [[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"];
 		NSDictionary *defaults = [NSDictionary dictionaryWithContentsOfFile:defaultsPath];
 		[[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
 		
-//		self.requestsIDs = [NSMutableSet set];
-//		self.favoritesRequestsIDs = [NSMutableSet set];
+        //		self.requestsIDs = [NSMutableSet set];
+        //		self.favoritesRequestsIDs = [NSMutableSet set];
 		
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.score" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.hideRead" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
@@ -251,11 +250,11 @@
     if(tweetText == nil) return;
     
 	self.requestStatus = nil;
-
+    
     NSSharingService *service = [NSSharingService sharingServiceNamed:NSSharingServiceNamePostOnTwitter];
     service.delegate = self;
     [service performWithItems:@[tweetText]];
-
+    
     self.tweetText = nil;
 }
 
@@ -265,12 +264,14 @@
 	self.requestStatus = nil;
 	self.isConnecting = @YES;
 	
-	NSNumber *lastKnownID = [[NSUserDefaults standardUserDefaults] valueForKey:@"highestID"]; // TODO: get it programatically
-	NSLog(@"-- found lastKnownID: %@", lastKnownID);
-	
+    THTweet *latestTweet = [THTweet tweetWithHighestUid];
+	NSLog(@"-- found lastKnownID: %@", latestTweet.uid);
+    
+	NSNumber *lastKnownID = latestTweet.uid;
+    
 	if(lastKnownID && [lastKnownID unsignedLongLongValue] != 0) {
 		NSLog(@"-- fetch timeline since ID: %@", lastKnownID);
-
+        
         self.requestStatus = @"fetching timeline since last known ID";
         
         self.isConnecting = @YES;
@@ -284,14 +285,14 @@
             NSLog(@"-- error: %@", [error localizedDescription]);
             self.requestStatus = [error localizedDescription];
         }];
-
+        
 	} else {
 		NSLog(@"-- fetch timeline last 50");
-
+        
         self.requestStatus = @"fetching last 50 statuses";
-
+        
         self.isConnecting = @YES;
-
+        
         [_twitterEngine fetchHomeTimeline:50 completionBlock:^(NSArray *statuses) {
             self.isConnecting = @NO;
             self.requestStatus = @"";
@@ -307,10 +308,10 @@
 - (void)didChangeTweetReadStatusNotification:(NSNotification *)aNotification {
 	BOOL hideRead = [[[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideRead"] boolValue];
 	if(!hideRead) return;
-
+    
 	THTweet *tweet = [[aNotification userInfo] objectForKey:@"Tweet"];
 	NSUInteger tweetScore = [tweet.score unsignedIntegerValue];
-
+    
 	numberOfTweetsForScore[tweetScore] += [tweet.isRead boolValue] ? -1 : +1;
 	if([[tweet isRead] boolValue]) tweetsCount -= 1;
 	
@@ -320,19 +321,19 @@
 	
 	[cumulativeChartView setScore:[currentScore unsignedIntegerValue]];
 	[cumulativeChartView setNeedsDisplay:YES];
-		
-	[tweetArrayController rearrangeObjects];	
+    
+	[tweetArrayController rearrangeObjects];
 }
 
 - (void)synchronizeFavoritesForUsername:(NSString *)aUsername {
     
     NSLog(@"-- %@", aUsername);
-        
+    
     return; // FIXME
     
 	self.requestStatus = @"Syncronizing Favorites";
 	self.isConnecting = @YES;
-
+    
     self.requestStatus = @"";
     
 	[_twitterEngine fetchFavoriteUpdatesForUsername:aUsername completionBlock:^(NSArray *statuses) {
@@ -345,8 +346,8 @@
         
     }];
     
-//	[requestsIDs addObject:s];
-//	[favoritesRequestsIDs addObject:s];
+    //	[requestsIDs addObject:s];
+    //	[favoritesRequestsIDs addObject:s];
 }
 
 - (IBAction)synchronizeFavorites:(id)sender {
@@ -363,7 +364,7 @@
 	[self updateTweetFilterPredicate];
 	
 	//[self updateTweetScores:self];
-
+    
 	[collectionView setMaxNumberOfColumns:1];
 	
 	self.twitterEngine = [[[THTwitterEngine alloc] init] autorelease];
@@ -371,9 +372,9 @@
     self.requestStatus = @"requesting access";
     
     [_twitterEngine requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
-
+        
         self.requestStatus = [NSString stringWithFormat:@"access granted for %@", twitterAccount];
-
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
@@ -392,18 +393,26 @@
         NSLog(@"-- %@", [error localizedDescription]);
         self.requestStatus = [error localizedDescription];
     }];
-		
+    
 }
 
 - (void)setFavoriteFlagForTweet:(NSNotification *)aNotification {
 	THTweet *tweet = [aNotification object];
 	BOOL value = [[[aNotification userInfo] valueForKey:@"value"] boolValue];
 	
-	//NSLog(@"-- %d %@", value, tweet);
-#warning FIXME: implement API request to set / unset flag
-	NSString *s = [_twitterEngine markUpdate:[tweet.uid unsignedLongLongValue] asFavorite:value];
-//	[requestsIDs addObject:s];
-//	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
+	NSLog(@"-- %d %@", value, tweet);
+    
+    self.isConnecting = @YES;
+    
+    [_twitterEngine sendFavorite:value forStatus:tweet.uid completionBlock:^(BOOL isFavorite) {
+        self.isConnecting = @NO;
+        NSLog(@"-- success -> isFavorite %d", isFavorite);
+    } errorBlock:^(NSError *error) {
+        self.isConnecting = @NO;
+        NSLog(@"-- error: %@", [error localizedDescription]);
+        self.requestStatus = [error localizedDescription];
+    }];
+    
 }
 
 - (IBAction)markAllAsRead:(id)sender {
@@ -425,7 +434,7 @@
 	[tweetFilterPredicate release];
 	[tweetText release];
 	[isConnecting release];
-	[requestStatus release];	
+	[requestStatus release];
 	[super dealloc];
 }
 
@@ -449,34 +458,34 @@
 	NSLog(@"-- statusesReceived: %ld", [statuses count]);
 	
 	self.requestStatus = nil;
-//	[requestsIDs removeObject:identifier];
-//	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
-
+    //	[requestsIDs removeObject:identifier];
+    //	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
+    
 	if([statuses count] == 0) return;
 	
-	BOOL isFavoritesRequest = NO; // TODO: sometimes YES
-	
-	if(isFavoritesRequest) {
-		// statuses are assumed to be ordered by DESC id
-		NSArray *statusesIds = [statuses valueForKeyPath:@"id"];
-		NSString *minIdString = [statusesIds lastObject];
-		NSString *maxIdString = [statusesIds objectAtIndex:0];
-		
-		NSNumber *unfavorMinId = [NSNumber numberWithUnsignedLongLong:[minIdString unsignedLongLongValue]];
-		NSNumber *unfavorMaxId = [NSNumber numberWithUnsignedLongLong:[maxIdString unsignedLongLongValue]];
-		
-		[THTweet unfavorFavoritesBetweenMinId:unfavorMinId maxId:unfavorMaxId];
-	}
-		
+    //	BOOL isFavoritesRequest = NO; // TODO: sometimes YES
+    //
+    //	if(isFavoritesRequest) {
+    //		// statuses are assumed to be ordered by DESC id
+    //		NSArray *statusesIds = [statuses valueForKeyPath:@"id"];
+    //		NSString *minIdString = [statusesIds lastObject];
+    //		NSString *maxIdString = [statusesIds objectAtIndex:0];
+    //
+    //		NSNumber *unfavorMinId = [NSNumber numberWithUnsignedLongLong:[minIdString unsignedLongLongValue]];
+    //		NSNumber *unfavorMaxId = [NSNumber numberWithUnsignedLongLong:[maxIdString unsignedLongLongValue]];
+    //
+    //		[THTweet unfavorFavoritesBetweenMinId:unfavorMinId maxId:unfavorMaxId];
+    //	}
+    
 	NSDictionary *boundingIds = [THTweet saveTweetsFromDictionariesArray:statuses];
 	
 	NSNumber *lowestId = [boundingIds valueForKey:@"lowestId"];
 	NSNumber *higestId = [boundingIds valueForKey:@"higestId"];
 	
-	if(higestId) {
-		[[NSUserDefaults standardUserDefaults] setObject:higestId forKey:@"highestID"];
-		NSLog(@"-- stored highestID: %@", higestId);
-	}
+    //	if(higestId) {
+    //		[[NSUserDefaults standardUserDefaults] setObject:higestId forKey:@"highestID"];
+    //		NSLog(@"-- stored highestID: %@", higestId);
+    //	}
 	
 	[self updateScoresForTweets:[THTweet tweetsWithIdGreaterOrEqualTo:lowestId]];
 	
@@ -489,7 +498,7 @@
 	//NSLog(@"-- didSlideToScore:%d", aScore);
 	
 	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%ld", cumulatedTweetsForScore[aScore]]];
-	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%ld", aScore]];	
+	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%ld", aScore]];
 }
 
 - (void)chartView:(THCumulativeChartView *)aChartView didStopSlidingOnScore:(NSUInteger)aScore {
@@ -497,7 +506,7 @@
 	
 	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%ld", cumulatedTweetsForScore[aScore]]];
 	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%ld", aScore]];
-
+    
 	NSUInteger score = [[[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"] unsignedIntegerValue];
 	
 	if(aScore == score) return;

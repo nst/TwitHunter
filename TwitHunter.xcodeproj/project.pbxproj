@@ -13,8 +13,8 @@
 		03359D1A0F9D09190084F7BD /* THTweetCollectionViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 03359D190F9D09190084F7BD /* THTweetCollectionViewItem.m */; };
 		03359F1C0F9D412A0084F7BD /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03359F1B0F9D412A0084F7BD /* Defaults.plist */; };
 		03359F790F9D48F20084F7BD /* THTextRule.m in Sources */ = {isa = PBXBuildFile; fileRef = 03359F760F9D48F20084F7BD /* THTextRule.m */; };
-		0349AB5B15E722A4008FE2EB /* NSManagedObject+UniqueContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 0349AB5A15E722A4008FE2EB /* NSManagedObject+UniqueContext.m */; };
 		03639B3815E72A3000D1AC44 /* THTwitterEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 03639B3715E72A3000D1AC44 /* THTwitterEngine.m */; };
+		03639B3B15E7507000D1AC44 /* NSManagedObject+SingleContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 03639B3A15E7507000D1AC44 /* NSManagedObject+SingleContext.m */; };
 		03946ADC15E5B2F800916FC5 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03946ADB15E5B2F800916FC5 /* Social.framework */; };
 		03946ADE15E5B2FD00916FC5 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03946ADD15E5B2FD00916FC5 /* Accounts.framework */; };
 		039B77EB0F9F2C99009A0C57 /* THTweet.m in Sources */ = {isa = PBXBuildFile; fileRef = 039B77EA0F9F2C99009A0C57 /* THTweet.m */; };
@@ -42,9 +42,9 @@
 		03359F1B0F9D412A0084F7BD /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
 		03359F750F9D48F20084F7BD /* THTextRule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THTextRule.h; sourceTree = "<group>"; };
 		03359F760F9D48F20084F7BD /* THTextRule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THTextRule.m; sourceTree = "<group>"; };
-		0349AB5915E722A4008FE2EB /* NSManagedObject+UniqueContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+UniqueContext.h"; sourceTree = "<group>"; };
-		0349AB5A15E722A4008FE2EB /* NSManagedObject+UniqueContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+UniqueContext.m"; sourceTree = "<group>"; };
 		03639B3715E72A3000D1AC44 /* THTwitterEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THTwitterEngine.m; sourceTree = "<group>"; };
+		03639B3915E7507000D1AC44 /* NSManagedObject+SingleContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+SingleContext.h"; sourceTree = "<group>"; };
+		03639B3A15E7507000D1AC44 /* NSManagedObject+SingleContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+SingleContext.m"; sourceTree = "<group>"; };
 		03946ADB15E5B2F800916FC5 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Social.framework; sourceTree = DEVELOPER_DIR; };
 		03946ADD15E5B2FD00916FC5 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Accounts.framework; sourceTree = DEVELOPER_DIR; };
 		039B77E90F9F2C99009A0C57 /* THTweet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THTweet.h; sourceTree = "<group>"; };
@@ -188,8 +188,8 @@
 		7756732906782D8800D1FEB8 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				0349AB5915E722A4008FE2EB /* NSManagedObject+UniqueContext.h */,
-				0349AB5A15E722A4008FE2EB /* NSManagedObject+UniqueContext.m */,
+				03639B3915E7507000D1AC44 /* NSManagedObject+SingleContext.h */,
+				03639B3A15E7507000D1AC44 /* NSManagedObject+SingleContext.m */,
 				039B77E90F9F2C99009A0C57 /* THTweet.h */,
 				039B77EA0F9F2C99009A0C57 /* THTweet.m */,
 				03359F750F9D48F20084F7BD /* THTextRule.h */,
@@ -276,8 +276,8 @@
 				039B77EB0F9F2C99009A0C57 /* THTweet.m in Sources */,
 				030F24B00FB1C6CF0026C436 /* NSString+TH.m in Sources */,
 				03F7F995118CC86A00CE6E55 /* THCumulativeChartView.m in Sources */,
-				0349AB5B15E722A4008FE2EB /* NSManagedObject+UniqueContext.m in Sources */,
 				03639B3815E72A3000D1AC44 /* THTwitterEngine.m in Sources */,
+				03639B3B15E7507000D1AC44 /* NSManagedObject+SingleContext.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,7 +347,6 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_IDENTITY = "Mac Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
@@ -361,7 +360,6 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CODE_SIGN_IDENTITY = "Mac Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;

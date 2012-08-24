@@ -6,6 +6,8 @@
 //  Copyright 2010 seriot.ch. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 typedef void (^STTE_completionBlock_t)(NSArray *statuses);
 typedef void (^STTE_errorBlock_t)(NSError *error);
 
@@ -30,9 +32,6 @@ typedef void (^STTE_errorBlock_t)(NSError *error);
 
 - (void)fetchFavoriteUpdatesForUsername:(NSString *)aUsername completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock;
 
-//- (NSArray *)getHomeTimelineSinceID:(NSUInteger)since_id count:(NSUInteger)count;
-//
-//- (NSString *)getFavoriteUpdatesFor:(NSString *)username startingAtPage:(NSUInteger)page;
-//- (NSString *)markUpdate:(NSUInteger)updatedID asFavorite:(BOOL)favorite;
+- (void)sendFavorite:(BOOL)favorite forStatus:(NSNumber *)statusUid completionBlock:(void(^)(BOOL favorite))completionBlock errorBlock:(void(^)(NSError *error))errorBlock;
 
 @end

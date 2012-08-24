@@ -6,7 +6,7 @@
 //  Copyright 2009 Sen:te. All rights reserved.
 //
 
-#import "NSManagedObject+UniqueContext.h"
+#import "NSManagedObject+SingleContext.h"
 #import "NSString+TH.h"
 #import "THTweet.h"
 #import "THUser.h"
@@ -120,6 +120,26 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	[request release];
 	
 	return [array lastObject];
+}
+
++ (THTweet *)tweetWithHighestUid {
+
+    NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
+	[request setEntity:[self entity]];
+    
+    NSSortDescriptor *sd = [NSSortDescriptor sortDescriptorWithKey:@"uid" ascending:NO];
+    [request setSortDescriptors:[NSArray arrayWithObject:sd]];
+	[request setFetchLimit:1];
+	
+	NSError *error = nil;
+    
+	NSManagedObjectContext *moc = [self moc];
+    NSArray *array = [moc executeFetchRequest:request error:&error];
+	if(array == nil) {
+		NSLog(@"-- error:%@", error);
+	}
+    
+    return [array lastObject];
 }
 
 + (NSArray *)tweetsWithIdGreaterOrEqualTo:(NSNumber *)anId {

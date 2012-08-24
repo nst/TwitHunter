@@ -7,7 +7,7 @@
 //
 
 #import "THUser.h"
-#import "NSManagedObject+UniqueContext.h"
+#import "NSManagedObject+SingleContext.h"
 
 #import "THTweet.h"
 
