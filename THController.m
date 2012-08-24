@@ -7,13 +7,12 @@
 //
 
 #import "THController.h"
-#import "Tweet.h"
-#import "User.h"
-#import "TextRule.h"
-#import "NSManagedObject+TH.h"
-#import "TweetCollectionViewItem.h"
-#import "STTwitterEngine.h"
-#import "NSArray+Functional.h"
+#import "THTweet.h"
+#import "THUser.h"
+#import "THTextRule.h"
+#import "NSManagedObject+UniqueContext.h"
+#import "THTweetCollectionViewItem.h"
+#import "THTwitterEngine.h"
 #import "NSString+TH.h"
 
 @implementation THController
@@ -59,22 +58,26 @@
 - (void)updateCumulatedData {
 	[latestTimeUpdateCulumatedDataWasAsked release];
 	latestTimeUpdateCulumatedDataWasAsked = [[NSDate date] retain];
-	    
+    
     NSOperationQueue *queue = [[[NSOperationQueue alloc] init] autorelease];
     
     [queue addOperationWithBlock:^{
         
         NSDate *startDate = [[latestTimeUpdateCulumatedDataWasAsked copy] autorelease];
         
-        NSUInteger totalTweetsCount = [Tweet tweetsCountWithAndPredicates:[self predicatesWithoutScore]];
+        NSArray *predicates = [self predicatesWithoutScore];
+        
+        NSUInteger totalTweetsCount = [THTweet tweetsCountWithAndPredicates:predicates];
+        NSLog(@"-- total number of tweets: %lu", totalTweetsCount);
         
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            
             [self setTweetsCount:totalTweetsCount];
         }];
     	
         NSMutableArray *tweetsForScores = [NSMutableArray arrayWithCapacity:101];
         for(NSUInteger i = 0; i < 101; i++) {
-            NSUInteger nbTweets = [Tweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andPredicates:[self predicatesWithoutScore]];
+            NSUInteger nbTweets = [THTweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andPredicates:[self predicatesWithoutScore]];
             [tweetsForScores addObject:[NSNumber numberWithInt:nbTweets]];
             
             BOOL requestOutdated = [startDate compare:latestTimeUpdateCulumatedDataWasAsked] == NSOrderedAscending;
@@ -116,7 +119,7 @@
 	NSLog(@"-- updating scores for %lu tweets", [tweets count]);
 	
 	// user score
-	for(Tweet *t in tweets) {
+	for(THTweet *t in tweets) {
 		NSInteger score = 50 + [t.user.score intValue];
 		if(score < 0) score = 0;
 		if(score > 100) score = 100;		
@@ -124,9 +127,9 @@
 	}
 
 	// text score
-	for(TextRule *rule in [TextRule allObjects]) {
-		NSArray *tweetsContainingKeyword = [Tweet tweetsContainingKeyword:rule.keyword];
-		for(Tweet *t in tweetsContainingKeyword) {
+	for(THTextRule *rule in [THTextRule allObjects]) {
+		NSArray *tweetsContainingKeyword = [THTweet tweetsContainingKeyword:rule.keyword];
+		for(THTweet *t in tweetsContainingKeyword) {
 			NSInteger score = [t.score intValue];
 			score += [rule.score intValue];
 			if(score < 0) score = 0;
@@ -136,7 +139,7 @@
 	}
 	
 	NSError *error = nil;
-	[[Tweet moc] save:&error];
+	[[THTweet moc] save:&error];
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	}
@@ -151,7 +154,7 @@
 - (IBAction)updateTweetScores:(id)sender {
 	NSLog(@"-- update scores");
 	
-	[self updateScoresForTweets:[Tweet allObjects]]; // TODO: optimize..
+	[self updateScoresForTweets:[THTweet allObjects]]; // TODO: optimize..
 }
 
 - (void)updateTweetFilterPredicate {
@@ -305,7 +308,7 @@
 	BOOL hideRead = [[[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideRead"] boolValue];
 	if(!hideRead) return;
 
-	Tweet *tweet = [[aNotification userInfo] objectForKey:@"Tweet"];
+	THTweet *tweet = [[aNotification userInfo] objectForKey:@"Tweet"];
 	NSUInteger tweetScore = [tweet.score unsignedIntegerValue];
 
 	numberOfTweetsForScore[tweetScore] += [tweet.isRead boolValue] ? -1 : +1;
@@ -363,7 +366,7 @@
 
 	[collectionView setMaxNumberOfColumns:1];
 	
-	self.twitterEngine = [[[STTwitterEngine alloc] init] autorelease];
+	self.twitterEngine = [[[THTwitterEngine alloc] init] autorelease];
     
     self.requestStatus = @"requesting access";
     
@@ -393,10 +396,11 @@
 }
 
 - (void)setFavoriteFlagForTweet:(NSNotification *)aNotification {
-	Tweet *tweet = [aNotification object];
+	THTweet *tweet = [aNotification object];
 	BOOL value = [[[aNotification userInfo] valueForKey:@"value"] boolValue];
 	
 	//NSLog(@"-- %d %@", value, tweet);
+#warning FIXME: implement API request to set / unset flag
 	NSString *s = [_twitterEngine markUpdate:[tweet.uid unsignedLongLongValue] asFavorite:value];
 //	[requestsIDs addObject:s];
 //	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
@@ -461,10 +465,10 @@
 		NSNumber *unfavorMinId = [NSNumber numberWithUnsignedLongLong:[minIdString unsignedLongLongValue]];
 		NSNumber *unfavorMaxId = [NSNumber numberWithUnsignedLongLong:[maxIdString unsignedLongLongValue]];
 		
-		[Tweet unfavorFavoritesBetweenMinId:unfavorMinId maxId:unfavorMaxId];
+		[THTweet unfavorFavoritesBetweenMinId:unfavorMinId maxId:unfavorMaxId];
 	}
 		
-	NSDictionary *boundingIds = [Tweet saveTweetsFromDictionariesArray:statuses];
+	NSDictionary *boundingIds = [THTweet saveTweetsFromDictionariesArray:statuses];
 	
 	NSNumber *lowestId = [boundingIds valueForKey:@"lowestId"];
 	NSNumber *higestId = [boundingIds valueForKey:@"higestId"];
@@ -474,21 +478,21 @@
 		NSLog(@"-- stored highestID: %@", higestId);
 	}
 	
-	[self updateScoresForTweets:[Tweet tweetsWithIdGreaterOrEqualTo:lowestId]];
+	[self updateScoresForTweets:[THTweet tweetsWithIdGreaterOrEqualTo:lowestId]];
 	
 	[self updateTweetFilterPredicate];
 }
 
 #pragma mark CumulativeChartViewDelegate
 
-- (void)chartView:(CumulativeChartView *)aChartView didSlideToScore:(NSUInteger)aScore {
+- (void)chartView:(THCumulativeChartView *)aChartView didSlideToScore:(NSUInteger)aScore {
 	//NSLog(@"-- didSlideToScore:%d", aScore);
 	
 	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%ld", cumulatedTweetsForScore[aScore]]];
 	[expectedScoreLabel setStringValue:[NSString stringWithFormat:@"%ld", aScore]];	
 }
 
-- (void)chartView:(CumulativeChartView *)aChartView didStopSlidingOnScore:(NSUInteger)aScore {
+- (void)chartView:(THCumulativeChartView *)aChartView didStopSlidingOnScore:(NSUInteger)aScore {
 	//NSLog(@"-- didStopSlidingOnScore:%d", aScore);
 	
 	[expectedNbTweetsLabel setStringValue:[NSString stringWithFormat:@"%ld", cumulatedTweetsForScore[aScore]]];

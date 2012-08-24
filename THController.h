@@ -7,8 +7,8 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "CumulativeChartView.h"
-#import "STTwitterEngine.h"
+#import "THCumulativeChartView.h"
+#import "THTwitterEngine.h"
 
 #define MAX_COUNT 100
 
@@ -20,8 +20,8 @@
 	IBOutlet NSArrayController *keywordArrayController;
 	IBOutlet NSCollectionView *collectionView;
 	IBOutlet NSPanel *preferences;
-	IBOutlet CumulativeChartView *cumulativeChartView;
-
+	IBOutlet THCumulativeChartView *cumulativeChartView;
+    
 	NSArray *tweetSortDescriptors;
 	NSPredicate *tweetFilterPredicate;
 	NSString *tweetText;
@@ -38,7 +38,7 @@
 	NSDate *latestTimeUpdateCulumatedDataWasAsked;
 }
 
-@property (nonatomic, retain) STTwitterEngine *twitterEngine;
+@property (nonatomic, retain) THTwitterEngine *twitterEngine;
 @property (nonatomic, retain) NSArray *tweetSortDescriptors;
 @property (nonatomic, retain) NSPredicate *tweetFilterPredicate;
 @property (nonatomic, retain) NSString *tweetText;
