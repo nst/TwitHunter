@@ -16,6 +16,9 @@
 }
 
 - (NSAttributedString *)attributedStringWithURLs {
+    
+    // TODO: use NSRegularExpression
+
 	NSMutableAttributedString *as = [[NSMutableAttributedString alloc] initWithString:self];
 	
 	NSRange searchRange = NSMakeRange(0, [self length]);

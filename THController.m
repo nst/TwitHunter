@@ -402,11 +402,14 @@
 	
 	NSLog(@"-- %d %@", value, tweet);
     
+    self.requestStatus = @"Setting favorite...";
     self.isConnecting = @YES;
     
     [_twitterEngine sendFavorite:value forStatus:tweet.uid completionBlock:^(BOOL isFavorite) {
         self.isConnecting = @NO;
         NSLog(@"-- success -> isFavorite %d", isFavorite);
+        self.requestStatus = [NSString stringWithFormat:@"Did set favorite to %d", isFavorite];
+        tweet.isFavorite = @(isFavorite);
     } errorBlock:^(NSError *error) {
         self.isConnecting = @NO;
         NSLog(@"-- error: %@", [error localizedDescription]);

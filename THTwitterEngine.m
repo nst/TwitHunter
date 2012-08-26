@@ -132,9 +132,7 @@
 - (void)sendFavorite:(BOOL)favorite forStatus:(NSNumber *)statusUid completionBlock:(void(^)(BOOL favorite))completionBlock errorBlock:(void(^)(NSError *error))errorBlock {
     // https://api.twitter.com/1/favorites/create/132256714090229760.json
     // https://api.twitter.com/1/favorites/destroy/132256714090229760.json
-
-#warning FIXME: we always get the error: "Could not authenticate with OAuth."
-
+    
     [self requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
         
         NSString *createOrDestroy = favorite ? @"create" : @"destroy";
@@ -142,7 +140,8 @@
         NSString *urlString = [NSString stringWithFormat:@"https://api.twitter.com/1/favorites/%@/%@.json", createOrDestroy, statusUid];
         NSLog(@"-- %@", urlString);
         NSURL *url = [NSURL URLWithString:urlString];
-        SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodPOST URL:url parameters:@{}];
+        SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodPOST URL:url parameters:nil];
+        [request addMultipartData:nil withName:@"foo" type:@"text/plain"]; // necessary
         request.account = twitterAccount;
                 
         [request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
@@ -195,8 +194,8 @@
                 return;
             }
                         
-            NSNumber *isFavoriteNumber = [json valueForKey:@"isFavorite"];
-            BOOL isFavorite = [isFavoriteNumber boolValue];
+            NSNumber *isFavoriteNumber = [json valueForKey:@"favorited"];
+            BOOL isFavorite = ([isFavoriteNumber boolValue] == NO); // for some reason the result is inverted
             
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 completionBlock(isFavorite);
