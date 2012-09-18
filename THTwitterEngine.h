@@ -17,15 +17,20 @@ typedef void (^STTE_errorBlock_t)(NSError *error);
 
 }
 
+- (void)getResource:(NSString *)resource parameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock;
+- (void)postResource:(NSString *)resource parameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock;
+
+/**/
+
 - (void)requestAccessWithCompletionBlock:(void(^)(ACAccount *twitterAccount))completionBlock errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (NSString *)username;
 
-- (void)fetchHomeTimeline:(NSUInteger)nbTweets
+- (void)getHomeTimeline:(NSUInteger)nbTweets
         completionBlock:(STTE_completionBlock_t)completionBlock
              errorBlock:(STTE_errorBlock_t)errorBlock;
 
-- (void)fetchHomeTimelineSinceID:(unsigned long long)sinceID
+- (void)getHomeTimelineSinceID:(unsigned long long)sinceID
                          count:(NSUInteger)nbTweets
                completionBlock:(STTE_completionBlock_t)completionBlock
                     errorBlock:(STTE_errorBlock_t)errorBlock;

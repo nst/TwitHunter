@@ -37,6 +37,8 @@
                 
                 ACAccount *twitterAccount = [accounts objectAtIndex:0];
                 
+                id cred = [twitterAccount credential];
+                
                 completionBlock(twitterAccount);
             } else {
                 errorBlock(error);
@@ -47,15 +49,15 @@
 
 - (void)fetchFavoritesWithParameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
     
-    [self fetchTwitterAPIv1Resource:@"/statuses/favorites.json" parameters:params completionBlock:completionBlock errorBlock:errorBlock];
+    [self fetchTwitterAPIResource:@"/statuses/favorites.json" parameters:params completionBlock:completionBlock errorBlock:errorBlock];
 }
 
-- (void)fetchTwitterAPIv1Resource:(NSString *)resource parameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
-    
+- (void)fetchAPIResource:(NSString *)resource httpMethod:(int)httpMethod parameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
+
     [self requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
-        NSString *urlString = [@"https://api.twitter.com/1" stringByAppendingString:resource];
+        NSString *urlString = [@"https://api.twitter.com/1.1" stringByAppendingString:resource];
         NSURL *url = [NSURL URLWithString:urlString];
-        SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodGET URL:url parameters:params];
+        SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:httpMethod URL:url parameters:params];
         request.account = twitterAccount;
         
         [request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
@@ -73,7 +75,7 @@
             NSJSONSerialization *json = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableLeaves error:&jsonError];
             NSLog(@"-- json: %@", json);
             NSLog(@"-- error: %@", [jsonError localizedDescription]);
-
+            
             /**/
             
             if([json isKindOfClass:[NSArray class]] == NO && [json valueForKey:@"error"]) {
@@ -107,7 +109,7 @@
                 
                 return;
             }
-
+            
             /**/
             
             if(json) {
@@ -129,6 +131,20 @@
     }];
 }
 
+- (void)getResource:(NSString *)resource parameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
+    
+    int HTTPMethod = SLRequestMethodGET;
+    
+    [self fetchAPIResource:resource httpMethod:HTTPMethod parameters:params completionBlock:completionBlock errorBlock:errorBlock];
+}
+
+- (void)postResource:(NSString *)resource parameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
+    
+    int HTTPMethod = SLRequestMethodPOST;
+    
+    [self fetchAPIResource:resource httpMethod:HTTPMethod parameters:params completionBlock:completionBlock errorBlock:errorBlock];
+}
+
 - (void)sendFavorite:(BOOL)favorite forStatus:(NSNumber *)statusUid completionBlock:(void(^)(BOOL favorite))completionBlock errorBlock:(void(^)(NSError *error))errorBlock {
     // https://api.twitter.com/1/favorites/create/132256714090229760.json
     // https://api.twitter.com/1/favorites/destroy/132256714090229760.json
@@ -137,7 +153,7 @@
         
         NSString *createOrDestroy = favorite ? @"create" : @"destroy";
         
-        NSString *urlString = [NSString stringWithFormat:@"https://api.twitter.com/1/favorites/%@/%@.json", createOrDestroy, statusUid];
+        NSString *urlString = [NSString stringWithFormat:@"https://api.twitter.com/1.1/favorites/%@/%@.json", createOrDestroy, statusUid];
         NSLog(@"-- %@", urlString);
         NSURL *url = [NSURL URLWithString:urlString];
         SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodPOST URL:url parameters:nil];
@@ -210,22 +226,23 @@
     }];
 }
 
-- (void)fetchHomeTimelineWithParameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
-    [self fetchTwitterAPIv1Resource:@"/statuses/home_timeline.json" parameters:params completionBlock:completionBlock errorBlock:errorBlock];
+- (void)getHomeTimelineWithParameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
+
+    [self getResource:@"/statuses/home_timeline.json" parameters:params completionBlock:completionBlock errorBlock:errorBlock];
 }
 
-- (void)fetchHomeTimelineSinceID:(unsigned long long)sinceID count:(NSUInteger)nbTweets completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
-    
+- (void)getHomeTimelineSinceID:(unsigned long long)sinceID count:(NSUInteger)nbTweets completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
+        
     NSDictionary *params = @{@"include_entities":@"1", @"since_id":[@(sinceID) description]};
     
-    [self fetchHomeTimelineWithParameters:params completionBlock:completionBlock errorBlock:errorBlock];
+    [self getHomeTimelineWithParameters:params completionBlock:completionBlock errorBlock:errorBlock];
 }
 
-- (void)fetchHomeTimeline:(NSUInteger)nbTweets completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
+- (void)getHomeTimeline:(NSUInteger)nbTweets completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
     
     NSDictionary *params = @{@"include_entities":@"0"};
     
-    [self fetchHomeTimelineWithParameters:params completionBlock:completionBlock errorBlock:errorBlock];
+    [self getHomeTimelineWithParameters:params completionBlock:completionBlock errorBlock:errorBlock];
 }
 
 - (void)fetchFavoriteUpdatesForUsername:(NSString *)aUsername completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {

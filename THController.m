@@ -276,7 +276,7 @@
         
         self.isConnecting = @YES;
         
-        [_twitterEngine fetchHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] count:100 completionBlock:^(NSArray *statuses) {
+        [_twitterEngine getHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] count:100 completionBlock:^(NSArray *statuses) {
             self.isConnecting = @NO;
             self.requestStatus = @"";
             [self statusesReceived:statuses];
@@ -293,7 +293,7 @@
         
         self.isConnecting = @YES;
         
-        [_twitterEngine fetchHomeTimeline:50 completionBlock:^(NSArray *statuses) {
+        [_twitterEngine getHomeTimeline:50 completionBlock:^(NSArray *statuses) {
             self.isConnecting = @NO;
             self.requestStatus = @"";
             [self statusesReceived:statuses];
