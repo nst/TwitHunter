@@ -7,13 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "STOAuthProtocol.h"
 
 typedef void (^STTE_completionBlock_t)(NSArray *statuses);
 typedef void (^STTE_errorBlock_t)(NSError *error);
 
 @class ACAccount;
 
-@interface STOAuthOSX : NSObject {
+@interface STOAuthOSX : NSObject <STOAuthProtocol> {
 
 }
 
