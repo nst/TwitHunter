@@ -12,7 +12,7 @@
 #import "THTextRule.h"
 #import "NSManagedObject+SingleContext.h"
 #import "THTweetCollectionViewItem.h"
-#import "STTwitterConnectionManager.h"
+#import "STOAuthOSX.h"
 #import "NSString+TH.h"
 
 @implementation THController
@@ -367,7 +367,7 @@
     
 	[collectionView setMaxNumberOfColumns:1];
 	
-	self.twitterEngine = [[[STTwitterConnectionManager alloc] init] autorelease];
+	self.twitterEngine = [[[STOAuthOSX alloc] init] autorelease];
     
     self.requestStatus = @"requesting access";
     

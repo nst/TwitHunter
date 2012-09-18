@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "THCumulativeChartView.h"
-#import "STTwitterConnectionManager.h"
+#import "STOAuthOSX.h"
 
 #define MAX_COUNT 100
 
@@ -38,7 +38,7 @@
 	NSDate *latestTimeUpdateCulumatedDataWasAsked;
 }
 
-@property (nonatomic, retain) STTwitterConnectionManager *twitterEngine;
+@property (nonatomic, retain) STOAuthOSX *twitterEngine;
 @property (nonatomic, retain) NSArray *tweetSortDescriptors;
 @property (nonatomic, retain) NSPredicate *tweetFilterPredicate;
 @property (nonatomic, retain) NSString *tweetText;
