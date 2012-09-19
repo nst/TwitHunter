@@ -9,11 +9,12 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface THTweetCollectionViewItem : NSCollectionViewItem {
-	IBOutlet NSTextView *textView;
-}
+@interface THTweetCollectionViewItem : NSCollectionViewItem
+
+@property (nonatomic, retain) IBOutlet NSTextView *textView;
 
 - (IBAction)openUserWebTimeline:(id)sender;
 - (IBAction)changeReadState:(id)sender;
+//- (IBAction)showContextMenu:(id)sender;
 
 @end

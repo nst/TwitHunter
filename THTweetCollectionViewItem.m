@@ -34,8 +34,14 @@
 
 - (IBAction)changeReadState:(id)sender {
 	THTweet *tweet = [self representedObject];
-	//NSLog(@"-- %@ %@", tweet.uid, tweet.isRead);
-	BOOL success = [tweet save];
+    
+    BOOL wasRead = [tweet.isRead boolValue];
+    
+    tweet.isRead = [NSNumber numberWithBool:!wasRead];
+	
+    NSLog(@"-- %@ %@", tweet.uid, tweet.isRead);
+	
+    BOOL success = [tweet save];
 	if(!success) NSLog(@"-- can't save tweet %@", tweet);
 	
 	NSDictionary *userInfo = [NSDictionary dictionaryWithObject:tweet forKey:@"Tweet"];
@@ -44,6 +50,20 @@
 	[[NSNotificationCenter defaultCenter] postNotification:notification];
 }
 
+//- (IBAction)showContextMenu:(id)sender {
+//    NSLog(@"-- show context menu, %@ %@", sender, NSStringFromRect([sender frame]));
+//    
+//    NSMenu *menu = [[[NSMenu alloc] initWithTitle:@"Contextual Menu"] autorelease];
+//    [menu insertItemWithTitle:@"Beep" action:@selector(beep:) keyEquivalent:@"" atIndex:0];
+//    [menu insertItemWithTitle:@"Honk" action:@selector(honk:) keyEquivalent:@"" atIndex:1];
+//    
+//    NSPopUpButtonCell *popUpButtonCell = [[[NSPopUpButtonCell alloc] initTextCell:@"" pullsDown:NO] autorelease];
+//    [popUpButtonCell setFra]
+//    [popUpButtonCell setMenu:menu];
+//    
+//    [popUpButtonCell performClickWithFrame:[sender frame] inView:[self collectionView]];
+//}
+
 #pragma mark NSTextView delegate
 
 - (BOOL)textView:(NSTextView*)textView clickedOnLink:(id)link 
@@ -51,6 +71,11 @@
 	BOOL success;
 	success=[[NSWorkspace sharedWorkspace] openURL: link];
 	return success;
+}
+
+- (void)dealloc {
+    [_textView release];
+    [super dealloc];
 }
 
 @end
