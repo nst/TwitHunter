@@ -53,15 +53,27 @@
 //- (IBAction)showContextMenu:(id)sender {
 //    NSLog(@"-- show context menu, %@ %@", sender, NSStringFromRect([sender frame]));
 //    
-//    NSMenu *menu = [[[NSMenu alloc] initWithTitle:@"Contextual Menu"] autorelease];
-//    [menu insertItemWithTitle:@"Beep" action:@selector(beep:) keyEquivalent:@"" atIndex:0];
-//    [menu insertItemWithTitle:@"Honk" action:@selector(honk:) keyEquivalent:@"" atIndex:1];
+//    NSRect frame = [(NSButton *)sender frame];
+//    NSPoint menuOrigin = [[(NSButton *)sender superview] convertPoint:NSMakePoint(frame.origin.x, frame.origin.y+frame.size.height)
+//                                                               toView:nil];
 //    
-//    NSPopUpButtonCell *popUpButtonCell = [[[NSPopUpButtonCell alloc] initTextCell:@"" pullsDown:NO] autorelease];
-//    [popUpButtonCell setFra]
-//    [popUpButtonCell setMenu:menu];
+//    NSEvent *event =  [NSEvent mouseEventWithType:NSLeftMouseDown
+//                                         location:menuOrigin
+//                                    modifierFlags:NSLeftMouseDownMask // 0x100
+//                                        timestamp:[[NSDate date] timeIntervalSince1970]
+//                                     windowNumber:[[(NSButton *)sender window] windowNumber]
+//                                          context:[[(NSButton *)sender window] graphicsContext]
+//                                      eventNumber:0
+//                                       clickCount:1
+//                                         pressure:1];
 //    
-//    [popUpButtonCell performClickWithFrame:[sender frame] inView:[self collectionView]];
+//    NSMenu *menu = [[NSMenu alloc] init];
+//    [menu insertItemWithTitle:@"add"
+//                       action:@selector(add:)
+//                keyEquivalent:@""
+//                      atIndex:0];
+//    
+//    [NSMenu popUpContextMenu:menu withEvent:event forView:(NSButton *)sender];
 //}
 
 #pragma mark NSTextView delegate
