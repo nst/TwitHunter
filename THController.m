@@ -11,8 +11,6 @@
 #import "THUser.h"
 #import "THTextRule.h"
 #import "NSManagedObject+SingleContext.h"
-//#import "THTweetCollectionViewItem.h"
-#import "STOAuthOSX.h"
 #import "NSString+TH.h"
 #import "STTwitterAPIWrapper.h"
 
@@ -295,10 +293,10 @@
     
     self.isConnecting = @YES;
     
-    [_twitter getHomeTimelineSinceID:[lastKnownID description] count:@"100" successBlock:^(NSString *response) {
+    [_twitter getHomeTimelineSinceID:[lastKnownID description] count:@"100" successBlock:^(id json) {
         self.isConnecting = @NO;
         self.requestStatus = @"";
-        [self statusesReceived:response];
+        [self statusesReceived:json];
     } errorBlock:^(NSError *error) {
         self.isConnecting = @NO;
         NSLog(@"-- error: %@", [error localizedDescription]);
@@ -337,12 +335,9 @@
     
     self.requestStatus = @"";
     
-    [_twitter getFavoritesListWithSuccessBlock:^(NSString *jsonString) {
+    [_twitter getFavoritesListWithSuccessBlock:^(NSArray *statuses) {
         self.isConnecting = @NO;
-        [self statusesReceived:jsonString];
-        
-#warning TODO: update database from jsonString
-        
+        [self statusesReceived:statuses];
     } errorBlock:^(NSError *error) {
         NSLog(@"-- error: %@", [error localizedDescription]);
         self.isConnecting = @NO;
@@ -359,7 +354,7 @@
 }
 
 - (void)awakeFromNib {
-	NSLog(@"awakeFromNib");
+	NSLog(@"-- awakeFromNib");
 	
 	NSNumber *currentScore = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
 	[cumulativeChartView setScore:[currentScore integerValue]];
@@ -370,34 +365,57 @@
     
 	[collectionView setMaxNumberOfColumns:1];
 	
-	self.oauth = [[[STOAuthOSX alloc] init] autorelease];
-    
-    self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthService:_oauth];
+    self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthOSX];
+
+//    self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:@"" consumerSecret:@"" username:@"" password:@""];
     
     self.requestStatus = @"requesting access";
-    
-    [_oauth requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
+
+    [_twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
+        NSLog(@"-- access granted for %@", username);
         
-        self.requestStatus = [NSString stringWithFormat:@"access granted for %@", twitterAccount];
-        
+        self.requestStatus = [NSString stringWithFormat:@"access granted for %@", username];
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
-        
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
-        
+
         [self update:self];
-        
+
         [self updateCumulatedData];
-        
+
 //        NSString *username = [_oauth username];
-        
+
         [self synchronizeFavorites];
         
         [self resetTimer];
-        
     } errorBlock:^(NSError *error) {
         NSLog(@"-- %@", [error localizedDescription]);
         self.requestStatus = [error localizedDescription];
     }];
+    
+//    [_oauth requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
+//        
+//        self.requestStatus = [NSString stringWithFormat:@"access granted for %@", twitterAccount];
+//        
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
+//        
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
+//        
+//        [self update:self];
+//        
+//        [self updateCumulatedData];
+//        
+////        NSString *username = [_oauth username];
+//        
+//        [self synchronizeFavorites];
+//        
+//        [self resetTimer];
+//        
+//    } errorBlock:^(NSError *error) {
+//        NSLog(@"-- %@", [error localizedDescription]);
+//        self.requestStatus = [error localizedDescription];
+//    }];
     
 }
 
@@ -438,7 +456,6 @@
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
-	[_oauth release];
 	[_twitter release];
 	[timer release];
 	[tweetSortDescriptors release];
