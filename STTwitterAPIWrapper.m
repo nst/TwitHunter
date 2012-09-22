@@ -7,6 +7,8 @@
 //
 
 #import "STTwitterAPIWrapper.h"
+#import "STOAuthOSX.h"
+#import "STOAuth.h"
 
 @interface STTwitterAPIWrapper ()
 @property (nonatomic, retain) NSObject <STOAuthProtocol> *oauth;
@@ -14,15 +16,33 @@
 
 @implementation STTwitterAPIWrapper
 
-+ (STTwitterAPIWrapper *)twitterAPIWithOAuthService:(NSObject <STOAuthProtocol> *)oauth {
++ (STTwitterAPIWrapper *)twitterAPIWithOAuthOSX {
     STTwitterAPIWrapper *twitter = [[STTwitterAPIWrapper alloc] init];
-    twitter.oauth = oauth;
+    twitter.oauth = [[[STOAuthOSX alloc] init] autorelease];
     return [twitter autorelease];
+}
+
++ (STTwitterAPIWrapper *)twitterAPIWithOAuthConsumerKey:(NSString *)consumerKey consumerSecret:(NSString *)consumerSecret username:(NSString *)username password:(NSString *)password {
+    STTwitterAPIWrapper *twitter = [[STTwitterAPIWrapper alloc] init];
+    twitter.oauth = [STOAuth twitterServiceWithConsumerKey:consumerKey consumerSecret:consumerSecret username:username password:password];
+    return [twitter autorelease];
+}
+
++ (STTwitterAPIWrapper *)twitterAPIWithOAuthConsumerKey:(NSString *)consumerKey consumerSecret:(NSString *)consumerSecret oauthToken:(NSString *)oauthToken oauthTokenSecret:(NSString *)oauthTokenSecret{
+    STTwitterAPIWrapper *twitter = [[STTwitterAPIWrapper alloc] init];
+    twitter.oauth = [STOAuth twitterServiceWithConsumerKey:consumerKey consumerSecret:consumerSecret oauthToken:oauthToken oauthTokenSecret:oauthTokenSecret];
+    return [twitter autorelease];    
 }
 
 - (void)dealloc {
     [_oauth release];
     [super dealloc];
+}
+
+/**/
+
+- (void)verifyCredentialsWithSuccessBlock:(void(^)(NSString *username))successBlock errorBlock:(void(^)(NSError *error))errorBlock {
+    [_oauth verifyCredentialsWithSuccessBlock:successBlock errorBlock:errorBlock];
 }
 
 /**/
@@ -124,10 +144,10 @@
     }];
 }
 
-- (void)getFavoritesListWithSuccessBlock:(void(^)(NSString *jsonString))successBlock
+- (void)getFavoritesListWithSuccessBlock:(void(^)(NSArray *statuses))successBlock
                               errorBlock:(void(^)(NSError *error))errorBlock {
     
-    [_oauth getResource:@"favorites/list.json" parameters:nil successBlock:^(NSString *response) {
+    [_oauth getResource:@"favorites/list.json" parameters:nil successBlock:^(id response) {
         successBlock(response);
     } errorBlock:^(NSError *error) {
         errorBlock(error);

@@ -28,7 +28,11 @@
 
 @interface STTwitterAPIWrapper : NSObject
 
-+ (STTwitterAPIWrapper *)twitterAPIWithOAuthService:(NSObject <STOAuthProtocol> *)oauth;
++ (STTwitterAPIWrapper *)twitterAPIWithOAuthOSX;
++ (STTwitterAPIWrapper *)twitterAPIWithOAuthConsumerKey:(NSString *)consumerKey consumerSecret:(NSString *)consumerSecret username:(NSString *)username password:(NSString *)password;
++ (STTwitterAPIWrapper *)twitterAPIWithOAuthConsumerKey:(NSString *)consumerKey consumerSecret:(NSString *)consumerSecret oauthToken:(NSString *)oauthToken oauthTokenSecret:(NSString *)oauthTokenSecret;
+
+- (void)verifyCredentialsWithSuccessBlock:(void(^)(NSString *username))successBlock errorBlock:(void(^)(NSError *error))errorBlock;
 
 #pragma mark Timelines
 
@@ -171,7 +175,7 @@
 #pragma mark Favorites
 
 // GET favorites/list
-- (void)getFavoritesListWithSuccessBlock:(void(^)(NSString *jsonString))successBlock
+- (void)getFavoritesListWithSuccessBlock:(void(^)(NSArray *statuses))successBlock
                               errorBlock:(void(^)(NSError *error))errorBlock;
 
 // POST favorites/destroy
