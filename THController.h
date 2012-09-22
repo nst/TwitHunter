@@ -13,6 +13,7 @@
 #define MAX_COUNT 100
 
 @class STTwitterAPIWrapper;
+@class THTweet;
 
 @interface THController : NSObject <CumulativeChartViewDelegate, CumulativeChartViewDataSource, NSSharingServiceDelegate> {
 	NSTimer *timer;

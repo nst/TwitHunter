@@ -50,6 +50,30 @@
 	[[NSNotificationCenter defaultCenter] postNotification:notification];
 }
 
+- (IBAction)retweet:(id)sender {
+	THTweet *tweet = [self representedObject];
+
+    NSDictionary *userInfo = @{@"Tweet" : tweet, @"Action" : @"Retweet"};
+    NSNotification *notification = [NSNotification notificationWithName:@"THTweetAction" object:self userInfo:userInfo];
+	[[NSNotificationCenter defaultCenter] postNotification:notification];
+}
+
+- (IBAction)reply:(id)sender {
+	THTweet *tweet = [self representedObject];
+
+    NSDictionary *userInfo = @{@"Tweet" : tweet, @"Action" : @"Reply"};
+    NSNotification *notification = [NSNotification notificationWithName:@"THTweetAction" object:self userInfo:userInfo];
+	[[NSNotificationCenter defaultCenter] postNotification:notification];
+}
+
+- (IBAction)remoteDelete:(id)sender {
+	THTweet *tweet = [self representedObject];
+
+    NSDictionary *userInfo = @{@"Tweet" : tweet, @"Action" : @"RemoteDelete"};
+    NSNotification *notification = [NSNotification notificationWithName:@"THTweetAction" object:self userInfo:userInfo];
+	[[NSNotificationCenter defaultCenter] postNotification:notification];
+}
+
 //- (IBAction)changeFavoriteState:(id)sender {
 //	THTweet *tweet = [self representedObject];
 //    

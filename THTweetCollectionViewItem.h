@@ -8,13 +8,15 @@
 
 #import <Cocoa/Cocoa.h>
 
-
 @interface THTweetCollectionViewItem : NSCollectionViewItem
 
 @property (nonatomic, retain) IBOutlet NSTextView *textView;
 
 - (IBAction)openUserWebTimeline:(id)sender;
 - (IBAction)changeReadState:(id)sender;
-//- (IBAction)changeFavoriteState:(id)sender;
+
+- (IBAction)retweet:(id)sender;
+- (IBAction)reply:(id)sender;
+- (IBAction)remoteDelete:(id)sender;
 
 @end

@@ -60,6 +60,19 @@
     }];
 }
 
+- (void)postStatusRetweetWithID:(NSString *)statusID
+                   successBlock:(void(^)(NSString *response))successBlock
+                     errorBlock:(void(^)(NSError *error))errorBlock {
+
+    NSString *resource = [NSString stringWithFormat:@"statuses/retweet/%@.json", statusID];
+    
+    [_oauth postResource:resource parameters:nil successBlock:^(NSString *response) {
+        successBlock(response);
+    } errorBlock:^(NSError *error) {
+        errorBlock(error);
+    }];
+}
+
 - (void)getHomeTimelineSinceID:(NSString *)optionalSinceID
                          count:(NSString *)optionalCount
                   successBlock:(void(^)(NSString *response))successBlock

@@ -37,7 +37,7 @@
                 
                 ACAccount *twitterAccount = [accounts objectAtIndex:0];
                 
-                id cred = [twitterAccount credential];
+//                id cred = [twitterAccount credential];
                 
                 completionBlock(twitterAccount);
             } else {
@@ -93,7 +93,12 @@
             
             /**/
             
-            NSArray *jsonErrors = [json valueForKey:@"errors"];
+            id jsonErrors = [json valueForKey:@"errors"];
+            
+            if(jsonErrors != nil && [jsonErrors isKindOfClass:[NSArray class]] == NO) {
+                if(jsonErrors == nil) jsonErrors = @"";
+                jsonErrors = [NSArray arrayWithObject:@{@"message":jsonErrors, @"code" : @(0)}];
+            }
             
             if([jsonErrors count] > 0 && [[jsonErrors lastObject] isEqualTo:[NSNull null]] == NO) {
                 
@@ -142,7 +147,9 @@
     
     int HTTPMethod = SLRequestMethodPOST;
     
-    [self fetchAPIResource:resource httpMethod:HTTPMethod parameters:params completionBlock:completionBlock errorBlock:errorBlock];
+    NSDictionary *d = params ? params : @{};
+    
+    [self fetchAPIResource:resource httpMethod:HTTPMethod parameters:d completionBlock:completionBlock errorBlock:errorBlock];
 }
 
 - (void)sendFavorite:(BOOL)favorite forStatus:(NSNumber *)statusUid completionBlock:(void(^)(BOOL favorite))completionBlock errorBlock:(void(^)(NSError *error))errorBlock {

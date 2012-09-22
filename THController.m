@@ -11,7 +11,7 @@
 #import "THUser.h"
 #import "THTextRule.h"
 #import "NSManagedObject+SingleContext.h"
-#import "THTweetCollectionViewItem.h"
+//#import "THTweetCollectionViewItem.h"
 #import "STOAuthOSX.h"
 #import "NSString+TH.h"
 #import "STTwitterAPIWrapper.h"
@@ -190,6 +190,21 @@
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.hideRead" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.hideURLs" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.updateFrequency" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
+
+        [[NSNotificationCenter defaultCenter] addObserverForName:@"THTweetAction" object:nil queue:nil usingBlock:^(NSNotification *note) {
+            NSDictionary *unserInfo = [note userInfo];
+            THTweet *tweet = [unserInfo valueForKey:@"Tweet"];
+            NSString *action = [unserInfo valueForKey:@"Action"];
+            
+            if([action isEqualToString:@"Retweet"]) {
+                [self retweetTweet:tweet];
+            } else if ([action isEqualToString:@"Reply"]) {
+                [self replyToTweet:tweet];
+            } else if ([action isEqualToString:@"RemoteDelete"]) {
+                [self remoteDeleteTweet:tweet];
+            }
+            
+        }];
     }
 	
 	return self;
@@ -476,7 +491,7 @@
 	NSDictionary *boundingIds = [THTweet saveTweetsFromDictionariesArray:statuses];
 	
 	NSNumber *lowestId = [boundingIds valueForKey:@"lowestId"];
-	NSNumber *higestId = [boundingIds valueForKey:@"higestId"];
+//	NSNumber *higestId = [boundingIds valueForKey:@"higestId"];
 	
     //	if(higestId) {
     //		[[NSUserDefaults standardUserDefaults] setObject:higestId forKey:@"highestID"];
@@ -486,6 +501,22 @@
 	[self updateScoresForTweets:[THTweet tweetsWithIdGreaterOrEqualTo:lowestId]];
 	
 	[self updateTweetFilterPredicate];
+}
+
+- (void)retweetTweet:(THTweet *)tweet {
+    [_twitter postStatusRetweetWithID:[tweet.uid description] successBlock:^(NSString *response) {
+        NSLog(@"-- response: %@", response);
+    } errorBlock:^(NSError *error) {
+        NSLog(@"-- error: %@", [error localizedDescription]);
+    }];
+}
+
+- (void)replyToTweet:(THTweet *)tweet {
+#warning TODO: implement replyToTweet:
+}
+
+- (void)remoteDeleteTweet:(THTweet *)tweet {
+#warning TODO: implement remoteDeleteTweet:    
 }
 
 #pragma mark CumulativeChartViewDelegate

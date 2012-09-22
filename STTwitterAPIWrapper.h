@@ -60,6 +60,10 @@
               errorBlock:(void(^)(NSError *error))errorBlock;
 
 // POST statuses/retweet/:id
+- (void)postStatusRetweetWithID:(NSString *)statusID
+                   successBlock:(void(^)(NSString *response))successBlock
+                     errorBlock:(void(^)(NSError *error))errorBlock;
+
 
 // POST statuses/update_with_media
 
