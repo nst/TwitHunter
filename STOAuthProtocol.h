@@ -10,14 +10,17 @@
 
 @protocol STOAuthProtocol <NSObject>
 
+- (void)verifyCredentialsWithSuccessBlock:(void(^)(NSString *username))successBlock
+                               errorBlock:(void(^)(NSError *error))errorBlock;
+
 - (void)getResource:(NSString *)resource
          parameters:(NSDictionary *)params
-       successBlock:(void(^)(NSString *response))successBlock
+       successBlock:(void(^)(id json))successBlock
          errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (void)postResource:(NSString *)resource
           parameters:(NSDictionary *)params
-        successBlock:(void(^)(NSString *response))successBlock
+        successBlock:(void(^)(id json))successBlock
           errorBlock:(void(^)(NSError *error))errorBlock;
 
 @end
