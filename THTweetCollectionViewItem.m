@@ -50,6 +50,26 @@
 	[[NSNotificationCenter defaultCenter] postNotification:notification];
 }
 
+//- (IBAction)changeFavoriteState:(id)sender {
+//	THTweet *tweet = [self representedObject];
+//    
+//    BOOL wasFavorite = [tweet.isFavorite boolValue];
+//    
+//    tweet.isFavorite = [NSNumber numberWithBool:!wasFavorite];
+//	
+//    NSLog(@"-- %@ %@", tweet.uid, tweet.isFavorite);
+//	
+//    BOOL success = [tweet save];
+//	if(!success) NSLog(@"-- can't save tweet %@", tweet);
+//	
+//	NSDictionary *userInfo = [NSDictionary dictionaryWithObject:tweet forKey:@"Tweet"];
+//	
+//#warning TODO: listen to favorite status change notification in controller and do the appropriate API request
+//    
+//	NSNotification *notification = [NSNotification notificationWithName:@"DidChangeTweetFavoriteStateNotification" object:self userInfo:userInfo];
+//	[[NSNotificationCenter defaultCenter] postNotification:notification];
+//}
+
 //- (IBAction)showContextMenu:(id)sender {
 //    NSLog(@"-- show context menu, %@ %@", sender, NSStringFromRect([sender frame]));
 //    

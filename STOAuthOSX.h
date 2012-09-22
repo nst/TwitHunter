@@ -41,17 +41,17 @@ typedef void (^STTE_errorBlock_t)(NSError *error);
 
 - (NSString *)username;
 
-- (void)getHomeTimeline:(NSUInteger)nbTweets
-        completionBlock:(STTE_completionBlock_t)completionBlock
-             errorBlock:(STTE_errorBlock_t)errorBlock;
-
-- (void)getHomeTimelineSinceID:(unsigned long long)sinceID
-                         count:(NSUInteger)nbTweets
-               completionBlock:(STTE_completionBlock_t)completionBlock
-                    errorBlock:(STTE_errorBlock_t)errorBlock;
-
-- (void)fetchFavoriteUpdatesForUsername:(NSString *)aUsername completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock;
-
-- (void)sendFavorite:(BOOL)favorite forStatus:(NSNumber *)statusUid completionBlock:(void(^)(BOOL favorite))completionBlock errorBlock:(void(^)(NSError *error))errorBlock;
+//- (void)getHomeTimeline:(NSUInteger)nbTweets
+//        completionBlock:(STTE_completionBlock_t)completionBlock
+//             errorBlock:(STTE_errorBlock_t)errorBlock;
+//
+//- (void)getHomeTimelineSinceID:(unsigned long long)sinceID
+//                         count:(NSUInteger)nbTweets
+//               completionBlock:(STTE_completionBlock_t)completionBlock
+//                    errorBlock:(STTE_errorBlock_t)errorBlock;
+//
+//- (void)fetchFavoriteUpdatesForUsername:(NSString *)aUsername completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock;
+//
+//- (void)sendFavorite:(BOOL)favorite forStatus:(NSNumber *)statusUid completionBlock:(void(^)(BOOL favorite))completionBlock errorBlock:(void(^)(NSError *error))errorBlock;
 
 @end

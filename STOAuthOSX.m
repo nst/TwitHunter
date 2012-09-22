@@ -55,7 +55,7 @@
 - (void)fetchAPIResource:(NSString *)resource httpMethod:(int)httpMethod parameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock {
 
     [self requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
-        NSString *urlString = [@"https://api.twitter.com/1.1" stringByAppendingString:resource];
+        NSString *urlString = [@"https://api.twitter.com/1.1/" stringByAppendingString:resource];
         NSURL *url = [NSURL URLWithString:urlString];
         SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:httpMethod URL:url parameters:params];
         request.account = twitterAccount;

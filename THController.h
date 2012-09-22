@@ -12,6 +12,8 @@
 
 #define MAX_COUNT 100
 
+@class STTwitterAPIWrapper;
+
 @interface THController : NSObject <CumulativeChartViewDelegate, CumulativeChartViewDataSource, NSSharingServiceDelegate> {
 	NSTimer *timer;
 	
@@ -38,7 +40,8 @@
 	NSDate *latestTimeUpdateCulumatedDataWasAsked;
 }
 
-@property (nonatomic, retain) STOAuthOSX *twitterEngine;
+@property (nonatomic, retain) STOAuthOSX *oauth;
+@property (nonatomic, retain) STTwitterAPIWrapper *twitter;
 @property (nonatomic, retain) NSArray *tweetSortDescriptors;
 @property (nonatomic, retain) NSPredicate *tweetFilterPredicate;
 @property (nonatomic, retain) NSString *tweetText;

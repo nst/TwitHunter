@@ -14,6 +14,7 @@
 #import "THTweetCollectionViewItem.h"
 #import "STOAuthOSX.h"
 #import "NSString+TH.h"
+#import "STTwitterAPIWrapper.h"
 
 @implementation THController
 
@@ -189,7 +190,7 @@
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.hideRead" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.hideURLs" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.updateFrequency" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
-	}
+    }
 	
 	return self;
 }
@@ -269,40 +270,25 @@
     
 	NSNumber *lastKnownID = latestTweet.uid;
     
-	if(lastKnownID && [lastKnownID unsignedLongLongValue] != 0) {
-		NSLog(@"-- fetch timeline since ID: %@", lastKnownID);
+	if([lastKnownID unsignedLongLongValue] == 0) {
+        lastKnownID = nil;
+    }
+
+    NSLog(@"-- fetch timeline since ID: %@", lastKnownID);
         
-        self.requestStatus = @"fetching timeline since last known ID";
-        
-        self.isConnecting = @YES;
-        
-        [_twitterEngine getHomeTimelineSinceID:[lastKnownID unsignedLongLongValue] count:100 completionBlock:^(NSArray *statuses) {
-            self.isConnecting = @NO;
-            self.requestStatus = @"";
-            [self statusesReceived:statuses];
-        } errorBlock:^(NSError *error) {
-            self.isConnecting = @NO;
-            NSLog(@"-- error: %@", [error localizedDescription]);
-            self.requestStatus = [error localizedDescription];
-        }];
-        
-	} else {
-		NSLog(@"-- fetch timeline last 50");
-        
-        self.requestStatus = @"fetching last 50 statuses";
-        
-        self.isConnecting = @YES;
-        
-        [_twitterEngine getHomeTimeline:50 completionBlock:^(NSArray *statuses) {
-            self.isConnecting = @NO;
-            self.requestStatus = @"";
-            [self statusesReceived:statuses];
-        } errorBlock:^(NSError *error) {
-            NSLog(@"-- error: %@", [error localizedDescription]);
-            self.isConnecting = @NO;
-            self.requestStatus = [error localizedDescription];
-        }];
-	}
+    self.requestStatus = @"fetching timeline since last known ID";
+    
+    self.isConnecting = @YES;
+    
+    [_twitter getHomeTimelineSinceID:[lastKnownID description] count:@"100" successBlock:^(NSString *response) {
+        self.isConnecting = @NO;
+        self.requestStatus = @"";
+        [self statusesReceived:response];
+    } errorBlock:^(NSError *error) {
+        self.isConnecting = @NO;
+        NSLog(@"-- error: %@", [error localizedDescription]);
+        self.requestStatus = [error localizedDescription];
+    }];
 }
 
 - (void)didChangeTweetReadStatusNotification:(NSNotification *)aNotification {
@@ -325,25 +311,27 @@
 	[tweetArrayController rearrangeObjects];
 }
 
-- (void)synchronizeFavoritesForUsername:(NSString *)aUsername {
+- (void)synchronizeFavorites {
     
-    NSLog(@"-- %@", aUsername);
+//    NSLog(@"-- %@", aUsername);
     
-    return; // FIXME
+//    return; // FIXME
     
 	self.requestStatus = @"Syncronizing Favorites";
 	self.isConnecting = @YES;
     
     self.requestStatus = @"";
     
-	[_twitterEngine fetchFavoriteUpdatesForUsername:aUsername completionBlock:^(NSArray *statuses) {
+    [_twitter getFavoritesListWithSuccessBlock:^(NSString *jsonString) {
         self.isConnecting = @NO;
-        [self statusesReceived:statuses];
+        [self statusesReceived:jsonString];
+        
+#warning TODO: update database from jsonString
+        
     } errorBlock:^(NSError *error) {
         NSLog(@"-- error: %@", [error localizedDescription]);
         self.isConnecting = @NO;
         self.requestStatus = [error localizedDescription];
-        
     }];
     
     //	[requestsIDs addObject:s];
@@ -351,8 +339,8 @@
 }
 
 - (IBAction)synchronizeFavorites:(id)sender {
-	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
-	[self synchronizeFavoritesForUsername:username];
+//	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
+	[self synchronizeFavorites];
 }
 
 - (void)awakeFromNib {
@@ -367,11 +355,13 @@
     
 	[collectionView setMaxNumberOfColumns:1];
 	
-	self.twitterEngine = [[[STOAuthOSX alloc] init] autorelease];
+	self.oauth = [[[STOAuthOSX alloc] init] autorelease];
+    
+    self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthService:_oauth];
     
     self.requestStatus = @"requesting access";
     
-    [_twitterEngine requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
+    [_oauth requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
         
         self.requestStatus = [NSString stringWithFormat:@"access granted for %@", twitterAccount];
         
@@ -383,9 +373,9 @@
         
         [self updateCumulatedData];
         
-        NSString *username = [_twitterEngine username];
+//        NSString *username = [_oauth username];
         
-        [self synchronizeFavoritesForUsername:username];
+        [self synchronizeFavorites];
         
         [self resetTimer];
         
@@ -405,17 +395,19 @@
     self.requestStatus = @"Setting favorite...";
     self.isConnecting = @YES;
     
-    [_twitterEngine sendFavorite:value forStatus:tweet.uid completionBlock:^(BOOL isFavorite) {
+    [_twitter postFavoriteState:(BOOL)value forStatusID:[tweet.uid description] successBlock:^(NSString *jsonString) {
         self.isConnecting = @NO;
-        NSLog(@"-- success -> isFavorite %d", isFavorite);
-        self.requestStatus = [NSString stringWithFormat:@"Did set favorite to %d", isFavorite];
-        tweet.isFavorite = @(isFavorite);
+        NSLog(@"-- success : %@", jsonString);
+        
+        BOOL updatedFavoriteValue = [[jsonString valueForKey:@"favorited"] boolValue];
+        
+        self.requestStatus = [NSString stringWithFormat:@"Did set favorite to %d", updatedFavoriteValue];
+        tweet.isFavorite = @(updatedFavoriteValue);
     } errorBlock:^(NSError *error) {
         self.isConnecting = @NO;
         NSLog(@"-- error: %@", [error localizedDescription]);
         self.requestStatus = [error localizedDescription];
     }];
-    
 }
 
 - (IBAction)markAllAsRead:(id)sender {
@@ -431,7 +423,8 @@
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
-	[_twitterEngine release];
+	[_oauth release];
+	[_twitter release];
 	[timer release];
 	[tweetSortDescriptors release];
 	[tweetFilterPredicate release];

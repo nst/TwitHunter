@@ -15,6 +15,6 @@
 
 - (IBAction)openUserWebTimeline:(id)sender;
 - (IBAction)changeReadState:(id)sender;
-//- (IBAction)showContextMenu:(id)sender;
+//- (IBAction)changeFavoriteState:(id)sender;
 
 @end
