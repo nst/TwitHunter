@@ -18,20 +18,6 @@ typedef void (^STTE_errorBlock_t)(NSError *error);
 
 }
 
-/*
- // TODO:
- 
- STTwitterAPI
- 
- - (void)setConnectionManager...
- - (void)getTimeline...
- 
- STTwitterConnectionManager
- 
- - (void)getResource:(NSString *)resource parameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock;
- - (void)postResource:(NSString *)resource parameters:(NSDictionary *)params completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock;
-*/
-
 - (void)verifyCredentialsWithSuccessBlock:(void(^)(NSString *username))successBlock errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (void)getResource:(NSString *)resource parameters:(NSDictionary *)params successBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock;
@@ -42,18 +28,5 @@ typedef void (^STTE_errorBlock_t)(NSError *error);
 - (void)requestAccessWithCompletionBlock:(void(^)(ACAccount *twitterAccount))completionBlock errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (NSString *)username;
-
-//- (void)getHomeTimeline:(NSUInteger)nbTweets
-//        completionBlock:(STTE_completionBlock_t)completionBlock
-//             errorBlock:(STTE_errorBlock_t)errorBlock;
-//
-//- (void)getHomeTimelineSinceID:(unsigned long long)sinceID
-//                         count:(NSUInteger)nbTweets
-//               completionBlock:(STTE_completionBlock_t)completionBlock
-//                    errorBlock:(STTE_errorBlock_t)errorBlock;
-//
-//- (void)fetchFavoriteUpdatesForUsername:(NSString *)aUsername completionBlock:(STTE_completionBlock_t)completionBlock errorBlock:(STTE_errorBlock_t)errorBlock;
-//
-//- (void)sendFavorite:(BOOL)favorite forStatus:(NSNumber *)statusUid completionBlock:(void(^)(BOOL favorite))completionBlock errorBlock:(void(^)(NSError *error))errorBlock;
 
 @end
