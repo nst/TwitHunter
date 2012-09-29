@@ -268,6 +268,7 @@
     NSString *selectedStatusID = nil; // TODO
     
     [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil successBlock:^(NSString *response) {
+        self.tweetText = nil;
         self.requestStatus = @"OK, status was posted.";
     } errorBlock:^(NSError *error) {
         self.requestStatus = [error localizedDescription];
@@ -277,7 +278,6 @@
 //    service.delegate = self;
 //    [service performWithItems:@[tweetText]];
     
-    self.tweetText = nil;
 }
 
 - (IBAction)update:(id)sender {
@@ -529,19 +529,44 @@
 }
 
 - (void)retweetTweet:(THTweet *)tweet {
+
+    self.requestStatus = @"Posting retweet...";
+    
     [_twitter postStatusRetweetWithID:[tweet.uid description] successBlock:^(NSString *response) {
-        NSLog(@"-- response: %@", response);
+        self.requestStatus = @"Retweet OK";
     } errorBlock:^(NSError *error) {
-        NSLog(@"-- error: %@", [error localizedDescription]);
+        self.requestStatus = [error localizedDescription];
     }];
 }
 
 - (void)replyToTweet:(THTweet *)tweet {
-#warning TODO: implement replyToTweet:
+
+    if(tweetText == nil) return;
+    
+	self.requestStatus = @"Posting reply...";
+    
+    THTweet *selectedTweet = [[tweetArrayController selectedObjects] lastObject];
+    
+    [_twitter postStatusUpdate:tweetText inReplyToStatusID:[selectedTweet.uid description] successBlock:^(NSString *response) {
+        self.tweetText = nil;
+        self.requestStatus = @"OK, reply was posted.";
+    } errorBlock:^(NSError *error) {
+        self.requestStatus = [error localizedDescription];
+    }];
 }
 
 - (void)remoteDeleteTweet:(THTweet *)tweet {
-#warning TODO: implement remoteDeleteTweet:    
+
+    self.requestStatus = @"Posting remote delete...";
+
+    [_twitter postDestroyStatusWithID:[tweet.uid description] successBlock:^(NSString *response) {
+        self.requestStatus = @"Delete OK";
+        [tweet deleteObject];
+        [tweetArrayController rearrangeObjects];
+    } errorBlock:^(NSError *error) {
+        self.requestStatus = [error localizedDescription];
+    }];
+
 }
 
 #pragma mark CumulativeChartViewDelegate
