@@ -265,8 +265,6 @@
     
 	self.requestStatus = @"Posting status...";
 
-    NSString *selectedStatusID = nil; // TODO
-    
     [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil successBlock:^(NSString *response) {
         self.tweetText = nil;
         self.requestStatus = @"OK, status was posted.";

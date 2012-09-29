@@ -100,6 +100,8 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 }
 
 + (THTweet *)tweetWithUid:(NSString *)uid {
+    if(uid == nil) return nil;
+    
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:[self entity]];
 	NSNumber *uidNumber = [NSNumber numberWithUnsignedLongLong:[uid unsignedLongLongValue]];
