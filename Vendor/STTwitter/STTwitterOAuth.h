@@ -7,15 +7,33 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "STHTTPRequest.h"
-#import "STOAuthProtocol.h"
+#import "STTwitterOAuthProtocol.h"
 
-@interface STOAuth : NSObject <STOAuthProtocol>
+/*
+ Based on the following documentation
+ http://oauth.net/core/1.0/
+ https://dev.twitter.com/docs/auth/authorizing-request
+ https://dev.twitter.com/docs/auth/implementing-sign-twitter
+ https://dev.twitter.com/docs/auth/creating-signature
+ https://dev.twitter.com/docs/api/1/post/oauth/request_token
+ https://dev.twitter.com/docs/oauth/xauth
+ ...
+ */
 
-+ (STOAuth *)twitterServiceWithConsumerKey:(NSString *)consumerKey consumerSecret:(NSString *)consumerSecret username:(NSString *)username password:(NSString *)password;
-+ (STOAuth *)twitterServiceWithConsumerKey:(NSString *)consumerKey consumerSecret:(NSString *)consumerSecret oauthToken:(NSString *)oauthToken oauthTokenSecret:(NSString *)oauthTokenSecret;
+@interface STTwitterOAuth : NSObject <STTwitterOAuthProtocol>
 
-// TODO: move the OAuth requests to STTwitterAPIWrapper?
++ (STTwitterOAuth *)twitterServiceWithConsumerKey:(NSString *)consumerKey
+                            consumerSecret:(NSString *)consumerSecret;
+
++ (STTwitterOAuth *)twitterServiceWithConsumerKey:(NSString *)consumerKey
+                            consumerSecret:(NSString *)consumerSecret
+                                  username:(NSString *)username
+                                  password:(NSString *)password;
+
++ (STTwitterOAuth *)twitterServiceWithConsumerKey:(NSString *)consumerKey
+                            consumerSecret:(NSString *)consumerSecret
+                                oauthToken:(NSString *)oauthToken
+                          oauthTokenSecret:(NSString *)oauthTokenSecret;
 
 - (void)postTokenRequest:(void(^)(NSURL *url, NSString *oauthToken))successBlock errorBlock:(void(^)(NSError *error))errorBlock;
 
@@ -29,10 +47,9 @@
                                    successBlock:(void(^)(NSString *oauthToken, NSString *oauthTokenSecret, NSString *userID, NSString *screenName))successBlock
                                      errorBlock:(void(^)(NSError *error))errorBlock;
 
-- (void)verifyCredentialsWithSuccessBlock:(void(^)(NSString *username))successBlock errorBlock:(void(^)(NSError *error))errorBlock;
+- (BOOL)canVerifyCredentials;
 
-@property (nonatomic, retain) NSString *testOauthNonce;
-@property (nonatomic, retain) NSString *testOauthTimestamp;
+- (void)verifyCredentialsWithSuccessBlock:(void(^)(NSString *username))successBlock errorBlock:(void(^)(NSError *error))errorBlock;
 
 @end
 

@@ -17,11 +17,13 @@ extern NSUInteger const kSTHTTPRequestCancellationError;
 
 @class STHTTPRequest;
 
+typedef void (^uploadProgressBlock_t)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite);
 typedef void (^completionBlock_t)(NSDictionary *headers, NSString *body);
 typedef void (^errorBlock_t)(NSError *error);
 
 @interface STHTTPRequest : NSObject
 
+@property (copy) uploadProgressBlock_t uploadProgressBlock;
 @property (copy) completionBlock_t completionBlock;
 @property (copy) errorBlock_t errorBlock;
 @property (nonatomic) NSStringEncoding postDataEncoding;
@@ -44,6 +46,7 @@ typedef void (^errorBlock_t)(NSError *error);
 - (NSString *)startSynchronousWithError:(NSError **)error;
 - (void)startAsynchronous;
 - (void)cancel;
+
 // Cookies
 + (void)addCookieWithName:(NSString *)name value:(NSString *)value url:(NSURL *)url;
 - (void)addCookieWithName:(NSString *)name value:(NSString *)value;
@@ -63,6 +66,11 @@ typedef void (^errorBlock_t)(NSError *error);
 - (void)setHeaderWithName:(NSString *)name value:(NSString *)value;
 - (void)removeHeaderWithName:(NSString *)name;
 - (NSDictionary *)responseHeaders;
+
+// Upload
+- (void)setFileToUpload:(NSString *)path parameterName:(NSString *)param;
+- (void)setDataToUpload:(NSData *)data parameterName:(NSString *)param;
+- (void)setDataToUpload:(NSData *)data parameterName:(NSString *)param mimeType:(NSString *)mimeType fileName:(NSString *)fileName;
 
 // Session
 + (void)clearSession; // delete all credentials and cookies

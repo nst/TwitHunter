@@ -263,11 +263,19 @@
     
     if(tweetText == nil) return;
     
-	self.requestStatus = nil;
+	self.requestStatus = @"Posting status...";
+
+    NSString *selectedStatusID = nil; // TODO
     
-    NSSharingService *service = [NSSharingService sharingServiceNamed:NSSharingServiceNamePostOnTwitter];
-    service.delegate = self;
-    [service performWithItems:@[tweetText]];
+    [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil successBlock:^(NSString *response) {
+        self.requestStatus = @"OK, status was posted.";
+    } errorBlock:^(NSError *error) {
+        self.requestStatus = [error localizedDescription];
+    }];
+    
+//    NSSharingService *service = [NSSharingService sharingServiceNamed:NSSharingServiceNamePostOnTwitter];
+//    service.delegate = self;
+//    [service performWithItems:@[tweetText]];
     
     self.tweetText = nil;
 }

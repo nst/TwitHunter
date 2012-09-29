@@ -20,6 +20,11 @@ static NSMutableDictionary *sharedCredentialsStorage;
 @property (nonatomic, retain) NSDictionary *responseHeaders;
 @property (nonatomic, retain) NSURL *url;
 @property (nonatomic, retain) NSError *error;
+@property (nonatomic, retain) NSString *POSTFilePath;
+@property (nonatomic, retain) NSData *POSTFileData;
+@property (nonatomic, retain) NSString *POSTFileMimeType;
+@property (nonatomic, retain) NSString *POSTFileName;
+@property (nonatomic, retain) NSString *POSTFileParameter;
 @end
 
 @interface NSData (Base64)
@@ -60,6 +65,8 @@ static NSMutableDictionary *sharedCredentialsStorage;
 }
 
 - (void)dealloc {
+    if(_uploadProgressBlock) [_uploadProgressBlock release];
+    
     [_responseStringEncodingName release];
     [_requestHeaders release];
     [_url release];
@@ -71,7 +78,13 @@ static NSMutableDictionary *sharedCredentialsStorage;
     [_credential release];
     [_proxyCredential release];
     [_POSTDictionary release];
+    [_POSTFilePath release];
+    [_POSTFileData release];
+    [_POSTFileMimeType release];
+    [_POSTFileName release];
+    [_POSTFileParameter release];
     [_error release];
+    
     [super dealloc];
 }
 
@@ -228,7 +241,60 @@ static NSMutableDictionary *sharedCredentialsStorage;
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:theURL];
     
-    if(_POSTDictionary != nil) { // may be empty (POST request without body)
+    if(_POSTFileParameter && (_POSTFilePath || _POSTFileData)) {
+
+        if(_POSTDictionary == nil) self.POSTDictionary = @{};
+        
+        NSData *fileData = nil;
+        NSString *mimeType = nil;
+        NSString *fileName = nil;
+
+        if (_POSTFilePath) {
+            NSError *readingError = nil;
+            fileData = [NSData dataWithContentsOfFile:_POSTFilePath options:0 error:&readingError];
+            if(fileData == nil ) {
+                NSLog(@"-- %@", [readingError localizedDescription]);
+                return nil;
+            }
+            
+            fileName = [_POSTFilePath lastPathComponent];
+        } else {
+            fileData = _POSTFileData;
+            if (_POSTFileName) {
+                fileName = _POSTFileName;
+            }
+        }
+        
+        mimeType = _POSTFileMimeType ? _POSTFileMimeType : @"application/octet-stream";
+
+        NSString *boundary = @"----------kStHtTpReQuEsTbOuNdArY";
+        
+        NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
+        [request addValue:contentType forHTTPHeaderField:@"Content-Type"];
+        
+        NSMutableData *body = [NSMutableData data];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        NSString *fileNameContentDisposition = fileName ? [NSString stringWithFormat:@"filename=\"%@\"", fileName] : @"";
+        NSString *contentDisposition = [NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; %@\r\n", _POSTFileParameter, fileNameContentDisposition];
+        
+        [body appendData:[contentDisposition dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Type: %@\r\n\r\n", mimeType] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:fileData];
+        
+        [_POSTDictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[[obj description] dataUsingEncoding:NSUTF8StringEncoding]];
+        }];
+        
+        [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [request setHTTPMethod:@"POST"];
+        [request setHTTPBody:body];
+
+    } else if(_POSTDictionary != nil) { // may be empty (POST request without body)
         
         NSMutableArray *ma = [NSMutableArray arrayWithCapacity:[_POSTDictionary count]];
         
@@ -274,6 +340,26 @@ static NSMutableDictionary *sharedCredentialsStorage;
     return [self requestByAddingCredentialsToURL:YES sendBasicAuthenticationHeaders:YES];
 }
 
+#pragma mark Upload
+
+- (void)setFileToUpload:(NSString *)path parameterName:(NSString *)param {
+    self.POSTFilePath = path;
+    self.POSTFileParameter = param;
+}
+
+- (void)setDataToUpload:(NSData *)data parameterName:(NSString *)param {
+    self.POSTFileData = data;
+    self.POSTFileParameter = param;
+}
+
+- (void)setDataToUpload:(NSData *)data parameterName:(NSString *)param mimeType:(NSString *)mimeType fileName:(NSString *)fileName
+{
+    self.POSTFileData = data;
+    self.POSTFileParameter = param;
+    self.POSTFileMimeType = mimeType;
+    self.POSTFileName = fileName;
+}
+
 #pragma mark Response
 
 - (NSString *)stringWithData:(NSData *)data encodingName:(NSString *)encodingName {
@@ -314,7 +400,7 @@ static NSMutableDictionary *sharedCredentialsStorage;
     [headers enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         NSLog(@"\t %@ = %@", key, obj);
     }];
-    
+
     NSArray *cookies = [self requestCookies];
     
     if([cookies count]) NSLog(@"COOKIES");
@@ -330,6 +416,14 @@ static NSMutableDictionary *sharedCredentialsStorage;
     [d enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         NSLog(@"\t %@ = %@", key, obj);
     }];
+        
+    if(_POSTFileParameter && _POSTFilePath) {
+        NSLog(@"UPLOAD FILE");
+        NSLog(@"\t %@ = %@", _POSTFileParameter, _POSTFilePath);
+    } else if(_POSTFileParameter && _POSTFileData) {
+        NSLog(@"UPLOAD DATA");
+        NSLog(@"\t %@ = [%ld bytes]", _POSTFileParameter, [_POSTFileData length]);
+    }
     
     NSLog(@"--------------------------------------");
 }
@@ -425,6 +519,12 @@ static NSMutableDictionary *sharedCredentialsStorage;
     [connection cancel];
     
     [[challenge sender] cancelAuthenticationChallenge:challenge];
+}
+
+- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
+    if (_uploadProgressBlock) {
+        _uploadProgressBlock(bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
+    }
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {

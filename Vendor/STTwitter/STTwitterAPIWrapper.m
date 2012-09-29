@@ -7,31 +7,58 @@
 //
 
 #import "STTwitterAPIWrapper.h"
-#import "STOAuthOSX.h"
-#import "STOAuth.h"
+#import "STTwitterOAuthOSX.h"
+#import "STTwitterOAuth.h"
+#import "STTwitterHTML.h"
 
 @interface STTwitterAPIWrapper ()
-@property (nonatomic, retain) NSObject <STOAuthProtocol> *oauth;
+@property (nonatomic, retain) NSObject <STTwitterOAuthProtocol> *oauth;
 @end
 
 @implementation STTwitterAPIWrapper
 
 + (STTwitterAPIWrapper *)twitterAPIWithOAuthOSX {
     STTwitterAPIWrapper *twitter = [[STTwitterAPIWrapper alloc] init];
-    twitter.oauth = [[[STOAuthOSX alloc] init] autorelease];
+    twitter.oauth = [[[STTwitterOAuthOSX alloc] init] autorelease];
     return [twitter autorelease];
 }
 
 + (STTwitterAPIWrapper *)twitterAPIWithOAuthConsumerKey:(NSString *)consumerKey consumerSecret:(NSString *)consumerSecret username:(NSString *)username password:(NSString *)password {
     STTwitterAPIWrapper *twitter = [[STTwitterAPIWrapper alloc] init];
-    twitter.oauth = [STOAuth twitterServiceWithConsumerKey:consumerKey consumerSecret:consumerSecret username:username password:password];
+    twitter.oauth = [STTwitterOAuth twitterServiceWithConsumerKey:consumerKey consumerSecret:consumerSecret username:username password:password];
     return [twitter autorelease];
 }
 
-+ (STTwitterAPIWrapper *)twitterAPIWithOAuthConsumerKey:(NSString *)consumerKey consumerSecret:(NSString *)consumerSecret oauthToken:(NSString *)oauthToken oauthTokenSecret:(NSString *)oauthTokenSecret{
++ (STTwitterAPIWrapper *)twitterAPIWithOAuthConsumerKey:(NSString *)consumerKey consumerSecret:(NSString *)consumerSecret oauthToken:(NSString *)oauthToken oauthTokenSecret:(NSString *)oauthTokenSecret {
     STTwitterAPIWrapper *twitter = [[STTwitterAPIWrapper alloc] init];
-    twitter.oauth = [STOAuth twitterServiceWithConsumerKey:consumerKey consumerSecret:consumerSecret oauthToken:oauthToken oauthTokenSecret:oauthTokenSecret];
-    return [twitter autorelease];    
+    twitter.oauth = [STTwitterOAuth twitterServiceWithConsumerKey:consumerKey consumerSecret:consumerSecret oauthToken:oauthToken oauthTokenSecret:oauthTokenSecret];
+    return [twitter autorelease];
+}
+
++ (STTwitterAPIWrapper *)twitterAPIWithOAuthConsumerKey:(NSString *)consumerKey consumerSecret:(NSString *)consumerSecret {
+    return [self twitterAPIWithOAuthConsumerKey:consumerKey consumerSecret:consumerSecret username:nil password:nil];
+}
+
+- (void)postTokenRequest:(void(^)(NSURL *url, NSString *oauthToken))successBlock errorBlock:(void(^)(NSError *error))errorBlock {
+    [_oauth postTokenRequest:successBlock errorBlock:errorBlock];
+}
+
+- (void)postAccessTokenRequestWithPIN:(NSString *)pin
+                           oauthToken:(NSString *)oauthToken
+                         successBlock:(void(^)(NSString *oauthToken, NSString *oauthTokenSecret, NSString *userID, NSString *screenName))successBlock
+                           errorBlock:(void(^)(NSError *error))errorBlock {
+    [_oauth postAccessTokenRequestWithPIN:pin
+                               oauthToken:oauthToken
+                             successBlock:successBlock
+                               errorBlock:errorBlock];
+}
+
+- (NSString *)oauthTokenSecret {
+    return [_oauth oauthTokenSecret];
+}
+
+- (NSString *)oauthToken {
+    return [_oauth oauthToken];
 }
 
 - (void)dealloc {
@@ -42,10 +69,17 @@
 /**/
 
 - (void)verifyCredentialsWithSuccessBlock:(void(^)(NSString *username))successBlock errorBlock:(void(^)(NSError *error))errorBlock {
-    [_oauth verifyCredentialsWithSuccessBlock:successBlock errorBlock:errorBlock];
+    
+    if([_oauth canVerifyCredentials]) {
+        [_oauth verifyCredentialsWithSuccessBlock:successBlock errorBlock:errorBlock];
+    } else {
+        [self getAccountVerifyCredentialsSkipStatus:YES successBlock:^(NSString *jsonString) {
+            successBlock([jsonString valueForKey:@"screen_name"]);
+        } errorBlock:^(NSError *error) {
+            errorBlock(error);
+        }];
+    }
 }
-
-/**/
 
 - (void)postDestroyStatusWithID:(NSString *)statusID
                    successBlock:(void(^)(NSString *jsonString))successBlock
@@ -80,10 +114,26 @@
     }];
 }
 
+- (void)postStatusUpdate:(NSString *)status
+                mediaURL:(NSURL *)mediaURL
+            successBlock:(void(^)(NSString *response))successBlock
+              errorBlock:(void(^)(NSError *error))errorBlock {
+    
+    NSData *data = [NSData dataWithContentsOfURL:mediaURL];
+    
+    NSDictionary *d = @{ @"status":status, @"media[]":data };
+    
+    [_oauth postResource:@"statuses/update_with_media.json" parameters:d successBlock:^(NSString *response) {
+        successBlock(response);
+    } errorBlock:^(NSError *error) {
+        errorBlock(error);
+    }];
+}
+
 - (void)postStatusRetweetWithID:(NSString *)statusID
                    successBlock:(void(^)(NSString *response))successBlock
                      errorBlock:(void(^)(NSError *error))errorBlock {
-
+    
     NSString *resource = [NSString stringWithFormat:@"statuses/retweet/%@.json", statusID];
     
     [_oauth postResource:resource parameters:nil successBlock:^(NSString *response) {
@@ -95,15 +145,15 @@
 
 - (void)getHomeTimelineSinceID:(NSString *)optionalSinceID
                          count:(NSString *)optionalCount
-                  successBlock:(void(^)(NSString *response))successBlock
+                  successBlock:(void(^)(NSArray *statuses))successBlock
                     errorBlock:(void(^)(NSError *error))errorBlock {
     
     NSMutableDictionary *md = [NSMutableDictionary dictionary];
     if(optionalSinceID) [md setObject:optionalSinceID forKey:@"since_id"];
     if(optionalCount) [md setObject:optionalCount forKey:@"count"];
     
-    [_oauth getResource:@"statuses/home_timeline.json" parameters:md successBlock:^(NSString *response) {
-        successBlock(response);
+    [_oauth getResource:@"statuses/home_timeline.json" parameters:md successBlock:^(NSArray *statuses) {
+        successBlock(statuses);
     } errorBlock:^(NSError *error) {
         errorBlock(error);
     }];
@@ -170,6 +220,16 @@
     } errorBlock:^(NSError *error) {
         errorBlock(error);
     }];
+}
+
+@end
+
+@implementation NSString (STTwitterAPIWrapper)
+
+- (NSString *)htmlLinkName {
+    NSString *ahref = [self extractFirstMatchWithRegex:@"<a href=\".*\">(.*)</a>" error:nil];
+    
+    return ahref ? ahref : self;
 }
 
 @end
