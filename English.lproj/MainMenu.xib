@@ -691,7 +691,6 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<string key="NSFrame">{{17, 3}, {495, 13}}</string>
 							<reference key="NSSuperview" ref="823886803"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="770444759">
 								<int key="NSCellFlags">68157504</int>
@@ -2304,7 +2303,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 										<string key="NSFrameSize">{382, 108}</string>
 										<reference key="NSSuperview" ref="485684430"/>
 										<reference key="NSWindow"/>
-										<reference key="NSNextKeyView" ref="499156427"/>
+										<reference key="NSNextKeyView" ref="653214066"/>
 										<object class="NSTextContainer" key="NSTextContainer" id="526568104">
 											<object class="NSLayoutManager" key="NSLayoutManager">
 												<object class="NSTextStorage" key="NSTextStorage">
@@ -2745,7 +2744,7 @@ wGw</bytes>
 						<string key="NSFrame">{{59, 3}, {382, 47}}</string>
 						<reference key="NSSuperview" ref="87381471"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="653214066"/>
+						<reference key="NSNextKeyView" ref="485684430"/>
 						<int key="NSsFlags">133696</int>
 						<reference key="NSVScroller" ref="653214066"/>
 						<reference key="NSHScroller" ref="1034165422"/>
@@ -2791,7 +2790,6 @@ wGw</bytes>
 						<string key="NSFrame">{{564, 0}, {22, 22}}</string>
 						<reference key="NSSuperview" ref="87381471"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSPopUpButtonCell" key="NSCell" id="814201657">
@@ -3002,7 +3000,6 @@ wGw</bytes>
 							<string key="NSFrame">{{166, 12}, {96, 32}}</string>
 							<reference key="NSSuperview" ref="770015816"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSButtonCell" key="NSCell" id="854888735">
 								<int key="NSCellFlags">67108864</int>
@@ -3184,7 +3181,6 @@ wGw</bytes>
 							<string key="NSFrame">{{13, 40}, {299, 340}}</string>
 							<reference key="NSSuperview" ref="1053190164"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView" ref="310079809"/>
 							<object class="NSMutableArray" key="NSTabViewItems">
 								<bool key="EncodedWithXMLCoder">YES</bool>
 								<object class="NSTabViewItem" id="136537707">
@@ -3210,7 +3206,7 @@ wGw</bytes>
 																<string key="NSFrameSize">{228, 209}</string>
 																<reference key="NSSuperview" ref="854000583"/>
 																<reference key="NSWindow"/>
-																<reference key="NSNextKeyView" ref="804641496"/>
+																<reference key="NSNextKeyView" ref="1073319949"/>
 																<bool key="NSEnabled">YES</bool>
 																<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 																<bool key="NSControlAllowsExpansionToolTips">YES</bool>
@@ -3420,13 +3416,12 @@ wGw</bytes>
 												<string key="NSFrame">{{17, 17}, {245, 242}}</string>
 												<reference key="NSSuperview" ref="310079809"/>
 												<reference key="NSWindow"/>
-												<reference key="NSNextKeyView" ref="1073319949"/>
+												<reference key="NSNextKeyView" ref="854000583"/>
 												<int key="NSsFlags">133170</int>
 												<reference key="NSVScroller" ref="804641496"/>
 												<reference key="NSHScroller" ref="260202816"/>
 												<reference key="NSContentView" ref="854000583"/>
 												<reference key="NSHeaderClipView" ref="1073319949"/>
-												<reference key="NSCornerView" ref="1008508310"/>
 												<bytes key="NSScrollAmts">QSAAAEEgAABBmAAAQZgAAA</bytes>
 												<double key="NSMinMagnification">0.25</double>
 												<double key="NSMaxMagnification">4</double>
@@ -3786,7 +3781,6 @@ wGw</bytes>
 							<string key="NSFrame">{{215, 12}, {96, 32}}</string>
 							<reference key="NSSuperview" ref="1053190164"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSButtonCell" key="NSCell" id="1013535935">
 								<int key="NSCellFlags">67108864</int>
@@ -3863,7 +3857,6 @@ wGw</bytes>
 				<string key="NSFrameSize">{96, 291}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView"/>
 				<string key="NSClassName">THCumulativeChartView</string>
 			</object>
 			<object class="NSMenu" id="613736822">
@@ -5038,26 +5031,6 @@ wGw</bytes>
 						</object>
 					</object>
 					<int key="connectionID">700</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">hidden: tweetText</string>
-						<reference key="source" ref="345533197"/>
-						<reference key="destination" ref="17366085"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="345533197"/>
-							<reference key="NSDestination" ref="17366085"/>
-							<string key="NSLabel">hidden: tweetText</string>
-							<string key="NSBinding">hidden</string>
-							<string key="NSKeyPath">tweetText</string>
-							<object class="NSDictionary" key="NSOptions">
-								<string key="NS.key.0">NSValueTransformerName</string>
-								<string key="NS.object.0">NSIsNil</string>
-							</object>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">731</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">

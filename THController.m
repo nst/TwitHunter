@@ -266,9 +266,10 @@
 	self.requestStatus = @"Posting status...";
 
     if(_postMediaURL) {
-        [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil successBlock:^(NSString *response) {
+        [_twitter postStatusUpdate:tweetText mediaURL:_postMediaURL successBlock:^(NSString *response) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
+            self.postMediaURL = nil;
         } errorBlock:^(NSError *error) {
             self.requestStatus = error ? [error localizedDescription] : @"Unknown error";
         }];
