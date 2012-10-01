@@ -48,8 +48,11 @@
 @property (nonatomic, retain) NSString *requestStatus;
 @property (nonatomic, retain) NSTimer *timer;
 
+@property (nonatomic, retain) NSURL *postMediaURL;
+
 - (IBAction)update:(id)sender;
 - (IBAction)synchronizeFavorites:(id)sender;
+- (IBAction)chooseMedia:(id)sender;
 - (IBAction)tweet:(id)sender;
 - (IBAction)updateCredentials:(id)sender;
 - (IBAction)updateTweetScores:(id)sender;

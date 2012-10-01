@@ -13,6 +13,11 @@
         <attribute name="text" attributeType="String" spotlightIndexingEnabled="YES" syncable="YES"/>
         <attribute name="uid" attributeType="Integer 64" indexed="YES" syncable="YES"/>
         <relationship name="user" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="THUser" inverseName="tweets" inverseEntity="THUser" indexed="YES" syncable="YES"/>
+        <compoundIndexes>
+            <compoundIndex>
+                <index value="uid"/>
+            </compoundIndex>
+        </compoundIndexes>
     </entity>
     <entity name="THUser" representedClassName="THUser" syncable="YES">
         <attribute name="followersCount" attributeType="Integer 32" minValueString="0" syncable="YES"/>
@@ -23,10 +28,15 @@
         <attribute name="screenName" attributeType="String" syncable="YES"/>
         <attribute name="uid" attributeType="Integer 64" indexed="YES" syncable="YES"/>
         <relationship name="tweets" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="THTweet" inverseName="user" inverseEntity="THTweet" indexed="YES" syncable="YES"/>
+        <compoundIndexes>
+            <compoundIndex>
+                <index value="uid"/>
+            </compoundIndex>
+        </compoundIndexes>
     </entity>
     <elements>
         <element name="THTextRule" positionX="468" positionY="114" width="128" height="73"/>
         <element name="THTweet" positionX="268" positionY="54" width="128" height="163"/>
-        <element name="THUser" positionX="27" positionY="27" width="128" height="165"/>
+        <element name="THUser" positionX="27" positionY="27" width="128" height="163"/>
     </elements>
 </model>

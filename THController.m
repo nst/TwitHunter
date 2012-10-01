@@ -265,17 +265,63 @@
     
 	self.requestStatus = @"Posting status...";
 
-    [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil successBlock:^(NSString *response) {
-        self.tweetText = nil;
-        self.requestStatus = @"OK, status was posted.";
-    } errorBlock:^(NSError *error) {
-        self.requestStatus = [error localizedDescription];
-    }];
+    if(_postMediaURL) {
+        [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil successBlock:^(NSString *response) {
+            self.tweetText = @"";
+            self.requestStatus = @"OK, status was posted.";
+        } errorBlock:^(NSError *error) {
+            self.requestStatus = error ? [error localizedDescription] : @"Unknown error";
+        }];
+    } else {
+        [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil successBlock:^(NSString *response) {
+            self.tweetText = @"";
+            self.requestStatus = @"OK, status was posted.";
+        } errorBlock:^(NSError *error) {
+            self.requestStatus = [error localizedDescription];
+        }];
+    }
     
 //    NSSharingService *service = [NSSharingService sharingServiceNamed:NSSharingServiceNamePostOnTwitter];
 //    service.delegate = self;
 //    [service performWithItems:@[tweetText]];
     
+}
+
+- (IBAction)chooseMedia:(id)sender {
+    self.postMediaURL = nil;
+    
+    NSOpenPanel *panel = [NSOpenPanel openPanel];
+    
+    [panel setCanChooseDirectories:NO];
+    [panel setCanChooseFiles:YES];
+    [panel setAllowedFileTypes:@[ @"png", @"PNG", @"jpg", @"JPG", @"jpeg", @"JPEG", @"gif", @"GIF"] ];
+    
+    NSWindow *window = [(id)[NSApplication sharedApplication].delegate window];
+    
+    [panel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+        
+        if (result != NSFileHandlingPanelOKButton) return;
+        
+        NSArray *urls = [panel URLs];
+        
+        NSPredicate *p = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+            if([evaluatedObject isKindOfClass:[NSURL class]] == NO) return NO;
+            
+            NSURL *url = (NSURL *)evaluatedObject;
+            
+            return [url isFileURL];
+        }];
+        
+        NSArray *fileURLS = [urls filteredArrayUsingPredicate:p];
+        
+        NSURL *fileURL = [fileURLS lastObject];
+        
+        BOOL isDir = NO;
+        if ([[NSFileManager defaultManager] fileExistsAtPath: fileURL.path isDirectory: &isDir] == NO) return;
+        
+        self.postMediaURL = fileURL;
+        NSLog(@"** postMediaURL: %@", fileURL);
+    }];
 }
 
 - (IBAction)update:(id)sender {
@@ -463,8 +509,10 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
 	[_twitter release];
-	[timer release];
-	[tweetSortDescriptors release];
+    [_postMediaURL release];
+    
+    [timer release];
+    [tweetSortDescriptors release];
 	[tweetFilterPredicate release];
 	[tweetText release];
 	[isConnecting release];
