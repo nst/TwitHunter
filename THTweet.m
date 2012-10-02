@@ -20,7 +20,7 @@
 @dynamic user;
 @dynamic isRead;
 @dynamic isFavorite;
-@dynamic containsURL;
+//@dynamic containsURL;
 
 static NSDateFormatter *createdAtDateFormatter = nil;
 
@@ -204,8 +204,17 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 		[s replaceOccurrencesOfString:@"&gt;" withString:@">" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
 		tweet.text = s;
 		
-		BOOL doesContainURL = [tweet.text rangeOfString:@"http"].location != NSNotFound;
-		tweet.containsURL = [NSNumber numberWithBool:doesContainURL];
+        // if needed, use entities.urls to detect URLs
+        /*
+         "entities":
+         {
+         "hashtags":[],
+         "urls":[],
+         "user_mentions":[]
+         }
+         */
+//		BOOL doesContainURL = [tweet.text rangeOfString:@"http"].location != NSNotFound;
+//		tweet.containsURL = [NSNumber numberWithBool:doesContainURL];
 				
 		tweet.date = [[tweet createdAtDateFormatter] dateFromString:[d objectForKey:@"created_at"]];
 		tweet.user = user;

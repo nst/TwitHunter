@@ -18,7 +18,7 @@
 @property (nonatomic, retain) NSNumber * uid;
 @property (nonatomic, retain) NSNumber * score;
 @property (nonatomic, retain) NSNumber * isRead;
-@property (nonatomic, retain) NSNumber * containsURL;
+//@property (nonatomic, retain) NSNumber * containsURL;
 @property (nonatomic, retain) NSNumber * isFavorite;
 @property (nonatomic, retain) NSDate * date;
 @property (nonatomic, retain) THUser * user;
@@ -34,6 +34,3 @@
 + (NSArray *)tweetsWithIdGreaterOrEqualTo:(NSNumber *)anId;
 
 @end
-
-
-

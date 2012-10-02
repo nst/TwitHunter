@@ -5,7 +5,6 @@
         <attribute name="score" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
     </entity>
     <entity name="THTweet" representedClassName="THTweet" syncable="YES">
-        <attribute name="containsURL" attributeType="Boolean" syncable="YES"/>
         <attribute name="date" attributeType="Date" syncable="YES"/>
         <attribute name="isFavorite" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="isRead" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
@@ -36,7 +35,7 @@
     </entity>
     <elements>
         <element name="THTextRule" positionX="468" positionY="114" width="128" height="73"/>
-        <element name="THTweet" positionX="268" positionY="54" width="128" height="163"/>
+        <element name="THTweet" positionX="268" positionY="54" width="128" height="148"/>
         <element name="THUser" positionX="27" positionY="27" width="128" height="163"/>
     </elements>
 </model>

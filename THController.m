@@ -32,11 +32,11 @@
 		[a addObject:p2];
 	}
 	
-	NSNumber *hideURLs = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideURLs"];
-	if([hideURLs boolValue]) {
-		NSPredicate *p3 = [NSPredicate predicateWithFormat:@"containsURL == NO"];
-		[a addObject:p3];
-	}
+//	NSNumber *hideURLs = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideURLs"];
+//	if([hideURLs boolValue]) {
+//		NSPredicate *p3 = [NSPredicate predicateWithFormat:@"containsURL == NO"];
+//		[a addObject:p3];
+//	}
 	
 	return a;
 }
