@@ -16,7 +16,7 @@
 
 @interface THController : NSObject <CumulativeChartViewDelegate, CumulativeChartViewDataSource, NSSharingServiceDelegate> {
 	NSTimer *timer;
-	
+    	
 	IBOutlet NSArrayController *tweetArrayController;
 	IBOutlet NSArrayController *userArrayController;
 	IBOutlet NSArrayController *keywordArrayController;
@@ -40,6 +40,7 @@
 	NSDate *latestTimeUpdateCulumatedDataWasAsked;
 }
 
+@property (nonatomic, retain) IBOutlet NSWindow *window;
 @property (nonatomic, retain) STTwitterAPIWrapper *twitter;
 @property (nonatomic, retain) NSArray *tweetSortDescriptors;
 @property (nonatomic, retain) NSPredicate *tweetFilterPredicate;
@@ -48,11 +49,15 @@
 @property (nonatomic, retain) NSString *requestStatus;
 @property (nonatomic, retain) NSTimer *timer;
 
+@property (nonatomic, retain) NSString *latitude;
+@property (nonatomic, retain) NSString *longitude;
 @property (nonatomic, retain) NSURL *postMediaURL;
+@property (nonatomic, retain) NSString *locationDescription;
 
 - (IBAction)update:(id)sender;
 - (IBAction)synchronizeFavorites:(id)sender;
 - (IBAction)chooseMedia:(id)sender;
+- (IBAction)chooseLocation:(id)sender;
 - (IBAction)tweet:(id)sender;
 - (IBAction)updateCredentials:(id)sender;
 - (IBAction)updateTweetScores:(id)sender;

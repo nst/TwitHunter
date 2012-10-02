@@ -266,17 +266,23 @@
 	self.requestStatus = @"Posting status...";
 
     if(_postMediaURL) {
-        [_twitter postStatusUpdate:tweetText mediaURL:_postMediaURL successBlock:^(NSString *response) {
+        [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil mediaURL:_postMediaURL lat:_latitude lon:_longitude successBlock:^(NSString *response) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
             self.postMediaURL = nil;
+            self.latitude = nil;
+            self.longitude = nil;
+            self.locationDescription = nil;
         } errorBlock:^(NSError *error) {
             self.requestStatus = error ? [error localizedDescription] : @"Unknown error";
         }];
     } else {
-        [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil successBlock:^(NSString *response) {
+        [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil lat:_latitude lon:_longitude successBlock:^(NSString *response) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
+            self.latitude = nil;
+            self.longitude = nil;
+            self.locationDescription = nil;
         } errorBlock:^(NSError *error) {
             self.requestStatus = [error localizedDescription];
         }];
@@ -288,6 +294,55 @@
     
 }
 
+- (IBAction)chooseLocation:(id)sender {
+    NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+    [alert addButtonWithTitle:@"OK"];
+    [alert addButtonWithTitle:@"Cancel"];
+    [alert setMessageText:@"Please choose latitude and longitude:"];
+    //[alert setInformativeText:@"STTwitter will login on Twitter through the website and parse the HTML to guess the PIN."];
+    [alert setAlertStyle:NSInformationalAlertStyle];
+    
+    NSTextField *latitudeTextField = [[[NSTextField alloc] initWithFrame:NSMakeRect(0,32, 180, 24)] autorelease];
+    NSTextField *longitudeTextField = [[[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 180, 24)] autorelease];
+    
+    NSView *accessoryView = [[[NSView alloc] initWithFrame:NSMakeRect(0, 0, 200, 64)] autorelease];
+    [accessoryView addSubview:latitudeTextField];
+    [accessoryView addSubview:longitudeTextField];
+    
+    [alert setAccessoryView:accessoryView];
+    
+    [alert beginSheetModalForWindow:_window modalDelegate:self didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:) contextInfo:nil];
+}
+
+- (void)alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(NSDictionary *)contextInfo {
+    if(returnCode != NSAlertFirstButtonReturn) {
+        self.latitude = nil;
+        self.longitude = nil;
+        self.locationDescription = nil;
+        return;
+    }
+    
+    NSArray *subviews = [alert.accessoryView subviews];
+    
+    NSTextField *latitudeTextField = [subviews objectAtIndex:0];
+    NSTextField *longitudeTextField = [subviews objectAtIndex:1];
+    
+    self.latitude = [latitudeTextField stringValue];
+    self.longitude = [longitudeTextField stringValue];
+  
+    [_twitter getReverseGeocodeWithLatitude:_latitude longitude:_longitude successBlock:^(NSArray *places) {
+        
+        if([places count] == 0) return;
+        
+        NSArray *firstPlace = [places objectAtIndex:0];
+        
+        self.locationDescription = [firstPlace valueForKey:@"full_name"];
+        
+    } errorBlock:^(NSError *error) {
+        NSLog(@"-- %@", [error localizedDescription]);
+    }];
+}
+
 - (IBAction)chooseMedia:(id)sender {
     self.postMediaURL = nil;
     
@@ -296,10 +351,8 @@
     [panel setCanChooseDirectories:NO];
     [panel setCanChooseFiles:YES];
     [panel setAllowedFileTypes:@[ @"png", @"PNG", @"jpg", @"JPG", @"jpeg", @"JPEG", @"gif", @"GIF"] ];
-    
-    NSWindow *window = [(id)[NSApplication sharedApplication].delegate window];
-    
-    [panel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+        
+    [panel beginSheetModalForWindow:_window completionHandler:^(NSInteger result) {
         
         if (result != NSFileHandlingPanelOKButton) return;
         
@@ -509,8 +562,12 @@
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
+    [_window release];
 	[_twitter release];
     [_postMediaURL release];
+    [_locationDescription release];
+    [_latitude release];
+    [_longitude release];
     
     [timer release];
     [tweetSortDescriptors release];
@@ -518,6 +575,7 @@
 	[tweetText release];
 	[isConnecting release];
 	[requestStatus release];
+    
 	[super dealloc];
 }
 
@@ -594,9 +652,12 @@
     
     THTweet *selectedTweet = [[tweetArrayController selectedObjects] lastObject];
     
-    [_twitter postStatusUpdate:tweetText inReplyToStatusID:[selectedTweet.uid description] successBlock:^(NSString *response) {
+    [_twitter postStatusUpdate:tweetText inReplyToStatusID:[selectedTweet.uid description] lat:_latitude lon:_longitude successBlock:^(NSString *response) {
         self.tweetText = nil;
         self.requestStatus = @"OK, reply was posted.";
+        self.latitude = nil;
+        self.longitude = nil;
+        self.locationDescription = nil;
     } errorBlock:^(NSError *error) {
         self.requestStatus = [error localizedDescription];
     }];
