@@ -41,4 +41,12 @@
     [super dealloc];
 }
 
+- (IBAction)ok:(id)sender {
+    [_delegate locationPicker:self didChooseLocation:_tweetLocation];
+}
+
+- (IBAction)cancel:(id)sender {
+    [_delegate locationPickerDidCancel:self];
+}
+
 @end

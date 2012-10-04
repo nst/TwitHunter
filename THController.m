@@ -263,7 +263,7 @@
         self.tweetLocation = [[[THTweetLocation alloc] init] autorelease];
     }
     
-    _locationPickerWindowController.tweetLocation = [[_tweetLocation copy] autorelease];
+    _locationPickerWindowController.tweetLocation = _tweetLocation;
     _locationPickerWindowController.delegate = self;
     [self.locationPickerWindowController showWindow:self];
 }
@@ -742,6 +742,11 @@
 #pragma mark TWLocationPickerProtocol
 - (void)locationPicker:(THLocationPickerWindowController *)locationPicker didChooseLocation:(THTweetLocation *)modifiedTweetLocation {
     self.tweetLocation = modifiedTweetLocation;
+    [_locationPickerWindowController close];
+}
+
+- (void)locationPickerDidCancel:(THLocationPickerWindowController *)locationPicker {
+    [_locationPickerWindowController close];
 }
 
 @end

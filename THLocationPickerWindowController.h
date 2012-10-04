@@ -16,12 +16,16 @@
 
 @protocol TWLocationPickerProtocol
 - (void)locationPicker:(THLocationPickerWindowController *)locationPicker didChooseLocation:(THTweetLocation *)tweetLocation;
+- (void)locationPickerDidCancel:(THLocationPickerWindowController *)locationPicker;
 @end
 
 @interface THLocationPickerWindowController : NSWindowController
 
 @property (nonatomic, retain) STTwitterAPIWrapper *twitter;
-@property (nonatomic, assign) THTweetLocation *tweetLocation;
+@property (nonatomic, copy) THTweetLocation *tweetLocation;
 @property (nonatomic, assign) NSObject <TWLocationPickerProtocol> *delegate;
+
+- (IBAction)ok:(id)sender;
+- (IBAction)cancel:(id)sender;
 
 @end
