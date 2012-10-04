@@ -13,6 +13,7 @@
 #import "NSManagedObject+SingleContext.h"
 #import "NSString+TH.h"
 #import "STTwitterAPIWrapper.h"
+#import "THTweetLocation.h"
 
 @implementation THController
 
@@ -251,6 +252,20 @@
 	}
 	
 	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+}
+
+- (IBAction)openLocationPicker:(id)sender {
+//    if(_locationPickerWindowController == nil) {
+        self.locationPickerWindowController = [[[THLocationPickerWindowController alloc] initWithWindowNibName:@"LocationPicker"] autorelease];
+//    }
+    
+    if(_tweetLocation == nil) {
+        self.tweetLocation = [[[THTweetLocation alloc] init] autorelease];
+    }
+    
+    _locationPickerWindowController.tweetLocation = [[_tweetLocation copy] autorelease];
+    _locationPickerWindowController.delegate = self;
+    [self.locationPickerWindowController showWindow:self];
 }
 
 - (IBAction)updateCredentials:(id)sender {
@@ -576,6 +591,9 @@
 	[isConnecting release];
 	[requestStatus release];
     
+    [_locationPickerWindowController release];
+    [_tweetLocation release];
+    
 	[super dealloc];
 }
 
@@ -720,5 +738,10 @@
 //- (NSRect)sharingService:(NSSharingService *)sharingService sourceFrameOnScreenForShareItem:(id <NSPasteboardWriting>)item;
 //- (NSImage *)sharingService:(NSSharingService *)sharingService transitionImageForShareItem:(id <NSPasteboardWriting>)item contentRect:(NSRect *)contentRect;
 //- (NSWindow *)sharingService:(NSSharingService *)sharingService sourceWindowForShareItems:(NSArray *)items sharingContentScope:(NSSharingContentScope *)sharingContentScope;
+
+#pragma mark TWLocationPickerProtocol
+- (void)locationPicker:(THLocationPickerWindowController *)locationPicker didChooseLocation:(THTweetLocation *)modifiedTweetLocation {
+    self.tweetLocation = modifiedTweetLocation;
+}
 
 @end

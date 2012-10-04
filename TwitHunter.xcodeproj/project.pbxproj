@@ -26,6 +26,9 @@
 		03BEBC51119521BE001E7311 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BEBC50119521BE001E7311 /* QuartzCore.framework */; };
 		03BECCCB1198B6B1001E7311 /* star_empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 03BECCC91198B6B1001E7311 /* star_empty.png */; };
 		03BECCCC1198B6B1001E7311 /* star_full.png in Resources */ = {isa = PBXBuildFile; fileRef = 03BECCCA1198B6B1001E7311 /* star_full.png */; };
+		03C99E2C161DCB8300A2570E /* LocationPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 03C99E2B161DCB8300A2570E /* LocationPicker.xib */; };
+		03C99E33161DCDCB00A2570E /* THLocationPickerWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 03C99E32161DCDCB00A2570E /* THLocationPickerWindowController.m */; };
+		03C99E36161DD58C00A2570E /* THTweetLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 03C99E35161DD58C00A2570E /* THTweetLocation.m */; };
 		03F7F995118CC86A00CE6E55 /* THCumulativeChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 03F7F994118CC86A00CE6E55 /* THCumulativeChartView.m */; };
 		2F7446990DB6B7EA00F9684A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2F7446970DB6B7EA00F9684A /* MainMenu.xib */; };
 		770B37ED0679A11B001EADE2 /* TwitHunter.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 770B37EC0679A11B001EADE2 /* TwitHunter.xcdatamodel */; };
@@ -68,6 +71,11 @@
 		03BEBC50119521BE001E7311 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		03BECCC91198B6B1001E7311 /* star_empty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star_empty.png; sourceTree = "<group>"; };
 		03BECCCA1198B6B1001E7311 /* star_full.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star_full.png; sourceTree = "<group>"; };
+		03C99E2B161DCB8300A2570E /* LocationPicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LocationPicker.xib; sourceTree = "<group>"; };
+		03C99E31161DCDCB00A2570E /* THLocationPickerWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THLocationPickerWindowController.h; sourceTree = "<group>"; };
+		03C99E32161DCDCB00A2570E /* THLocationPickerWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THLocationPickerWindowController.m; sourceTree = "<group>"; };
+		03C99E34161DD58C00A2570E /* THTweetLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THTweetLocation.h; sourceTree = "<group>"; };
+		03C99E35161DD58C00A2570E /* THTweetLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THTweetLocation.m; sourceTree = "<group>"; };
 		03F7F993118CC86A00CE6E55 /* THCumulativeChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THCumulativeChartView.h; sourceTree = "<group>"; };
 		03F7F994118CC86A00CE6E55 /* THCumulativeChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THCumulativeChartView.m; sourceTree = "<group>"; };
 		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -148,6 +156,10 @@
 				77C8280C06725ACE000B614F /* THAppDelegate.m */,
 				033595900F9AB5180084F7BD /* THController.h */,
 				033595910F9AB5180084F7BD /* THController.m */,
+				03C99E34161DD58C00A2570E /* THTweetLocation.h */,
+				03C99E35161DD58C00A2570E /* THTweetLocation.m */,
+				03C99E31161DCDCB00A2570E /* THLocationPickerWindowController.h */,
+				03C99E32161DCDCB00A2570E /* THLocationPickerWindowController.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -211,6 +223,7 @@
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				2F7446970DB6B7EA00F9684A /* MainMenu.xib */,
+				03C99E2B161DCB8300A2570E /* LocationPicker.xib */,
 				03359F1B0F9D412A0084F7BD /* Defaults.plist */,
 			);
 			name = Resources;
@@ -299,6 +312,7 @@
 				03359F1C0F9D412A0084F7BD /* Defaults.plist in Resources */,
 				03BECCCB1198B6B1001E7311 /* star_empty.png in Resources */,
 				03BECCCC1198B6B1001E7311 /* star_full.png in Resources */,
+				03C99E2C161DCB8300A2570E /* LocationPicker.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,6 +339,8 @@
 				03919FA816171EA200D9B66F /* STTwitterOAuth.m in Sources */,
 				03919FA916171EA200D9B66F /* STTwitterOAuthOSX.m in Sources */,
 				03919FAA16171EA200D9B66F /* STHTTPRequest.m in Sources */,
+				03C99E33161DCDCB00A2570E /* THLocationPickerWindowController.m in Sources */,
+				03C99E36161DD58C00A2570E /* THTweetLocation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,7 +369,7 @@
 		26FC0A850875C7B200E6366F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Mac Developer: Nicolas Seriot (9V2U949PMC)";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -362,14 +378,14 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = TwitHunter;
-				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
 		26FC0A860875C7B200E6366F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Mac Developer: Nicolas Seriot (9V2U949PMC)";
+				CODE_SIGN_IDENTITY = "";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PREFIX_HEADER = TwitHunter_Prefix.pch;
@@ -377,7 +393,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = TwitHunter;
-				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -388,7 +404,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "";
 			};
@@ -401,7 +417,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
