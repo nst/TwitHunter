@@ -44,29 +44,12 @@
 }
 
 - (void)postAccessTokenRequestWithPIN:(NSString *)pin
-                           oauthToken:(NSString *)oauthToken
                          successBlock:(void(^)(NSString *oauthToken, NSString *oauthTokenSecret, NSString *userID, NSString *screenName))successBlock
                            errorBlock:(void(^)(NSError *error))errorBlock {
     [_oauth postAccessTokenRequestWithPIN:pin
-                               oauthToken:oauthToken
                              successBlock:successBlock
                                errorBlock:errorBlock];
 }
-
-- (NSString *)oauthTokenSecret {
-    return [_oauth oauthTokenSecret];
-}
-
-- (NSString *)oauthToken {
-    return [_oauth oauthToken];
-}
-
-- (void)dealloc {
-    [_oauth release];
-    [super dealloc];
-}
-
-/**/
 
 - (void)verifyCredentialsWithSuccessBlock:(void(^)(NSString *username))successBlock errorBlock:(void(^)(NSError *error))errorBlock {
     
@@ -80,6 +63,41 @@
         }];
     }
 }
+
+- (NSString *)oauthAccessTokenSecret {
+    return [_oauth oauthAccessTokenSecret];
+}
+
+- (NSString *)oauthAccessToken {
+    return [_oauth oauthAccessToken];
+}
+
+- (void)dealloc {
+    [_oauth release];
+    [super dealloc];
+}
+
+/**/
+
+#pragma mark Timelines
+
+- (void)getHomeTimelineSinceID:(NSString *)optionalSinceID
+                         count:(NSString *)optionalCount
+                  successBlock:(void(^)(NSArray *statuses))successBlock
+                    errorBlock:(void(^)(NSError *error))errorBlock {
+    
+    NSMutableDictionary *md = [NSMutableDictionary dictionary];
+    if(optionalSinceID) [md setObject:optionalSinceID forKey:@"since_id"];
+    if(optionalCount) [md setObject:optionalCount forKey:@"count"];
+    
+    [_oauth getResource:@"statuses/home_timeline.json" parameters:md successBlock:^(NSArray *statuses) {
+        successBlock(statuses);
+    } errorBlock:^(NSError *error) {
+        errorBlock(error);
+    }];
+}
+
+#pragma mark Tweets
 
 - (void)postDestroyStatusWithID:(NSString *)statusID
                    successBlock:(void(^)(NSString *jsonString))successBlock
@@ -131,7 +149,7 @@
               errorBlock:(void(^)(NSError *error))errorBlock {
     
     NSData *data = [NSData dataWithContentsOfURL:mediaURL];
-
+    
     NSMutableDictionary *md = [[ @{ @"status":status, @"media[]":data } mutableCopy] autorelease];
     
     if(optionalExistingStatusID) {
@@ -164,21 +182,24 @@
     }];
 }
 
-- (void)getHomeTimelineSinceID:(NSString *)optionalSinceID
-                         count:(NSString *)optionalCount
-                  successBlock:(void(^)(NSArray *statuses))successBlock
-                    errorBlock:(void(^)(NSError *error))errorBlock {
+#pragma mark Search
+
+- (void)getSearchTweetsWithQuery:(NSString *)q successBlock:(void(^)(NSString *jsonString))successBlock errorBlock:(void(^)(NSError *error))errorBlock {
     
-    NSMutableDictionary *md = [NSMutableDictionary dictionary];
-    if(optionalSinceID) [md setObject:optionalSinceID forKey:@"since_id"];
-    if(optionalCount) [md setObject:optionalCount forKey:@"count"];
+    NSDictionary *d = @{@"q" : q};
     
-    [_oauth getResource:@"statuses/home_timeline.json" parameters:md successBlock:^(NSArray *statuses) {
-        successBlock(statuses);
+    [_oauth getResource:@"search/tweets.json" parameters:d successBlock:^(NSString *response) {
+        successBlock(response);
     } errorBlock:^(NSError *error) {
         errorBlock(error);
     }];
 }
+
+#pragma mark Streaming
+
+#pragma mark Direct Messages
+
+#pragma mark Friends & Followers
 
 - (void)getFollowersWithScreenName:(NSString *)screenName
                       successBlock:(void(^)(NSString *response))successBlock
@@ -193,16 +214,7 @@
     }];
 }
 
-- (void)getSearchTweetsWithQuery:(NSString *)q successBlock:(void(^)(NSString *jsonString))successBlock errorBlock:(void(^)(NSError *error))errorBlock {
-    
-    NSDictionary *d = @{@"q" : q};
-    
-    [_oauth getResource:@"search/tweets.json" parameters:d successBlock:^(NSString *response) {
-        successBlock(response);
-    } errorBlock:^(NSError *error) {
-        errorBlock(error);
-    }];
-}
+#pragma mark Users
 
 - (void)getAccountVerifyCredentialsSkipStatus:(BOOL)skipStatus successBlock:(void(^)(NSString *jsonString))successBlock errorBlock:(void(^)(NSError *error))errorBlock {
     
@@ -214,6 +226,10 @@
         errorBlock(error);
     }];
 }
+
+#pragma mark Suggested Users
+
+#pragma mark Favorites
 
 - (void)getFavoritesListWithSuccessBlock:(void(^)(NSArray *statuses))successBlock
                               errorBlock:(void(^)(NSError *error))errorBlock {
@@ -243,6 +259,12 @@
     }];
 }
 
+#pragma mark Lists
+
+#pragma mark Saved Searches
+
+#pragma mark Places & Geo
+
 - (void)getReverseGeocodeWithLatitude:(NSString *)latitude
                             longitude:(NSString *)longitude
                          successBlock:(void(^)(NSArray *places))successBlock
@@ -264,6 +286,14 @@
         errorBlock(error);
     }];
 }
+
+#pragma mark Trends
+
+#pragma mark Spam Reporting
+
+#pragma mark OAuth
+
+#pragma mark Help
 
 @end
 

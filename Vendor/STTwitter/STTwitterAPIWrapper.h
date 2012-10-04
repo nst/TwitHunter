@@ -60,14 +60,15 @@
                                        oauthTokenSecret:(NSString *)oauthTokenSecret;
 
 - (void)postTokenRequest:(void(^)(NSURL *url, NSString *oauthToken))successBlock errorBlock:(void(^)(NSError *error))errorBlock;
+
 - (void)postAccessTokenRequestWithPIN:(NSString *)pin
-                           oauthToken:(NSString *)oauthToken
                          successBlock:(void(^)(NSString *oauthToken, NSString *oauthTokenSecret, NSString *userID, NSString *screenName))successBlock
                            errorBlock:(void(^)(NSError *error))errorBlock;
+
 - (void)verifyCredentialsWithSuccessBlock:(void(^)(NSString *username))successBlock errorBlock:(void(^)(NSError *error))errorBlock;
 
-@property (nonatomic, readonly) NSString *oauthToken;
-@property (nonatomic, readonly) NSString *oauthTokenSecret;
+@property (nonatomic, readonly) NSString *oauthAccessToken;
+@property (nonatomic, readonly) NSString *oauthAccessTokenSecret;
 
 #pragma mark Timelines
 
@@ -120,6 +121,9 @@
 #pragma mark Search
 
 // GET search/tweets
+- (void)getSearchTweetsWithQuery:(NSString *)q
+                    successBlock:(void(^)(NSString *jsonString))successBlock
+                      errorBlock:(void(^)(NSError *error))errorBlock;
 
 #pragma mark Streaming
 
