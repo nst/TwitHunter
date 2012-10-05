@@ -30,4 +30,12 @@
     return tl;
 }
 
+- (NSString *)description {
+    if(_latitude && _longitude) {
+        return [NSString stringWithFormat:@"%@, %@", _latitude, _longitude];
+    }
+    
+    return @"";
+}
+
 @end
