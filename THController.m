@@ -14,6 +14,7 @@
 #import "NSString+TH.h"
 #import "STTwitterAPIWrapper.h"
 #import "THTweetLocation.h"
+#import "THLocationVC.h"
 
 @implementation THController
 
@@ -254,20 +255,6 @@
 	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
-- (IBAction)openLocationPicker:(id)sender {
-//    if(_locationPickerWindowController == nil) {
-        self.locationPickerWindowController = [[[THLocationPickerWindowController alloc] initWithWindowNibName:@"LocationPicker"] autorelease];
-//    }
-    
-    if(_tweetLocation == nil) {
-        self.tweetLocation = [[[THTweetLocation alloc] init] autorelease];
-    }
-    
-    _locationPickerWindowController.tweetLocation = _tweetLocation;
-    _locationPickerWindowController.delegate = self;
-    [self.locationPickerWindowController showWindow:self];
-}
-
 - (IBAction)updateCredentials:(id)sender {
 	[preferences close];
 	
@@ -281,22 +268,18 @@
 	self.requestStatus = @"Posting status...";
 
     if(_postMediaURL) {
-        [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil mediaURL:_postMediaURL lat:_latitude lon:_longitude successBlock:^(NSString *response) {
+        [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil mediaURL:_postMediaURL lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
             self.postMediaURL = nil;
-            self.latitude = nil;
-            self.longitude = nil;
             self.locationDescription = nil;
         } errorBlock:^(NSError *error) {
             self.requestStatus = error ? [error localizedDescription] : @"Unknown error";
         }];
     } else {
-        [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil lat:_latitude lon:_longitude successBlock:^(NSString *response) {
+        [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
-            self.latitude = nil;
-            self.longitude = nil;
             self.locationDescription = nil;
         } errorBlock:^(NSError *error) {
             self.requestStatus = [error localizedDescription];
@@ -324,28 +307,39 @@
     [accessoryView addSubview:latitudeTextField];
     [accessoryView addSubview:longitudeTextField];
     
-    [alert setAccessoryView:accessoryView];
+    
+    self.locationVC = [[[THLocationVC alloc] initWithNibName:@"THLocationVC" bundle:[NSBundle mainBundle]] autorelease];
+    
+    if(_tweetLocation == nil) {
+        self.tweetLocation = [[[THTweetLocation alloc] init] autorelease];
+    }
+    
+    _locationVC.representedObject = [[_tweetLocation copy] autorelease];
+    
+    [alert setAccessoryView:_locationVC.view];
     
     [alert beginSheetModalForWindow:_window modalDelegate:self didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:) contextInfo:nil];
 }
 
 - (void)alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(NSDictionary *)contextInfo {
     if(returnCode != NSAlertFirstButtonReturn) {
-        self.latitude = nil;
-        self.longitude = nil;
         self.locationDescription = nil;
         return;
     }
     
-    NSArray *subviews = [alert.accessoryView subviews];
+    NSLog(@"-- xxx %@", [_locationVC.representedObject latitude]);
     
-    NSTextField *latitudeTextField = [subviews objectAtIndex:0];
-    NSTextField *longitudeTextField = [subviews objectAtIndex:1];
+    self.tweetLocation = _locationVC.representedObject;
     
-    self.latitude = [latitudeTextField stringValue];
-    self.longitude = [longitudeTextField stringValue];
+//    NSArray *subviews = [alert.accessoryView subviews];
+    
+//    NSTextField *latitudeTextField = [subviews objectAtIndex:0];
+//    NSTextField *longitudeTextField = [subviews objectAtIndex:1];
+    
+//    self.latitude = [latitudeTextField stringValue];
+//    self.longitude = [longitudeTextField stringValue];
   
-    [_twitter getReverseGeocodeWithLatitude:_latitude longitude:_longitude successBlock:^(NSArray *places) {
+    [_twitter getReverseGeocodeWithLatitude:_tweetLocation.latitude longitude:_tweetLocation.longitude successBlock:^(NSArray *places) {
         
         if([places count] == 0) return;
         
@@ -581,8 +575,8 @@
 	[_twitter release];
     [_postMediaURL release];
     [_locationDescription release];
-    [_latitude release];
-    [_longitude release];
+//    [_latitude release];
+//    [_longitude release];
     
     [timer release];
     [tweetSortDescriptors release];
@@ -591,7 +585,7 @@
 	[isConnecting release];
 	[requestStatus release];
     
-    [_locationPickerWindowController release];
+    [_locationVC release];
     [_tweetLocation release];
     
 	[super dealloc];
@@ -670,11 +664,9 @@
     
     THTweet *selectedTweet = [[tweetArrayController selectedObjects] lastObject];
     
-    [_twitter postStatusUpdate:tweetText inReplyToStatusID:[selectedTweet.uid description] lat:_latitude lon:_longitude successBlock:^(NSString *response) {
+    [_twitter postStatusUpdate:tweetText inReplyToStatusID:[selectedTweet.uid description] lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
         self.tweetText = nil;
         self.requestStatus = @"OK, reply was posted.";
-        self.latitude = nil;
-        self.longitude = nil;
         self.locationDescription = nil;
     } errorBlock:^(NSError *error) {
         self.requestStatus = [error localizedDescription];
@@ -739,14 +731,14 @@
 //- (NSImage *)sharingService:(NSSharingService *)sharingService transitionImageForShareItem:(id <NSPasteboardWriting>)item contentRect:(NSRect *)contentRect;
 //- (NSWindow *)sharingService:(NSSharingService *)sharingService sourceWindowForShareItems:(NSArray *)items sharingContentScope:(NSSharingContentScope *)sharingContentScope;
 
-#pragma mark TWLocationPickerProtocol
-- (void)locationPicker:(THLocationPickerWindowController *)locationPicker didChooseLocation:(THTweetLocation *)modifiedTweetLocation {
-    self.tweetLocation = modifiedTweetLocation;
-    [_locationPickerWindowController close];
-}
-
-- (void)locationPickerDidCancel:(THLocationPickerWindowController *)locationPicker {
-    [_locationPickerWindowController close];
-}
+//#pragma mark TWLocationPickerProtocol
+//- (void)locationPicker:(THLocationPickerWindowController *)locationPicker didChooseLocation:(THTweetLocation *)modifiedTweetLocation {
+//    self.tweetLocation = modifiedTweetLocation;
+//    [_locationPickerWindowController close];
+//}
+//
+//- (void)locationPickerDidCancel:(THLocationPickerWindowController *)locationPicker {
+//    [_locationPickerWindowController close];
+//}
 
 @end

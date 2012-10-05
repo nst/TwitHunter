@@ -8,15 +8,15 @@
 
 #import <Cocoa/Cocoa.h>
 #import "THCumulativeChartView.h"
-#import "THLocationPickerWindowController.h"
 
 #define MAX_COUNT 100
 
 @class STTwitterAPIWrapper;
 @class THTweet;
 @class THTweetLocation;
+@class THLocationVC;
 
-@interface THController : NSObject <CumulativeChartViewDelegate, CumulativeChartViewDataSource, NSSharingServiceDelegate, TWLocationPickerProtocol> {
+@interface THController : NSObject <CumulativeChartViewDelegate, CumulativeChartViewDataSource, NSSharingServiceDelegate> {
 	NSTimer *timer;
     	
 	IBOutlet NSArrayController *tweetArrayController;
@@ -42,7 +42,7 @@
 	NSDate *latestTimeUpdateCulumatedDataWasAsked;
 }
 
-@property (nonatomic, retain) THLocationPickerWindowController *locationPickerWindowController;
+@property (nonatomic, retain) THLocationVC *locationVC;
 @property (nonatomic, retain) THTweetLocation *tweetLocation;
 
 @property (nonatomic, retain) IBOutlet NSWindow *window;
@@ -54,8 +54,8 @@
 @property (nonatomic, retain) NSString *requestStatus;
 @property (nonatomic, retain) NSTimer *timer;
 
-@property (nonatomic, retain) NSString *latitude;
-@property (nonatomic, retain) NSString *longitude;
+//@property (nonatomic, retain) NSString *latitude;
+//@property (nonatomic, retain) NSString *longitude;
 @property (nonatomic, retain) NSURL *postMediaURL;
 @property (nonatomic, retain) NSString *locationDescription;
 
@@ -69,7 +69,5 @@
 
 - (IBAction)markAllAsRead:(id)sender;
 - (IBAction)markAllAsUnread:(id)sender;
-
-- (IBAction)openLocationPicker:(id)sender;
 
 @end

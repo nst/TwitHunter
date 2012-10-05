@@ -26,8 +26,8 @@
 		03BEBC51119521BE001E7311 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BEBC50119521BE001E7311 /* QuartzCore.framework */; };
 		03BECCCB1198B6B1001E7311 /* star_empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 03BECCC91198B6B1001E7311 /* star_empty.png */; };
 		03BECCCC1198B6B1001E7311 /* star_full.png in Resources */ = {isa = PBXBuildFile; fileRef = 03BECCCA1198B6B1001E7311 /* star_full.png */; };
-		03C99E2C161DCB8300A2570E /* LocationPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 03C99E2B161DCB8300A2570E /* LocationPicker.xib */; };
-		03C99E33161DCDCB00A2570E /* THLocationPickerWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 03C99E32161DCDCB00A2570E /* THLocationPickerWindowController.m */; };
+		03C0D310161EAA6D009684BC /* THLocationVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 03C0D30E161EAA6D009684BC /* THLocationVC.m */; };
+		03C0D311161EAA6D009684BC /* THLocationVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 03C0D30F161EAA6D009684BC /* THLocationVC.xib */; };
 		03C99E36161DD58C00A2570E /* THTweetLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 03C99E35161DD58C00A2570E /* THTweetLocation.m */; };
 		03F7F995118CC86A00CE6E55 /* THCumulativeChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 03F7F994118CC86A00CE6E55 /* THCumulativeChartView.m */; };
 		2F7446990DB6B7EA00F9684A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2F7446970DB6B7EA00F9684A /* MainMenu.xib */; };
@@ -71,9 +71,9 @@
 		03BEBC50119521BE001E7311 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		03BECCC91198B6B1001E7311 /* star_empty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star_empty.png; sourceTree = "<group>"; };
 		03BECCCA1198B6B1001E7311 /* star_full.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star_full.png; sourceTree = "<group>"; };
-		03C99E2B161DCB8300A2570E /* LocationPicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LocationPicker.xib; sourceTree = "<group>"; };
-		03C99E31161DCDCB00A2570E /* THLocationPickerWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THLocationPickerWindowController.h; sourceTree = "<group>"; };
-		03C99E32161DCDCB00A2570E /* THLocationPickerWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THLocationPickerWindowController.m; sourceTree = "<group>"; };
+		03C0D30D161EAA6D009684BC /* THLocationVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THLocationVC.h; sourceTree = "<group>"; };
+		03C0D30E161EAA6D009684BC /* THLocationVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THLocationVC.m; sourceTree = "<group>"; };
+		03C0D30F161EAA6D009684BC /* THLocationVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = THLocationVC.xib; sourceTree = "<group>"; };
 		03C99E34161DD58C00A2570E /* THTweetLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THTweetLocation.h; sourceTree = "<group>"; };
 		03C99E35161DD58C00A2570E /* THTweetLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THTweetLocation.m; sourceTree = "<group>"; };
 		03F7F993118CC86A00CE6E55 /* THCumulativeChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THCumulativeChartView.h; sourceTree = "<group>"; };
@@ -158,8 +158,8 @@
 				033595910F9AB5180084F7BD /* THController.m */,
 				03C99E34161DD58C00A2570E /* THTweetLocation.h */,
 				03C99E35161DD58C00A2570E /* THTweetLocation.m */,
-				03C99E31161DCDCB00A2570E /* THLocationPickerWindowController.h */,
-				03C99E32161DCDCB00A2570E /* THLocationPickerWindowController.m */,
+				03C0D30D161EAA6D009684BC /* THLocationVC.h */,
+				03C0D30E161EAA6D009684BC /* THLocationVC.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -223,7 +223,7 @@
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				2F7446970DB6B7EA00F9684A /* MainMenu.xib */,
-				03C99E2B161DCB8300A2570E /* LocationPicker.xib */,
+				03C0D30F161EAA6D009684BC /* THLocationVC.xib */,
 				03359F1B0F9D412A0084F7BD /* Defaults.plist */,
 			);
 			name = Resources;
@@ -312,7 +312,7 @@
 				03359F1C0F9D412A0084F7BD /* Defaults.plist in Resources */,
 				03BECCCB1198B6B1001E7311 /* star_empty.png in Resources */,
 				03BECCCC1198B6B1001E7311 /* star_full.png in Resources */,
-				03C99E2C161DCB8300A2570E /* LocationPicker.xib in Resources */,
+				03C0D311161EAA6D009684BC /* THLocationVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -339,8 +339,8 @@
 				03919FA816171EA200D9B66F /* STTwitterOAuth.m in Sources */,
 				03919FA916171EA200D9B66F /* STTwitterOAuthOSX.m in Sources */,
 				03919FAA16171EA200D9B66F /* STHTTPRequest.m in Sources */,
-				03C99E33161DCDCB00A2570E /* THLocationPickerWindowController.m in Sources */,
 				03C99E36161DD58C00A2570E /* THTweetLocation.m in Sources */,
+				03C0D310161EAA6D009684BC /* THLocationVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
