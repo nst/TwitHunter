@@ -42,6 +42,7 @@
     // 6.6335971
     
     _tweetLocation.placeID = [selectedPlaceID valueForKey:@"id"];
+    _tweetLocation.fullName = [selectedPlaceID valueForKey:@"full_name"];
     
     [_locationDelegate locationVC:self didChooseLocation:_tweetLocation];
 }

@@ -15,6 +15,7 @@
     [_placeID release];
     [_latitude release];
     [_longitude release];
+    [_fullName release];
 
     [super dealloc];
 }
@@ -26,13 +27,14 @@
     tl.placeID = [[_placeID copy] autorelease];
     tl.latitude = [[_latitude copy] autorelease];
     tl.longitude = [[_longitude copy] autorelease];
+    tl.fullName = [[_fullName copy] autorelease];
     
     return tl;
 }
 
 - (NSString *)description {
     if(_placeID) {
-        return _placeID;
+        return _fullName;
     } else if(_latitude && _longitude) {
         return [NSString stringWithFormat:@"%@, %@", _latitude, _longitude];
     }
