@@ -31,7 +31,9 @@
 }
 
 - (NSString *)description {
-    if(_latitude && _longitude) {
+    if(_placeID) {
+        return _placeID;
+    } else if(_latitude && _longitude) {
         return [NSString stringWithFormat:@"%@, %@", _latitude, _longitude];
     }
     

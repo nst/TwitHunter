@@ -88,7 +88,8 @@
             
             NSError *jsonError = nil;
             NSJSONSerialization *json = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableLeaves error:&jsonError];
-            NSLog(@"-- jsonError: %@", [jsonError localizedDescription]);
+            //NSLog(@"-- json: %@", json);
+            //NSLog(@"-- jsonError: %@", [jsonError localizedDescription]);
             
             if(json == nil) {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{

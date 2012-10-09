@@ -310,9 +310,15 @@
     // NSWindow setContentView:
     
     self.locationVC = [[[THLocationVC alloc] initWithNibName:@"THLocationVC" bundle:nil] autorelease];
+    _locationVC.twitter = _twitter;
     _locationVC.tweetLocation = [[_tweetLocation copy] autorelease];
     _locationVC.locationDelegate = self;
+    
+    _locationVC.tweetLocation.latitude = @"46.5199617";
+    _locationVC.tweetLocation.longitude = @"6.6335971";
 
+//    NSPanel *locationPanel = [[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, 480, 320) styleMask:<#(NSUInteger)#> backing:<#(NSBackingStoreType)#> defer:<#(BOOL)#>
+    
     [_locationPanel setContentView:_locationVC.view];
     
     [[NSApplication sharedApplication] beginSheet:_locationPanel

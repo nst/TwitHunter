@@ -23,6 +23,7 @@
 @property (nonatomic, assign) id <THLocationVCProtocol> locationDelegate;
 @property (nonatomic, retain) STTwitterAPIWrapper *twitter;
 @property (nonatomic, retain) THTweetLocation *tweetLocation;
+@property (nonatomic, retain) IBOutlet NSArrayController *twitterPlacesController;
 @property (nonatomic, retain) NSArray *twitterPlaces;
 
 - (IBAction)lookupLocation:(id)sender;
