@@ -8,15 +8,17 @@
 
 #import <Cocoa/Cocoa.h>
 #import "THCumulativeChartView.h"
+#import "THLocationVC.h"
 
 #define MAX_COUNT 100
 
 @class STTwitterAPIWrapper;
 @class THTweet;
 @class THTweetLocation;
+@class THLocationPanel;
 @class THLocationVC;
 
-@interface THController : NSObject <CumulativeChartViewDelegate, CumulativeChartViewDataSource, NSSharingServiceDelegate> {
+@interface THController : NSObject <CumulativeChartViewDelegate, CumulativeChartViewDataSource, THLocationVCProtocol> {
 	NSTimer *timer;
     	
 	IBOutlet NSArrayController *tweetArrayController;
@@ -42,8 +44,9 @@
 	NSDate *latestTimeUpdateCulumatedDataWasAsked;
 }
 
-@property (nonatomic, retain) THLocationVC *locationVC;
+@property (nonatomic, retain) IBOutlet NSPanel *locationPanel;
 @property (nonatomic, retain) THTweetLocation *tweetLocation;
+@property (nonatomic, retain) THLocationVC *locationVC;
 
 @property (nonatomic, retain) IBOutlet NSWindow *window;
 @property (nonatomic, retain) STTwitterAPIWrapper *twitter;
@@ -54,10 +57,7 @@
 @property (nonatomic, retain) NSString *requestStatus;
 @property (nonatomic, retain) NSTimer *timer;
 
-//@property (nonatomic, retain) NSString *latitude;
-//@property (nonatomic, retain) NSString *longitude;
 @property (nonatomic, retain) NSURL *postMediaURL;
-@property (nonatomic, retain) NSString *locationDescription;
 
 - (IBAction)update:(id)sender;
 - (IBAction)synchronizeFavorites:(id)sender;

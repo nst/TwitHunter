@@ -34,11 +34,11 @@
 		[a addObject:p2];
 	}
 	
-//	NSNumber *hideURLs = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideURLs"];
-//	if([hideURLs boolValue]) {
-//		NSPredicate *p3 = [NSPredicate predicateWithFormat:@"containsURL == NO"];
-//		[a addObject:p3];
-//	}
+    //	NSNumber *hideURLs = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.hideURLs"];
+    //	if([hideURLs boolValue]) {
+    //		NSPredicate *p3 = [NSPredicate predicateWithFormat:@"containsURL == NO"];
+    //		[a addObject:p3];
+    //	}
 	
 	return a;
 }
@@ -190,7 +190,7 @@
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.hideRead" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.hideURLs" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
 		[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.updateFrequency" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:NULL];
-
+        
         [[NSNotificationCenter defaultCenter] addObserverForName:@"THTweetAction" object:nil queue:nil usingBlock:^(NSNotification *note) {
             NSDictionary *unserInfo = [note userInfo];
             THTweet *tweet = [unserInfo valueForKey:@"Tweet"];
@@ -266,13 +266,12 @@
     if(tweetText == nil) return;
     
 	self.requestStatus = @"Posting status...";
-
+    
     if(_postMediaURL) {
         [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil mediaURL:_postMediaURL lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
             self.postMediaURL = nil;
-            self.locationDescription = nil;
         } errorBlock:^(NSError *error) {
             self.requestStatus = error ? [error localizedDescription] : @"Unknown error";
         }];
@@ -280,26 +279,19 @@
         [_twitter postStatusUpdate:tweetText inReplyToStatusID:nil lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
-            self.locationDescription = nil;
         } errorBlock:^(NSError *error) {
             self.requestStatus = [error localizedDescription];
         }];
     }
     
-//    NSSharingService *service = [NSSharingService sharingServiceNamed:NSSharingServiceNamePostOnTwitter];
-//    service.delegate = self;
-//    [service performWithItems:@[tweetText]];
+    //    NSSharingService *service = [NSSharingService sharingServiceNamed:NSSharingServiceNamePostOnTwitter];
+    //    service.delegate = self;
+    //    [service performWithItems:@[tweetText]];
     
 }
 
 - (IBAction)chooseLocation:(id)sender {
-    NSAlert *alert = [[[NSAlert alloc] init] autorelease];
-    [alert addButtonWithTitle:@"OK"];
-    [alert addButtonWithTitle:@"Cancel"];
-    [alert setMessageText:@"Please choose latitude and longitude:"];
-    //[alert setInformativeText:@"STTwitter will login on Twitter through the website and parse the HTML to guess the PIN."];
-    [alert setAlertStyle:NSInformationalAlertStyle];
-    
+
     NSTextField *latitudeTextField = [[[NSTextField alloc] initWithFrame:NSMakeRect(0,32, 180, 24)] autorelease];
     NSTextField *longitudeTextField = [[[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 180, 24)] autorelease];
     
@@ -308,48 +300,51 @@
     [accessoryView addSubview:longitudeTextField];
     
     
-    self.locationVC = [[[THLocationVC alloc] initWithNibName:@"THLocationVC" bundle:[NSBundle mainBundle]] autorelease];
+//    self.locationVC = [[[THLocationVC alloc] initWithNibName:@"THLocationVC" bundle:[NSBundle mainBundle]] autorelease];
     
     if(_tweetLocation == nil) {
         self.tweetLocation = [[[THTweetLocation alloc] init] autorelease];
     }
     
-    _locationVC.representedObject = [[_tweetLocation copy] autorelease];
+#pragma mark TODO:
+    // NSWindow setContentView:
     
-    [alert setAccessoryView:_locationVC.view];
+    self.locationVC = [[[THLocationVC alloc] initWithNibName:@"THLocationVC" bundle:nil] autorelease];
+    _locationVC.tweetLocation = [[_tweetLocation copy] autorelease];
+    _locationVC.locationDelegate = self;
+
+    [_locationPanel setContentView:_locationVC.view];
     
-    [alert beginSheetModalForWindow:_window modalDelegate:self didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:) contextInfo:nil];
+    [[NSApplication sharedApplication] beginSheet:_locationPanel
+                                   modalForWindow:[[NSApplication sharedApplication] mainWindow]
+                                    modalDelegate:self
+                                   didEndSelector:NULL
+                                      contextInfo:NULL];
+    
+    //    [panel setAccessoryView:_locationVC.view];
+    //
+    //    [panel beginSheetModalForWindow:_window modalDelegate:self didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:) contextInfo:nil];
 }
 
-- (void)alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(NSDictionary *)contextInfo {
-    if(returnCode != NSAlertFirstButtonReturn) {
-        self.locationDescription = nil;
-        return;
-    }
+#pragma mark THLocationVCProtocol
+- (void)locationVC:(THLocationVC *)locationVC didChooseLocation:(THTweetLocation *)location {
+
+    NSLog(@"-- xxx %@", locationVC.tweetLocation.latitude);
     
-    NSLog(@"-- xxx %@", [_locationVC.representedObject latitude]);
+    self.tweetLocation = locationVC.tweetLocation;
+
+    [[NSApplication sharedApplication] endSheet:_locationPanel];
+    [_locationPanel orderOut:self];
     
-    self.tweetLocation = _locationVC.representedObject;
-    
-//    NSArray *subviews = [alert.accessoryView subviews];
-    
-//    NSTextField *latitudeTextField = [subviews objectAtIndex:0];
-//    NSTextField *longitudeTextField = [subviews objectAtIndex:1];
-    
-//    self.latitude = [latitudeTextField stringValue];
-//    self.longitude = [longitudeTextField stringValue];
-  
-    [_twitter getReverseGeocodeWithLatitude:_tweetLocation.latitude longitude:_tweetLocation.longitude successBlock:^(NSArray *places) {
-        
-        if([places count] == 0) return;
-        
-        NSArray *firstPlace = [places objectAtIndex:0];
-        
-        self.locationDescription = [firstPlace valueForKey:@"full_name"];
-        
-    } errorBlock:^(NSError *error) {
-        NSLog(@"-- %@", [error localizedDescription]);
-    }];
+    self.locationVC = nil;
+}
+
+- (void)locationVCDidCancel:(THLocationVC *)locationVC {
+    NSLog(@"-- cancel");
+    [[NSApplication sharedApplication] endSheet:_locationPanel];
+    [_locationPanel orderOut:self];
+
+    self.locationVC = nil;
 }
 
 - (IBAction)chooseMedia:(id)sender {
@@ -360,7 +355,7 @@
     [panel setCanChooseDirectories:NO];
     [panel setCanChooseFiles:YES];
     [panel setAllowedFileTypes:@[ @"png", @"PNG", @"jpg", @"JPG", @"jpeg", @"JPEG", @"gif", @"GIF"] ];
-        
+    
     [panel beginSheetModalForWindow:_window completionHandler:^(NSInteger result) {
         
         if (result != NSFileHandlingPanelOKButton) return;
@@ -401,9 +396,9 @@
 	if([lastKnownID unsignedLongLongValue] == 0) {
         lastKnownID = nil;
     }
-
+    
     NSLog(@"-- fetch timeline since ID: %@", lastKnownID);
-        
+    
     self.requestStatus = @"fetching timeline since last known ID";
     
     self.isConnecting = @YES;
@@ -441,9 +436,9 @@
 
 - (void)synchronizeFavorites {
     
-//    NSLog(@"-- %@", aUsername);
+    //    NSLog(@"-- %@", aUsername);
     
-//    return; // FIXME
+    //    return; // FIXME
     
 	self.requestStatus = @"Syncronizing Favorites";
 	self.isConnecting = @YES;
@@ -464,7 +459,7 @@
 }
 
 - (IBAction)synchronizeFavorites:(id)sender {
-//	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
+    //	NSString *username = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.username"];
 	[self synchronizeFavorites];
 }
 
@@ -481,26 +476,26 @@
 	[collectionView setMaxNumberOfColumns:1];
 	
     self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthOSX];
-
-//    self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:@"" consumerSecret:@"" username:@"" password:@""];
+    
+    //    self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:@"" consumerSecret:@"" username:@"" password:@""];
     
     self.requestStatus = @"requesting access";
-
+    
     [_twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
         NSLog(@"-- access granted for %@", username);
         
         self.requestStatus = [NSString stringWithFormat:@"access granted for %@", username];
-
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
-
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
-
+        
         [self update:self];
-
+        
         [self updateCumulatedData];
-
-//        NSString *username = [_oauth username];
-
+        
+        //        NSString *username = [_oauth username];
+        
         [self synchronizeFavorites];
         
         [self resetTimer];
@@ -509,28 +504,28 @@
         self.requestStatus = [error localizedDescription];
     }];
     
-//    [_oauth requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
-//        
-//        self.requestStatus = [NSString stringWithFormat:@"access granted for %@", twitterAccount];
-//        
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
-//        
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
-//        
-//        [self update:self];
-//        
-//        [self updateCumulatedData];
-//        
-////        NSString *username = [_oauth username];
-//        
-//        [self synchronizeFavorites];
-//        
-//        [self resetTimer];
-//        
-//    } errorBlock:^(NSError *error) {
-//        NSLog(@"-- %@", [error localizedDescription]);
-//        self.requestStatus = [error localizedDescription];
-//    }];
+    //    [_oauth requestAccessWithCompletionBlock:^(ACAccount *twitterAccount) {
+    //
+    //        self.requestStatus = [NSString stringWithFormat:@"access granted for %@", twitterAccount];
+    //
+    //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
+    //
+    //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
+    //
+    //        [self update:self];
+    //
+    //        [self updateCumulatedData];
+    //
+    ////        NSString *username = [_oauth username];
+    //
+    //        [self synchronizeFavorites];
+    //
+    //        [self resetTimer];
+    //
+    //    } errorBlock:^(NSError *error) {
+    //        NSLog(@"-- %@", [error localizedDescription]);
+    //        self.requestStatus = [error localizedDescription];
+    //    }];
     
 }
 
@@ -574,9 +569,8 @@
     [_window release];
 	[_twitter release];
     [_postMediaURL release];
-    [_locationDescription release];
-//    [_latitude release];
-//    [_longitude release];
+    //    [_latitude release];
+    //    [_longitude release];
     
     [timer release];
     [tweetSortDescriptors release];
@@ -585,7 +579,7 @@
 	[isConnecting release];
 	[requestStatus release];
     
-    [_locationVC release];
+    [_locationPanel release];
     [_tweetLocation release];
     
 	[super dealloc];
@@ -633,7 +627,7 @@
 	NSDictionary *boundingIds = [THTweet saveTweetsFromDictionariesArray:statuses];
 	
 	NSNumber *lowestId = [boundingIds valueForKey:@"lowestId"];
-//	NSNumber *higestId = [boundingIds valueForKey:@"higestId"];
+    //	NSNumber *higestId = [boundingIds valueForKey:@"higestId"];
 	
     //	if(higestId) {
     //		[[NSUserDefaults standardUserDefaults] setObject:higestId forKey:@"highestID"];
@@ -646,7 +640,7 @@
 }
 
 - (void)retweetTweet:(THTweet *)tweet {
-
+    
     self.requestStatus = @"Posting retweet...";
     
     [_twitter postStatusRetweetWithID:[tweet.uid description] successBlock:^(NSString *response) {
@@ -657,7 +651,7 @@
 }
 
 - (void)replyToTweet:(THTweet *)tweet {
-
+    
     if(tweetText == nil) return;
     
 	self.requestStatus = @"Posting reply...";
@@ -667,16 +661,15 @@
     [_twitter postStatusUpdate:tweetText inReplyToStatusID:[selectedTweet.uid description] lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
         self.tweetText = nil;
         self.requestStatus = @"OK, reply was posted.";
-        self.locationDescription = nil;
     } errorBlock:^(NSError *error) {
         self.requestStatus = [error localizedDescription];
     }];
 }
 
 - (void)remoteDeleteTweet:(THTweet *)tweet {
-
+    
     self.requestStatus = @"Posting remote delete...";
-
+    
     [_twitter postDestroyStatusWithID:[tweet.uid description] successBlock:^(NSString *response) {
         self.requestStatus = @"Delete OK";
         [tweet deleteObject];
@@ -684,7 +677,7 @@
     } errorBlock:^(NSError *error) {
         self.requestStatus = [error localizedDescription];
     }];
-
+    
 }
 
 #pragma mark CumulativeChartViewDelegate
