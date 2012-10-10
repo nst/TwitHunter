@@ -9,6 +9,7 @@
 #import "THLocationVC.h"
 #import "THTweetLocation.h"
 #import "STTwitterAPIWrapper.h"
+#import "STJSONIP.h"
 
 @interface THLocationVC ()
 
@@ -31,6 +32,14 @@
     [_twitterPlaces release];
     [_twitterPlacesController release];
     [super dealloc];
+}
+
+- (void)awakeFromNib {
+    [STJSONIP getExternalIPAddressWithSuccessBlock:^(NSString *ipAddress) {
+        _tweetLocation.ipAddress = ipAddress;
+    } errorBlock:^(NSError *error) {
+        NSLog(@"-- %@", [error localizedDescription]);
+    }];
 }
 
 - (IBAction)ok:(id)sender {
@@ -57,7 +66,8 @@
     
     //    THTweetLocation *location = (THTweetLocation *)
     
-    [_twitter getReverseGeocodeWithLatitude:_tweetLocation.latitude longitude:_tweetLocation.longitude successBlock:^(NSArray *places) {
+    [_twitter getGeoSearchWithLatitude:_tweetLocation.latitude longitude:_tweetLocation.longitude successBlock:^(NSArray *places) {
+//    [_twitter getGeoReverseGeocodeWithLatitude:_tweetLocation.latitude longitude:_tweetLocation.longitude successBlock:^(NSArray *places) {
         
         self.twitterPlaces = places;
         

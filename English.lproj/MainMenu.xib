@@ -3812,10 +3812,10 @@ wGw</bytes>
 				<string key="NSWindowRect">{{167, 107}, {312, 310}}</string>
 				<int key="NSWTFlags">-1535638528</int>
 				<string key="NSWindowTitle">Tweet Location</string>
-				<string key="NSWindowClass">THLocationPanel</string>
+				<string key="NSWindowClass">NSPanel</string>
 				<nil key="NSViewClass"/>
 				<nil key="NSUserInterfaceItemIdentifier"/>
-				<string key="NSWindowContentMinSize">{521, 332}</string>
+				<string key="NSWindowContentMinSize">{600, 400}</string>
 				<object class="NSView" key="NSWindowView" id="883414776">
 					<reference key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
@@ -3829,7 +3829,7 @@ wGw</bytes>
 					<string key="NSReuseIdentifierKey">_NS:21</string>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1680, 1028}}</string>
-				<string key="NSMinSize">{521, 354}</string>
+				<string key="NSMinSize">{600, 416}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<bool key="NSWindowIsRestorable">YES</bool>
 			</object>

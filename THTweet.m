@@ -115,6 +115,9 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	NSError *error = nil;
 
 	NSManagedObjectContext *moc = [self moc];
+    
+    NSLog(@"-- fetching tweet with uid: %@", uid);
+    
     NSArray *array = [moc executeFetchRequest:request error:&error];
 	if(array == nil) {
 		NSLog(@"-- error:%@", error);

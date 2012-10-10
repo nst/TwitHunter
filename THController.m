@@ -57,44 +57,35 @@
 }
 
 - (void)updateCumulatedData {
+#warning TODO: move in another thread, with another CoreData context
+    
 	[latestTimeUpdateCulumatedDataWasAsked release];
 	latestTimeUpdateCulumatedDataWasAsked = [[NSDate date] retain];
     
-    NSOperationQueue *queue = [[[NSOperationQueue alloc] init] autorelease];
+    NSDate *startDate = [[latestTimeUpdateCulumatedDataWasAsked copy] autorelease];
     
-    [queue addOperationWithBlock:^{
+    NSArray *predicates = [self predicatesWithoutScore];
+    
+    NSUInteger totalTweetsCount = [THTweet tweetsCountWithAndPredicates:predicates];
+    NSLog(@"-- total number of tweets: %lu", totalTweetsCount);
+    
+    [self setTweetsCount:totalTweetsCount];
+    
+    NSMutableArray *tweetsForScores = [NSMutableArray arrayWithCapacity:101];
+    for(NSUInteger i = 0; i < 101; i++) {
+        NSUInteger nbTweets = [THTweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andPredicates:[self predicatesWithoutScore]];
+        [tweetsForScores addObject:[NSNumber numberWithInt:nbTweets]];
         
-        NSDate *startDate = [[latestTimeUpdateCulumatedDataWasAsked copy] autorelease];
-        
-        NSArray *predicates = [self predicatesWithoutScore];
-        
-        NSUInteger totalTweetsCount = [THTweet tweetsCountWithAndPredicates:predicates];
-        NSLog(@"-- total number of tweets: %lu", totalTweetsCount);
-        
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self setTweetsCount:totalTweetsCount];
-        }];
-        
-        NSMutableArray *tweetsForScores = [NSMutableArray arrayWithCapacity:101];
-        for(NSUInteger i = 0; i < 101; i++) {
-            NSUInteger nbTweets = [THTweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andPredicates:[self predicatesWithoutScore]];
-            [tweetsForScores addObject:[NSNumber numberWithInt:nbTweets]];
-            
-            BOOL requestOutdated = [startDate compare:latestTimeUpdateCulumatedDataWasAsked] == NSOrderedAscending;
-            if(requestOutdated) {
-                NSLog(@"updateCumulatedData was cancelled by a newer request");
-                return;
-            }
+        BOOL requestOutdated = [startDate compare:latestTimeUpdateCulumatedDataWasAsked] == NSOrderedAscending;
+        if(requestOutdated) {
+            NSLog(@"updateCumulatedData was cancelled by a newer request");
+            return;
         }
-        
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self didFinishUpdatingCumulatedData:tweetsForScores];
-        }];
-        
-        NSLog(@"updateCumulatedData took %f seconds", [[NSDate date] timeIntervalSinceDate:startDate]);
-        
-    }];
+    }
     
+    [self didFinishUpdatingCumulatedData:tweetsForScores];
+    
+    NSLog(@"updateCumulatedData took %f seconds", [[NSDate date] timeIntervalSinceDate:startDate]);
 }
 
 - (void)setTweetsCount:(NSUInteger)count {
@@ -291,7 +282,7 @@
 }
 
 - (IBAction)chooseLocation:(id)sender {
-
+    
     NSTextField *latitudeTextField = [[[NSTextField alloc] initWithFrame:NSMakeRect(0,32, 180, 24)] autorelease];
     NSTextField *longitudeTextField = [[[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 180, 24)] autorelease];
     
@@ -300,7 +291,7 @@
     [accessoryView addSubview:longitudeTextField];
     
     
-//    self.locationVC = [[[THLocationVC alloc] initWithNibName:@"THLocationVC" bundle:[NSBundle mainBundle]] autorelease];
+    //    self.locationVC = [[[THLocationVC alloc] initWithNibName:@"THLocationVC" bundle:[NSBundle mainBundle]] autorelease];
     
     if(_tweetLocation == nil) {
         self.tweetLocation = [[[THTweetLocation alloc] init] autorelease];
@@ -316,8 +307,13 @@
     
     _locationVC.tweetLocation.latitude = @"46.5199617";
     _locationVC.tweetLocation.longitude = @"6.6335971";
+    
+//    NSPanel *panel = [[[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, 800, 600)
+//                                                 styleMask:NSBorderlessWindowMask
+//                                                   backing:NSBackingStoreBuffered
+//                                                     defer:NO] autorelease];
 
-//    NSPanel *locationPanel = [[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, 480, 320) styleMask:<#(NSUInteger)#> backing:<#(NSBackingStoreType)#> defer:<#(BOOL)#>
+    [_locationPanel setFrame:NSMakeRect(0, 0, 600, 232) display:YES];
     
     [_locationPanel setContentView:_locationVC.view];
     
@@ -334,11 +330,11 @@
 
 #pragma mark THLocationVCProtocol
 - (void)locationVC:(THLocationVC *)locationVC didChooseLocation:(THTweetLocation *)location {
-
+    
     NSLog(@"-- xxx %@", locationVC.tweetLocation.latitude);
     
     self.tweetLocation = locationVC.tweetLocation;
-
+    
     [[NSApplication sharedApplication] endSheet:_locationPanel];
     [_locationPanel orderOut:self];
     
@@ -349,7 +345,7 @@
     NSLog(@"-- cancel");
     [[NSApplication sharedApplication] endSheet:_locationPanel];
     [_locationPanel orderOut:self];
-
+    
     self.locationVC = nil;
 }
 

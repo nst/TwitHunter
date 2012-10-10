@@ -11,7 +11,7 @@
 @implementation THTweetLocation
 
 - (void)dealloc {
-    [_ip release];
+    [_ipAddress release];
     [_placeID release];
     [_latitude release];
     [_longitude release];
@@ -23,7 +23,7 @@
 - (id)copyWithZone:(NSZone *)zone {
     THTweetLocation *tl = [[THTweetLocation alloc] init];
     
-    tl.ip = [[_ip copy] autorelease];
+    tl.ipAddress = [[_ipAddress copy] autorelease];
     tl.placeID = [[_placeID copy] autorelease];
     tl.latitude = [[_latitude copy] autorelease];
     tl.longitude = [[_longitude copy] autorelease];
