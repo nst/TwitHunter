@@ -16,6 +16,7 @@
     [_latitude release];
     [_longitude release];
     [_fullName release];
+    [_query release];
 
     [super dealloc];
 }
@@ -28,6 +29,7 @@
     tl.latitude = [[_latitude copy] autorelease];
     tl.longitude = [[_longitude copy] autorelease];
     tl.fullName = [[_fullName copy] autorelease];
+    tl.query = [[_query copy] autorelease];
     
     return tl;
 }

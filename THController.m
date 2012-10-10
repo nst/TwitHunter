@@ -313,7 +313,7 @@
 //                                                   backing:NSBackingStoreBuffered
 //                                                     defer:NO] autorelease];
 
-    [_locationPanel setFrame:NSMakeRect(0, 0, 600, 232) display:YES];
+    [_locationPanel setFrame:NSMakeRect(0, 0, 600, 300) display:YES];
     
     [_locationPanel setContentView:_locationVC.view];
     

@@ -62,12 +62,39 @@
     [_locationDelegate locationVCDidCancel:self];
 }
 
-- (IBAction)lookupLocation:(id)sender {
+- (IBAction)lookupIPAddress:(id)sender {
     
-    //    THTweetLocation *location = (THTweetLocation *)
+    [_twitter getGeoSearchWithIPAddress:_tweetLocation.ipAddress successBlock:^(NSArray *places) {
+        
+        self.twitterPlaces = places;
+        
+        NSLog(@"-- places: %@", places);
+        
+        //        self.locationDescription = [firstPlace valueForKey:@"full_name"];
+        
+    } errorBlock:^(NSError *error) {
+        NSLog(@"-- %@", [error localizedDescription]);
+    }];
+}
+
+- (IBAction)lookupCoordinates:(id)sender {
     
     [_twitter getGeoSearchWithLatitude:_tweetLocation.latitude longitude:_tweetLocation.longitude successBlock:^(NSArray *places) {
-//    [_twitter getGeoReverseGeocodeWithLatitude:_tweetLocation.latitude longitude:_tweetLocation.longitude successBlock:^(NSArray *places) {
+    
+        self.twitterPlaces = places;
+        
+        NSLog(@"-- places: %@", places);
+        
+        //        self.locationDescription = [firstPlace valueForKey:@"full_name"];
+        
+    } errorBlock:^(NSError *error) {
+        NSLog(@"-- %@", [error localizedDescription]);
+    }];
+}
+
+- (IBAction)lookupQuery:(id)sender {
+    
+    [_twitter getGeoSearchWithQuery:_tweetLocation.query successBlock:^(NSArray *places) {
         
         self.twitterPlaces = places;
         

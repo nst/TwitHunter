@@ -26,7 +26,9 @@
 @property (nonatomic, retain) IBOutlet NSArrayController *twitterPlacesController;
 @property (nonatomic, retain) NSArray *twitterPlaces;
 
-- (IBAction)lookupLocation:(id)sender;
+- (IBAction)lookupIPAddress:(id)sender;
+- (IBAction)lookupCoordinates:(id)sender;
+- (IBAction)lookupQuery:(id)sender;
 
 - (IBAction)ok:(id)sender;
 - (IBAction)cancel:(id)sender;
