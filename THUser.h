@@ -24,8 +24,8 @@
 @property (nonatomic, retain) NSNumber * followersCount;
 @property (nonatomic, retain) NSSet* tweets;
 
-+ (THUser *)getOrCreateUserWithDictionary:(NSDictionary *)d;
-+ (THUser *)userWithName:(NSString *)aName;
++ (THUser *)getOrCreateUserWithDictionary:(NSDictionary *)d context:(NSManagedObjectContext *)context;
++ (THUser *)userWithName:(NSString *)aName context:(NSManagedObjectContext *)context;
 - (NSImage *)image;
 
 @end

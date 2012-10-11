@@ -9,7 +9,7 @@
 #import "THTweetCollectionViewItem.h"
 #import "THTweet.h"
 #import "THUser.h"
-#import "NSManagedObject+SingleContext.h"
+#import "NSManagedObject+ST.h"
 //#import "NSColor+TH.h"
 
 @implementation THTweetCollectionViewItem

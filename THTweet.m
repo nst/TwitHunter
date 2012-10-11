@@ -6,7 +6,7 @@
 //  Copyright 2009 Sen:te. All rights reserved.
 //
 
-#import "NSManagedObject+SingleContext.h"
+#import "NSManagedObject+ST.h"
 #import "NSString+TH.h"
 #import "THTweet.h"
 #import "THUser.h"
@@ -56,16 +56,16 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	if(!success) NSLog(@"-- can't save");
 }
 
-+ (NSUInteger)tweetsCountWithAndPredicates:(NSArray *)predicates {
++ (NSUInteger)tweetsCountWithAndPredicates:(NSArray *)predicates context:(NSManagedObjectContext *)context {
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
-	[request setEntity:[self entity]];
+    [request setEntity:[THTweet entityInContext:context]];
 	
 	NSPredicate *p = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
 	[request setPredicate:p];
 	
 	NSError *error = nil;
 	
-	NSUInteger count = [[self moc] countForFetchRequest:request error:&error];
+	NSUInteger count = [context countForFetchRequest:request error:&error];
 	
 	[request release];
 	if(error) {
@@ -78,20 +78,30 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"score == %@", aScore];
 	NSArray *ps = [predicates arrayByAddingObject:p];
 
-	return [self tweetsCountWithAndPredicates:ps];
+    NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    privateContext.parentContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
+
+	__block NSUInteger count = NSNotFound;
+    
+    [privateContext performBlockAndWait:^{
+        count = [self tweetsCountWithAndPredicates:ps context:privateContext];
+    }];
+    
+    return count;
+    
 }
 
-+ (NSArray *)tweetsContainingKeyword:(NSString *)keyword {
++ (NSArray *)tweetsContainingKeyword:(NSString *)keyword context:(NSManagedObjectContext *)context {
 
     NSAssert(keyword != nil, @"keyword should not be nil");
     
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
-	[request setEntity:[self entity]];
+    [request setEntity:[self entityInContext:context]];
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"text contains[c] %@" argumentArray:[NSArray arrayWithObject:keyword]];
 	[request setPredicate:p];
 	
 	NSError *error = nil;
-	NSArray *array = [[self moc] executeFetchRequest:request error:&error];
+	NSArray *array = [context executeFetchRequest:request error:&error];
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	}
@@ -99,11 +109,11 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	return array;
 }
 
-+ (THTweet *)tweetWithUid:(NSString *)uid {
++ (THTweet *)tweetWithUid:(NSString *)uid context:(NSManagedObjectContext *)context {
     if(uid == nil) return nil;
     
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
-	[request setEntity:[self entity]];
+    [request setEntity:[self entityInContext:context]];
 	NSNumber *uidNumber = [NSNumber numberWithUnsignedLongLong:[uid unsignedLongLongValue]];
     
     //NSLog(@"--> %@", uidNumber);
@@ -113,12 +123,10 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	[request setFetchLimit:1];
 	
 	NSError *error = nil;
-
-	NSManagedObjectContext *moc = [self moc];
     
     NSLog(@"-- fetching tweet with uid: %@", uid);
     
-    NSArray *array = [moc executeFetchRequest:request error:&error];
+    NSArray *array = [context executeFetchRequest:request error:&error];
 	if(array == nil) {
 		NSLog(@"-- error:%@", error);
 	}
@@ -127,10 +135,10 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	return [array lastObject];
 }
 
-+ (THTweet *)tweetWithHighestUid {
++ (THTweet *)tweetWithHighestUidInContext:(NSManagedObjectContext *)context {
 
     NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
-	[request setEntity:[self entity]];
+    [request setEntity:[self entityInContext:context]];
     
     NSSortDescriptor *sd = [NSSortDescriptor sortDescriptorWithKey:@"uid" ascending:NO];
     [request setSortDescriptors:[NSArray arrayWithObject:sd]];
@@ -138,8 +146,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	
 	NSError *error = nil;
     
-	NSManagedObjectContext *moc = [self moc];
-    NSArray *array = [moc executeFetchRequest:request error:&error];
+    NSArray *array = [context executeFetchRequest:request error:&error];
 	if(array == nil) {
 		NSLog(@"-- error:%@", error);
 	}
@@ -147,14 +154,14 @@ static NSDateFormatter *createdAtDateFormatter = nil;
     return [array lastObject];
 }
 
-+ (NSArray *)tweetsWithIdGreaterOrEqualTo:(NSNumber *)anId {
++ (NSArray *)tweetsWithIdGreaterOrEqualTo:(NSNumber *)anId context:(NSManagedObjectContext *)context {
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
-	[request setEntity:[self entity]];
+    [request setEntity:[self entityInContext:context]];
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"uid >= %@", anId, nil];
 	[request setPredicate:p];
 	
 	NSError *error = nil;
-	NSArray *array = [[self moc] executeFetchRequest:request error:&error];
+	NSArray *array = [context executeFetchRequest:request error:&error];
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	}
@@ -163,19 +170,19 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	return [array lastObject];
 }
 
-+ (void)unfavorFavoritesBetweenMinId:(NSNumber *)unfavorMinId maxId:(NSNumber *)unfavorMaxId {
++ (void)unfavorFavoritesBetweenMinId:(NSNumber *)unfavorMinId maxId:(NSNumber *)unfavorMaxId context:(NSManagedObjectContext *)context {
 	if([unfavorMinId isGreaterThanOrEqualTo:unfavorMaxId]) {
 		NSLog(@"-- can't unfavor ids, given maxId is smaller than minId");
 		return;
 	}
 	
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
-	[request setEntity:[self entity]];
+    [request setEntity:[THTweet entityInContext:context]];
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"isFavorite == YES AND uid <= %@ AND uid >= %@", unfavorMaxId, unfavorMinId, nil];
 	[request setPredicate:p];
 	
 	NSError *error = nil;
-	NSArray *array = [[self moc] executeFetchRequest:request error:&error];
+	NSArray *array = [context executeFetchRequest:request error:&error];
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	}
@@ -187,20 +194,20 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	}
 }
 
-+ (BOOL)updateOrCreateTweetFromDictionary:(NSDictionary *)d {
++ (BOOL)updateOrCreateTweetFromDictionary:(NSDictionary *)d context:(NSManagedObjectContext *)context {
 	// TODO: keep lower and bigger uids and if request was favorites, then un-favorite the ones out of bounds..
 	
 	NSString *uid = [d objectForKey:@"id"];
 	
 	BOOL wasCreated = NO;
-	THTweet *tweet = [self tweetWithUid:uid];
+	THTweet *tweet = [self tweetWithUid:uid context:context];
 	if(!tweet) {
-		tweet = [THTweet create];
+		tweet = [THTweet createInContext:context];
 		wasCreated = YES;
 		tweet.uid = [NSNumber numberWithUnsignedLongLong:[[d objectForKey:@"id"] unsignedLongLongValue]];
 
 		NSDictionary *userDictionary = [d objectForKey:@"user"];
-		THUser *user = [THUser getOrCreateUserWithDictionary:userDictionary];
+		THUser *user = [THUser getOrCreateUserWithDictionary:userDictionary context:context];
 		
 		NSMutableString *s = [NSMutableString stringWithString:[d objectForKey:@"text"]];
 		[s replaceOccurrencesOfString:@"&lt;" withString:@"<" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
@@ -231,24 +238,33 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 
 + (NSDictionary *)saveTweetsFromDictionariesArray:(NSArray *)a {
 	// TODO: remove non-favorites between new favorites bounds
+
+    NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    privateContext.parentContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
+    
+	__block unsigned long long lowestID = -1;
+	__block unsigned long long highestID = 0;
 	
-	unsigned long long lowestID = 0;
-	unsigned long long highestID = 0;
-		
-	for(NSDictionary *d in a) {
-		[THTweet updateOrCreateTweetFromDictionary:d];
-		
-		unsigned long long currentID = [[d objectForKey:@"id"] unsignedLongLongValue];
-		highestID = MAX(highestID, currentID);
-		lowestID = MIN(lowestID, currentID);
-	}
-	
-	BOOL success = [THTweet save];
-	if(!success) {
-		NSLog(@"-- can't save moc");
-		return nil;
-	}
-	
+    __block BOOL success = NO;
+    __block NSError *error = nil;
+    
+	[privateContext performBlockAndWait:^{
+        for(NSDictionary *d in a) {
+            [THTweet updateOrCreateTweetFromDictionary:d context:privateContext];
+            
+            unsigned long long currentID = [[d objectForKey:@"id"] unsignedLongLongValue];
+            highestID = MAX(highestID, currentID);
+            lowestID = MIN(lowestID, currentID);
+        }
+        
+        success = [privateContext save:&error];
+    }];
+
+    if(success == NO) {
+        NSLog(@"-- save error: %@", [error localizedDescription]);
+        return nil;
+    }
+    
 	return [NSDictionary dictionaryWithObjectsAndKeys:
 			[NSNumber numberWithUnsignedLongLong:lowestID], @"lowestID",
 			[NSNumber numberWithUnsignedLongLong:highestID], @"higestId", nil];

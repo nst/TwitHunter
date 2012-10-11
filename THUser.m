@@ -7,7 +7,7 @@
 //
 
 #import "THUser.h"
-#import "NSManagedObject+SingleContext.h"
+#import "NSManagedObject+ST.h"
 
 #import "THTweet.h"
 
@@ -22,25 +22,25 @@
 @dynamic friendsCount;
 @dynamic followersCount;
 
-+ (THUser *)userWithName:(NSString *)aName {
++ (THUser *)userWithName:(NSString *)aName context:(NSManagedObjectContext *)context {
 	NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
-	[request setEntity:[self entity]];
+	[request setEntity:[self entityInContext:context]];
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"name == %@", aName, nil];
 	[request setPredicate:p];
 	[request setFetchLimit:1];
 	
 	NSError *error = nil;
-	NSArray *array = [[self moc] executeFetchRequest:request error:&error];
+	NSArray *array = [context executeFetchRequest:request error:&error];
 	return [array lastObject];
 }
 
-+ (THUser *)getOrCreateUserWithDictionary:(NSDictionary *)d {
++ (THUser *)getOrCreateUserWithDictionary:(NSDictionary *)d context:(NSManagedObjectContext *)context {
 	//NSLog(@"-- %@", d);
 	
-	THUser *user = [THUser userWithName:[d objectForKey:@"name"]];
+	THUser *user = [THUser userWithName:[d objectForKey:@"name"] context:context];
 	
 	if(!user) {
-		user = [NSEntityDescription insertNewObjectForEntityForName:@"THUser" inManagedObjectContext:[self moc]];
+		user = [NSEntityDescription insertNewObjectForEntityForName:@"THUser" inManagedObjectContext:context];
 		user.uid = [NSNumber numberWithInt:[(NSString *)[d objectForKey:@"id"] intValue]];
 		user.name = [d objectForKey:@"name"];
 	}

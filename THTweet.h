@@ -23,14 +23,14 @@
 @property (nonatomic, retain) NSDate * date;
 @property (nonatomic, retain) THUser * user;
 
-+ (THTweet *)tweetWithHighestUid;
-+ (THTweet *)tweetWithUid:(NSString *)uid;
-+ (void)unfavorFavoritesBetweenMinId:(NSNumber *)unfavorMinId maxId:(NSNumber *)unfavorMaxId;
-+ (BOOL)updateOrCreateTweetFromDictionary:(NSDictionary *)d;
++ (THTweet *)tweetWithHighestUidInContext:(NSManagedObjectContext *)context;
++ (THTweet *)tweetWithUid:(NSString *)uid context:(NSManagedObjectContext *)context;
++ (void)unfavorFavoritesBetweenMinId:(NSNumber *)unfavorMinId maxId:(NSNumber *)unfavorMaxId context:(NSManagedObjectContext *)context;
++ (BOOL)updateOrCreateTweetFromDictionary:(NSDictionary *)d context:(NSManagedObjectContext *)context;
 + (NSDictionary *)saveTweetsFromDictionariesArray:(NSArray *)a;
-+ (NSArray *)tweetsContainingKeyword:(NSString *)keyword;
++ (NSArray *)tweetsContainingKeyword:(NSString *)keyword context:(NSManagedObjectContext *)context;
 + (NSUInteger)nbOfTweetsForScore:(NSNumber *)aScore andPredicates:(NSArray *)predicates;
-+ (NSUInteger)tweetsCountWithAndPredicates:(NSArray *)predicates;
-+ (NSArray *)tweetsWithIdGreaterOrEqualTo:(NSNumber *)anId;
++ (NSUInteger)tweetsCountWithAndPredicates:(NSArray *)predicates context:(NSManagedObjectContext *)context;
++ (NSArray *)tweetsWithIdGreaterOrEqualTo:(NSNumber *)anId context:(NSManagedObjectContext *)context;
 
 @end
