@@ -17,6 +17,8 @@
 #import "THLocationVC.h"
 #import "THCumulativeChartView.h"
 
+// TODO: https://developer.apple.com/library/mac/#qa/qa2006/qa1487.html
+
 @interface THController ()
 @property (nonatomic, retain) THTweetLocation *tweetLocation;
 @property (nonatomic, retain) THLocationVC *locationVC;

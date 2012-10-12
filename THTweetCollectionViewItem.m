@@ -14,14 +14,13 @@
 
 @implementation THTweetCollectionViewItem
 
-- (void)awakeFromNib {
-    
+//- (void)awakeFromNib {
+//    
 //	CALayer *layer = [CALayer layer];
-//	CGColorRef color = [[NSColor redColor] copyAsCGColor];
+//	CGColorRef color = [NSColor redColor].CGColor;
 //	layer.backgroundColor = color;
-//	CGColorRelease(color);
 //	[[self view] setLayer:layer];
-}
+//}
 
 - (IBAction)openUserWebTimeline:(id)sender {
 	THTweet *tweet = [self representedObject];

@@ -519,7 +519,7 @@
 							<string key="NSFrame">{{517, 57}, {84, 19}}</string>
 							<reference key="NSSuperview" ref="823886803"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView" ref="819211522"/>
+							<reference key="NSNextKeyView" ref="545637085"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSButtonCell" key="NSCell" id="438930565">
 								<int key="NSCellFlags">67108864</int>
@@ -568,7 +568,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<string key="NSFrame">{{109, 60}, {195, 17}}</string>
 							<reference key="NSSuperview" ref="823886803"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView" ref="545637085"/>
+							<reference key="NSNextKeyView" ref="153169048"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="293323528">
 								<int key="NSCellFlags">68157504</int>
@@ -598,6 +598,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<string key="NSFrame">{{17, 3}, {495, 13}}</string>
 							<reference key="NSSuperview" ref="823886803"/>
 							<reference key="NSWindow"/>
+							<reference key="NSNextKeyView"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="770444759">
 								<int key="NSCellFlags">68157504</int>
@@ -902,7 +903,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<string key="NSFrame">{{109, 33}, {206, 17}}</string>
 							<reference key="NSSuperview" ref="823886803"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView" ref="153169048"/>
+							<reference key="NSNextKeyView" ref="819211522"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="423497263">
 								<int key="NSCellFlags">68157504</int>
@@ -2273,6 +2274,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<string key="NSFrame">{{564, 0}, {22, 22}}</string>
 						<reference key="NSSuperview" ref="87381471"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSPopUpButtonCell" key="NSCell" id="814201657">
@@ -2348,7 +2350,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<string key="NSAntiCompressionPriority">{250, 750}</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="130491537">
-							<int key="NSCellFlags">69206017</int>
+							<int key="NSCellFlags">69730305</int>
 							<int key="NSCellFlags2">1111756800</int>
 							<string key="NSContents">Text</string>
 							<object class="NSFont" key="NSSupport" id="209021238">
@@ -4197,14 +4199,6 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 					<int key="connectionID">1002</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">controller</string>
-						<reference key="source" ref="369229797"/>
-						<reference key="destination" ref="17366085"/>
-					</object>
-					<int key="connectionID">1003</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
 						<string key="label">managedObjectContext: managedObjectContext</string>
 						<reference key="source" ref="196445218"/>
@@ -4842,7 +4836,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">1077</int>
+					<int key="connectionID">1102</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -7417,7 +7411,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">1098</int>
+			<int key="maxID">1102</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
