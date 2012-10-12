@@ -15,8 +15,7 @@
 @implementation THTweetCollectionViewItem
 
 - (void)awakeFromNib {
-	//[textView setAutomaticLinkDetectionEnabled:YES];
-
+    
 //	CALayer *layer = [CALayer layer];
 //	CGColorRef color = [[NSColor redColor] copyAsCGColor];
 //	layer.backgroundColor = color;
@@ -130,7 +129,7 @@
 }
 
 - (void)dealloc {
-    [_textView release];
+//    [_textView release];
     [super dealloc];
 }
 

@@ -48,13 +48,13 @@
 										   [NSColor blueColor], NSForegroundColorAttributeName,
 										   [NSCursor pointingHandCursor], NSCursorAttributeName, NULL];
 			
-			[as addAttributes:linkAttributes range:foundRange];
+            [as addAttributes:linkAttributes range:foundRange];
 		}
 		
 	} while (foundRange.length!=0);
 
     [as addAttributes:@{NSFontAttributeName:[NSFont fontWithName:@"Helvetica" size:12]} range:NSMakeRange(0, [as length])];
-
+    
 	[as endEditing];
 
     return [as autorelease];

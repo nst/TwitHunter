@@ -10,8 +10,6 @@
 
 @interface THTweetCollectionViewItem : NSCollectionViewItem
 
-@property (nonatomic, retain) IBOutlet NSTextView *textView;
-
 - (IBAction)openUserWebTimeline:(id)sender;
 - (IBAction)changeReadState:(id)sender;
 

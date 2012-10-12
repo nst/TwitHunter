@@ -40,6 +40,15 @@ static NSDateFormatter *createdAtDateFormatter = nil;
     return createdAtDateFormatter;
 }
 
+//- (NSAttributedString *)attributedString {
+//    
+//    if(self.text == nil) return nil;
+//    
+//    NSAttributedString *as = [[NSAttributedString alloc] initWithString:self.text];
+//    
+//    return [as autorelease];
+//}
+
 - (NSNumber *)isFavoriteWrapper {
 	return self.isFavorite;
 }
