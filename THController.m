@@ -18,6 +18,8 @@
 #import "THCumulativeChartView.h"
 
 // TODO: https://developer.apple.com/library/mac/#qa/qa2006/qa1487.html
+// TODO: https://github.com/blladnar/AutoLink
+// TODO: http://www.nightproductions.net/developer.htm
 
 @interface THController ()
 @property (nonatomic, retain) THTweetLocation *tweetLocation;
