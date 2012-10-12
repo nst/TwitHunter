@@ -78,43 +78,28 @@
     NSManagedObjectContext *privateContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
     privateContext.parentContext = mainContext;
     
-    __block BOOL success = NO;
-    __block NSError *error = nil;
-    __block NSMutableArray *tweetsForScores = [NSMutableArray arrayWithCapacity:101];
+    __block NSArray *tweets = nil;
     
     [privateContext performBlockAndWait:^{
-        NSUInteger totalTweetsCount = [THTweet tweetsCountWithAndPredicates:predicates context:privateContext];
-        NSLog(@"-- total number of tweets: %lu", totalTweetsCount);
-        
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self setTweetsCount:totalTweetsCount];
-        }];
-        
-        for(NSUInteger i = 0; i < 101; i++) {
-#warning TODO: maybe more efficient to iterate over all tweets and count the number for each score
-            NSUInteger nbTweets = [THTweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andPredicates:[self predicatesWithoutScore] context:privateContext];
-            [tweetsForScores addObject:[NSNumber numberWithInt:nbTweets]];
-            
-            BOOL requestOutdated = [startDate compare:_latestTimeUpdateCulumatedDataWasAsked] == NSOrderedAscending;
-            if(requestOutdated) {
-                NSLog(@"updateCumulatedData was cancelled by a newer request");
-                return;
-            }
-        }
-        
-        success = [privateContext save:&error];
+        tweets = [THTweet tweetsWithAndPredicates:predicates context:privateContext];
     }];
     
-    if(success == NO) {
-        NSLog(@"-- save error: %@", [error localizedDescription]);
+    NSUInteger count = [tweets count];
+    NSLog(@"-- total number of tweets: %lu", count);
+    
+    [self setTweetsCount:count];
+    
+    for(NSUInteger i = 0; i < 101; i++) {
+        numberOfTweetsForScore[i] = 0;
+    }
+    
+    for(THTweet *t in tweets) {
+        NSInteger score = [t.score integerValue];
+        numberOfTweetsForScore[score] += 1;
     }
 
     NSLog(@"updateCumulatedData took %f seconds", [[NSDate date] timeIntervalSinceDate:startDate]);
 
-	for(NSUInteger i = 0; i < [tweetsForScores count]; i++) {
-		numberOfTweetsForScore[i] = [[tweetsForScores objectAtIndex:i] intValue];
-	}
-	
 	[self recomputeCumulatedTweetsForScore];
 	[_cumulativeChartView setNeedsDisplay:YES];
 }
@@ -455,9 +440,7 @@
         lastKnownID = nil;
     }
     
-    NSLog(@"-- fetch timeline since ID: %@", lastKnownID);
-    
-    self.requestStatus = @"fetching timeline since last known ID";
+    self.requestStatus = [NSString stringWithFormat:@"fetching timeline since last known ID %@", lastKnownID];
     
     self.isConnecting = @YES;
     

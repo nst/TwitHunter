@@ -56,6 +56,24 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	if(!success) NSLog(@"-- can't save");
 }
 
++ (NSArray *)tweetsWithAndPredicates:(NSArray *)predicates context:(NSManagedObjectContext *)context {
+	NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[THTweet entityInContext:context]];
+	
+	NSPredicate *p = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
+	[request setPredicate:p];
+	
+	NSError *error = nil;
+	
+	NSArray *tweets = [context executeFetchRequest:request error:&error];
+	
+	[request release];
+	if(error) {
+		NSLog(@"-- error:%@", error);
+	}
+	return tweets;
+}
+
 + (NSUInteger)tweetsCountWithAndPredicates:(NSArray *)predicates context:(NSManagedObjectContext *)context {
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[THTweet entityInContext:context]];
@@ -80,7 +98,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 
 	NSUInteger count = [self tweetsCountWithAndPredicates:ps context:context];
     
-    NSLog(@"-- score %@ -> %d", aScore, count);
+    NSLog(@"-- score %@ -> %ld", aScore, count);
     
     return count;
 }

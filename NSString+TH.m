@@ -26,7 +26,7 @@
 	
 	[as beginEditing];
 	do {
-		foundRange = [self rangeOfString:@"http" options:0 range:searchRange];
+		foundRange = [self rangeOfString:@"http://" options:0 range:searchRange];
 		
 		if (foundRange.length > 0) {
 			searchRange.location = foundRange.location + foundRange.length;
@@ -52,9 +52,12 @@
 		}
 		
 	} while (foundRange.length!=0);
-	
+
+    [as addAttributes:@{NSFontAttributeName:[NSFont fontWithName:@"Helvetica" size:12]} range:NSMakeRange(0, [as length])];
+
 	[as endEditing];
-	return [as autorelease];
+
+    return [as autorelease];
 }
 
 @end

@@ -30,6 +30,7 @@
 + (NSDictionary *)saveTweetsFromDictionariesArray:(NSArray *)a;
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword context:(NSManagedObjectContext *)context;
 + (NSUInteger)nbOfTweetsForScore:(NSNumber *)aScore andPredicates:(NSArray *)predicates context:(NSManagedObjectContext *)context;
++ (NSArray *)tweetsWithAndPredicates:(NSArray *)predicates context:(NSManagedObjectContext *)context;
 + (NSUInteger)tweetsCountWithAndPredicates:(NSArray *)predicates context:(NSManagedObjectContext *)context;
 + (NSArray *)tweetsWithIdGreaterOrEqualTo:(NSNumber *)anId context:(NSManagedObjectContext *)context;
 
