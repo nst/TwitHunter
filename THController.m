@@ -91,7 +91,8 @@
         }];
         
         for(NSUInteger i = 0; i < 101; i++) {
-            NSUInteger nbTweets = [THTweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andPredicates:[self predicatesWithoutScore]];
+#warning TODO: maybe more efficient to iterate over all tweets and count the number for each score
+            NSUInteger nbTweets = [THTweet nbOfTweetsForScore:[NSNumber numberWithUnsignedInt:i] andPredicates:[self predicatesWithoutScore] context:privateContext];
             [tweetsForScores addObject:[NSNumber numberWithInt:nbTweets]];
             
             BOOL requestOutdated = [startDate compare:_latestTimeUpdateCulumatedDataWasAsked] == NSOrderedAscending;

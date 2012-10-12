@@ -74,21 +74,15 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	return count;	
 }
 
-+ (NSUInteger)nbOfTweetsForScore:(NSNumber *)aScore andPredicates:(NSArray *)predicates {
++ (NSUInteger)nbOfTweetsForScore:(NSNumber *)aScore andPredicates:(NSArray *)predicates context:(NSManagedObjectContext *)context {
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"score == %@", aScore];
 	NSArray *ps = [predicates arrayByAddingObject:p];
 
-    NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    privateContext.parentContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
-
-	__block NSUInteger count = NSNotFound;
+	NSUInteger count = [self tweetsCountWithAndPredicates:ps context:context];
     
-    [privateContext performBlockAndWait:^{
-        count = [self tweetsCountWithAndPredicates:ps context:privateContext];
-    }];
+    NSLog(@"-- score %@ -> %d", aScore, count);
     
     return count;
-    
 }
 
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword context:(NSManagedObjectContext *)context {
