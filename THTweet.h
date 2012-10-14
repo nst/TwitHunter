@@ -34,4 +34,6 @@
 + (NSUInteger)tweetsCountWithAndPredicates:(NSArray *)predicates context:(NSManagedObjectContext *)context;
 + (NSArray *)tweetsWithIdGreaterOrEqualTo:(NSNumber *)anId context:(NSManagedObjectContext *)context;
 
+- (NSAttributedString *)attributedString;
+
 @end

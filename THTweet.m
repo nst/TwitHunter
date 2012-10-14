@@ -1,4 +1,4 @@
-// 
+//
 //  Tweet.m
 //  TwitHunter
 //
@@ -11,7 +11,7 @@
 #import "THTweet.h"
 #import "THUser.h"
 
-@implementation THTweet 
+@implementation THTweet
 
 @dynamic text;
 @dynamic uid;
@@ -25,7 +25,7 @@
 static NSDateFormatter *createdAtDateFormatter = nil;
 
 - (NSDateFormatter *)createdAtDateFormatter {
-        
+    
     if (createdAtDateFormatter == nil) {
         createdAtDateFormatter = [[NSDateFormatter alloc] init];
         
@@ -36,16 +36,16 @@ static NSDateFormatter *createdAtDateFormatter = nil;
         [createdAtDateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
         [createdAtDateFormatter setDateFormat: @"EEE MMM dd HH:mm:ss Z yyyy"];
     }
-
+    
     return createdAtDateFormatter;
 }
 
 //- (NSAttributedString *)attributedString {
-//    
+//
 //    if(self.text == nil) return nil;
-//    
+//
 //    NSAttributedString *as = [[NSAttributedString alloc] initWithString:self.text];
-//    
+//
 //    return [as autorelease];
 //}
 
@@ -98,13 +98,13 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	}
-	return count;	
+	return count;
 }
 
 + (NSUInteger)nbOfTweetsForScore:(NSNumber *)aScore andPredicates:(NSArray *)predicates context:(NSManagedObjectContext *)context {
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"score == %@", aScore];
 	NSArray *ps = [predicates arrayByAddingObject:p];
-
+    
 	NSUInteger count = [self tweetsCountWithAndPredicates:ps context:context];
     
     NSLog(@"-- score %@ -> %ld", aScore, count);
@@ -113,7 +113,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 }
 
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword context:(NSManagedObjectContext *)context {
-
+    
     NSAssert(keyword != nil, @"keyword should not be nil");
     
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -157,7 +157,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 }
 
 + (THTweet *)tweetWithHighestUidInContext:(NSManagedObjectContext *)context {
-
+    
     NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
     [request setEntity:[self entityInContext:context]];
     
@@ -226,7 +226,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 		tweet = [THTweet createInContext:context];
 		wasCreated = YES;
 		tweet.uid = [NSNumber numberWithUnsignedLongLong:[[d objectForKey:@"id"] unsignedLongLongValue]];
-
+        
 		NSDictionary *userDictionary = [d objectForKey:@"user"];
 		THUser *user = [THUser getOrCreateUserWithDictionary:userDictionary context:context];
 		
@@ -244,14 +244,14 @@ static NSDateFormatter *createdAtDateFormatter = nil;
          "user_mentions":[]
          }
          */
-//		BOOL doesContainURL = [tweet.text rangeOfString:@"http"].location != NSNotFound;
-//		tweet.containsURL = [NSNumber numberWithBool:doesContainURL];
-				
+        //		BOOL doesContainURL = [tweet.text rangeOfString:@"http"].location != NSNotFound;
+        //		tweet.containsURL = [NSNumber numberWithBool:doesContainURL];
+        
 		tweet.date = [[tweet createdAtDateFormatter] dateFromString:[d objectForKey:@"created_at"]];
 		tweet.user = user;
 	}
 	tweet.isFavorite = [d objectForKey:@"favorited"];
-
+    
 	NSLog(@"** created %d favorite %@ %@ %@ %@", wasCreated, tweet.isFavorite, tweet.uid, tweet.user.screenName, tweet.text);
 	
 	return YES;
@@ -259,7 +259,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 
 + (NSDictionary *)saveTweetsFromDictionariesArray:(NSArray *)a {
 	// TODO: remove non-favorites between new favorites bounds
-
+    
     NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     privateContext.parentContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
     
@@ -280,7 +280,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
         
         success = [privateContext save:&error];
     }];
-
+    
     if(success == NO) {
         NSLog(@"-- save error: %@", [error localizedDescription]);
         return nil;
@@ -291,4 +291,141 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 			[NSNumber numberWithUnsignedLongLong:highestID], @"higestId", nil];
 }
 
+- (NSAttributedString *)attributedString {
+    NSString *statusString = self.text;
+    
+//    NSString *statusString = @"http://apple.com sdf @flyosity asd #hashtag dfg";
+	
+	NSMutableAttributedString *attributedStatusString = [[NSMutableAttributedString alloc] initWithString:statusString];
+    
+    
+    
+    
+    
+	// Defining our paragraph style for the tweet text. Starting with the shadow to make the text
+	// appear inset against the gray background.
+	NSShadow *textShadow = [[NSShadow alloc] init];
+	[textShadow setShadowColor:[NSColor colorWithDeviceWhite:1 alpha:.8]];
+	[textShadow setShadowBlurRadius:0];
+	[textShadow setShadowOffset:NSMakeSize(0, -1)];
+    
+	NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+	[paragraphStyle setMinimumLineHeight:22];
+	[paragraphStyle setMaximumLineHeight:22];
+	[paragraphStyle setParagraphSpacing:0];
+	[paragraphStyle setParagraphSpacingBefore:0];
+	[paragraphStyle setTighteningFactorForTruncation:4];
+	[paragraphStyle setAlignment:NSNaturalTextAlignment];
+	[paragraphStyle setLineBreakMode:NSLineBreakByWordWrapping];
+	
+	// Our initial set of attributes that are applied to the full string length
+	NSDictionary *fullAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSColor colorWithDeviceHue:.53 saturation:.13 brightness:.26 alpha:1], NSForegroundColorAttributeName,
+									textShadow, NSShadowAttributeName,
+									[NSCursor arrowCursor], NSCursorAttributeName,
+									[NSNumber numberWithFloat:0.0], NSKernAttributeName,
+									[NSNumber numberWithInt:0], NSLigatureAttributeName,
+									paragraphStyle, NSParagraphStyleAttributeName,
+									[NSFont systemFontOfSize:11.0], NSFontAttributeName, nil];
+	[attributedStatusString addAttributes:fullAttributes range:NSMakeRange(0, [statusString length])];
+	[textShadow release];
+	[paragraphStyle release];
+    
+	// Generate arrays of our interesting items. Links, usernames, hashtags.
+	NSArray *linkMatches = [self scanStringForLinks:statusString];
+	NSArray *usernameMatches = [self scanStringForUsernames:statusString];
+	NSArray *hashtagMatches = [self scanStringForHashtags:statusString];
+	
+	// Iterate across the string matches from our regular expressions, find the range
+	// of each match, add new attributes to that range
+	for (NSTextCheckingResult *linkMatch in linkMatches) {
+		NSRange range = [linkMatch range];
+        NSString *s = [statusString substringWithRange:range];
+		if( range.location != NSNotFound ) {
+			// Add custom attribute of LinkMatch to indicate where our URLs are found. Could be blue
+			// or any other color.
+			NSDictionary *linkAttr = [[NSDictionary alloc] initWithObjectsAndKeys:
+									  [NSCursor pointingHandCursor], NSCursorAttributeName,
+									  [NSColor blueColor], NSForegroundColorAttributeName,
+									  [NSFont boldSystemFontOfSize:14.0], NSFontAttributeName,
+									  s, @"LinkMatch",
+									  nil];
+			[attributedStatusString addAttributes:linkAttr range:range];
+			[linkAttr release];
+		}
+	}
+	
+	for (NSTextCheckingResult *usernameMatch in usernameMatches) {
+		NSRange range = [usernameMatch range];
+        NSString *s = [statusString substringWithRange:range];
+		if( range.location != NSNotFound ) {
+			// Add custom attribute of UsernameMatch to indicate where our usernames are found
+			NSDictionary *linkAttr2 = [[NSDictionary alloc] initWithObjectsAndKeys:
+									   [NSColor blackColor], NSForegroundColorAttributeName,
+									   [NSCursor pointingHandCursor], NSCursorAttributeName,
+									   [NSFont boldSystemFontOfSize:14.0], NSFontAttributeName,
+									   s, @"UsernameMatch",
+									   nil];
+			[attributedStatusString addAttributes:linkAttr2 range:range];
+			[linkAttr2 release];
+		}
+	}
+	
+	for (NSTextCheckingResult *hashtagMatch in hashtagMatches) {
+		NSRange range = [hashtagMatch range];
+        NSString *s = [statusString substringWithRange:range];
+		if( range.location != NSNotFound ) {
+			// Add custom attribute of HashtagMatch to indicate where our hashtags are found
+			NSDictionary *linkAttr3 = [[NSDictionary alloc] initWithObjectsAndKeys:
+                                       [NSColor grayColor], NSForegroundColorAttributeName,
+                                       [NSCursor pointingHandCursor], NSCursorAttributeName,
+                                       [NSFont systemFontOfSize:14.0], NSFontAttributeName,
+                                       s, @"HashtagMatch",
+                                       nil];
+			[attributedStatusString addAttributes:linkAttr3 range:range];
+			[linkAttr3 release];
+		}
+	}
+	
+    return [attributedStatusString autorelease];
+    
+    
+    
+    
+    
+    
+    
+    
+    
+//	[_tweetTextTextView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
+//	[_tweetTextTextView setBackgroundColor:[NSColor clearColor]];
+//	[_tweetTextTextView setTextContainerInset:NSZeroSize];
+//	[[_tweetTextTextView textStorage] setAttributedString:attributedStatusString];
+//	[_tweetTextTextView setEditable:NO];
+//	[_tweetTextTextView setSelectable:YES];
+//    
+//    [attributedStatusString release];
+}
+
+#pragma mark -
+#pragma mark String parsing
+
+// These regular expressions aren't the greatest. There are much better ones out there to parse URLs, @usernames
+// and hashtags out of tweets. Getting the escaping just right is a pain in the ass, so be forewarned.
+
+- (NSArray *)scanStringForLinks:(NSString *)string {
+    //return @[@"YouTube"];
+	return [string componentsMatchedByRegex:@"\\b(([\\w-]+://?|www[.])[^\\s()<>]+(?:\\([\\w\\d]+\\)|([^[:punct:]\\s]|/)))"];
+}
+
+- (NSArray *)scanStringForUsernames:(NSString *)string {
+	return [string componentsMatchedByRegex:@"@{1}([-A-Za-z0-9_]{2,})"];
+}
+
+- (NSArray *)scanStringForHashtags:(NSString *)string {
+	return [string componentsMatchedByRegex:@"[\\s]{1,}#{1}([^\\s]{2,})"];
+}
+
 @end
+
+

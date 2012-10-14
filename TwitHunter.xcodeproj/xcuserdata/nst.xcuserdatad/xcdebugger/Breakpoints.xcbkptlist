@@ -8,23 +8,23 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "THController.m"
-         timestampString = "371656821.081309"
+         timestampString = "371760603.397315"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "785"
-         endingLineNumber = "785">
+         startingLineNumber = "786"
+         endingLineNumber = "786">
       </FileBreakpoint>
       <FileBreakpoint
-         shouldBeEnabled = "Yes"
+         shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "THController.m"
-         timestampString = "371656657.311956"
+         filePath = "NSString+TH.m"
+         timestampString = "371936468.76697"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "260"
-         endingLineNumber = "260"
-         landmarkName = "-observeValueForKeyPath:ofObject:change:context:"
+         startingLineNumber = "71"
+         endingLineNumber = "71"
+         landmarkName = "-componentsMatchedByRegex:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

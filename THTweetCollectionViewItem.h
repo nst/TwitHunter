@@ -8,7 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class THTextView;
+
 @interface THTweetCollectionViewItem : NSCollectionViewItem
+
+@property (nonatomic, retain) IBOutlet THTextView *tweetTextTextView;
 
 - (IBAction)openUserWebTimeline:(id)sender;
 - (IBAction)changeReadState:(id)sender;

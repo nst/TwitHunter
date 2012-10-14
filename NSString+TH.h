@@ -11,7 +11,9 @@
 
 @interface NSString (TH)
 
-- (NSAttributedString *)attributedStringWithURLs;
+//- (NSAttributedString *)attributedStringWithURLs;
 - (unsigned long long)unsignedLongLongValue;
+
+- (NSArray *)componentsMatchedByRegex:(NSString *)pattern;
 
 @end
