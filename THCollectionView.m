@@ -28,14 +28,18 @@
 {
     [super setSelectionIndexes:indexes];
     
-    NSCollectionViewItem *item = [self itemAtIndex:currentSelection];
-    THTweetView *view = (THTweetView *)[item view];
-    [view setSelected:NO];
+    if(currentSelection != NSNotFound) {
+        NSCollectionViewItem *item = [self itemAtIndex:currentSelection];
+        THTweetView *view = (THTweetView *)[item view];
+        [view setSelected:NO];
+    }
     
-    item = [self itemAtIndex:[indexes firstIndex]];
-    view = (THTweetView *)[item view];
-    [view setSelected:YES];
-    
+    if([indexes count] != 0) {        
+        NSCollectionViewItem *item = [self itemAtIndex:[indexes firstIndex]];
+        THTweetView *view = (THTweetView *)[item view];
+        [view setSelected:YES];
+    }
+
     currentSelection = [indexes firstIndex];
 }
 
