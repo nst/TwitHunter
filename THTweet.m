@@ -298,13 +298,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 - (NSAttributedString *)attributedString {
     NSString *statusString = self.text;
     
-//    NSString *statusString = @"http://apple.com sdf @flyosity asd #hashtag dfg";
-	
 	NSMutableAttributedString *attributedStatusString = [[NSMutableAttributedString alloc] initWithString:statusString];
-    
-    
-    
-    
     
 	// Defining our paragraph style for the tweet text. Starting with the shadow to make the text
 	// appear inset against the gray background.
@@ -314,11 +308,11 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	[textShadow setShadowOffset:NSMakeSize(0, -1)];
     
 	NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-	[paragraphStyle setMinimumLineHeight:22];
-	[paragraphStyle setMaximumLineHeight:22];
-	[paragraphStyle setParagraphSpacing:0];
-	[paragraphStyle setParagraphSpacingBefore:0];
-	[paragraphStyle setTighteningFactorForTruncation:4];
+//	[paragraphStyle setMinimumLineHeight:22];
+//	[paragraphStyle setMaximumLineHeight:22];
+//	[paragraphStyle setParagraphSpacing:0];
+//	[paragraphStyle setParagraphSpacingBefore:0];
+//	[paragraphStyle setTighteningFactorForTruncation:4];
 	[paragraphStyle setAlignment:NSNaturalTextAlignment];
 	[paragraphStyle setLineBreakMode:NSLineBreakByWordWrapping];
 	
@@ -352,7 +346,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 			NSDictionary *linkAttr = [[NSDictionary alloc] initWithObjectsAndKeys:
 									  [NSCursor pointingHandCursor], NSCursorAttributeName,
 									  [NSColor blueColor], NSForegroundColorAttributeName,
-									  [NSFont boldSystemFontOfSize:14.0], NSFontAttributeName,
+									  [NSFont boldSystemFontOfSize:11.0], NSFontAttributeName,
 									  s, @"LinkMatch",
 									  nil];
 			[attributedStatusString addAttributes:linkAttr range:range];
@@ -368,7 +362,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 			NSDictionary *linkAttr2 = [[NSDictionary alloc] initWithObjectsAndKeys:
 									   [NSColor blackColor], NSForegroundColorAttributeName,
 									   [NSCursor pointingHandCursor], NSCursorAttributeName,
-									   [NSFont boldSystemFontOfSize:14.0], NSFontAttributeName,
+									   [NSFont boldSystemFontOfSize:11.0], NSFontAttributeName,
 									   s, @"UsernameMatch",
 									   nil];
 			[attributedStatusString addAttributes:linkAttr2 range:range];
@@ -384,7 +378,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 			NSDictionary *linkAttr3 = [[NSDictionary alloc] initWithObjectsAndKeys:
                                        [NSColor grayColor], NSForegroundColorAttributeName,
                                        [NSCursor pointingHandCursor], NSCursorAttributeName,
-                                       [NSFont systemFontOfSize:14.0], NSFontAttributeName,
+                                       [NSFont systemFontOfSize:11.0], NSFontAttributeName,
                                        s, @"HashtagMatch",
                                        nil];
 			[attributedStatusString addAttributes:linkAttr3 range:range];
