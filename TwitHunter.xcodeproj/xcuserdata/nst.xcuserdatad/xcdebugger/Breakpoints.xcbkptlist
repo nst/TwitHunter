@@ -14,18 +14,14 @@
          startingLineNumber = "786"
          endingLineNumber = "786">
       </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "No"
+   </FileBreakpoints>
+   <ExceptionBreakpoints>
+      <ExceptionBreakpoint
+         shouldBeEnabled = "Yes"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "NSString+TH.m"
-         timestampString = "371936468.76697"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "71"
-         endingLineNumber = "71"
-         landmarkName = "-componentsMatchedByRegex:"
-         landmarkType = "5">
-      </FileBreakpoint>
-   </FileBreakpoints>
+         scope = "0"
+         stopOnStyle = "0">
+      </ExceptionBreakpoint>
+   </ExceptionBreakpoints>
 </Bucket>
