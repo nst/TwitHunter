@@ -10,7 +10,7 @@
 
 @class THUser;
 
-@interface THTweet :  NSManagedObject  
+@interface THTweet :  NSManagedObject
 {
 }
 

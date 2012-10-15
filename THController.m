@@ -278,7 +278,7 @@
 		[self resetTimer];
 		return;
 	}
-	
+	    
 	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 

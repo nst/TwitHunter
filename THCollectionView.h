@@ -8,6 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface THCollectionView : NSCollectionView
+@interface THCollectionView : NSCollectionView {
+@private
+    NSUInteger currentSelection;
+}
+
 
 @end

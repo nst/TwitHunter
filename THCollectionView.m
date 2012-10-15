@@ -9,23 +9,35 @@
 #import "THCollectionView.h"
 #import "THTweetCollectionViewItem.h"
 #import "THTweet.h"
+#import "THTweetView.h"
 
 @implementation THCollectionView
 
-- (id)initWithFrame:(NSRect)frame
+- (id)init
 {
-    self = [super initWithFrame:frame];
+    self = [super init];
     if (self) {
-        // Initialization code here.
+        currentSelection = 0;
     }
     
     return self;
 }
 
-//- (void)drawRect:(NSRect)dirtyRect
-//{
-//    // Drawing code here.
-//}
+
+- (void)setSelectionIndexes:(NSIndexSet *)indexes
+{
+    [super setSelectionIndexes:indexes];
+    
+    NSCollectionViewItem *item = [self itemAtIndex:currentSelection];
+    THTweetView *view = (THTweetView *)[item view];
+    [view setSelected:NO];
+    
+    item = [self itemAtIndex:[indexes firstIndex]];
+    view = (THTweetView *)[item view];
+    [view setSelected:YES];
+    
+    currentSelection = [indexes firstIndex];
+}
 
 - (void)awakeFromNib {
     [super awakeFromNib];

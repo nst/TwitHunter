@@ -427,6 +427,8 @@
 												<bool key="EncodedWithXMLCoder">YES</bool>
 												<reference ref="685044582"/>
 											</object>
+											<bool key="NSSelectable">YES</bool>
+											<bool key="NSAllowsMultipleSelection">YES</bool>
 											<int key="NSDraggingSourceMaskForLocal">-1</int>
 											<int key="NSDraggingSourceMaskForNonLocal">0</int>
 										</object>
@@ -445,7 +447,7 @@
 											<bytes key="NSWhite">MC42NjY2NjY2NjY3AA</bytes>
 										</object>
 									</object>
-									<int key="NScvFlags">6</int>
+									<int key="NScvFlags">4</int>
 								</object>
 								<object class="NSScroller" id="950682163">
 									<reference key="NSNextResponder" ref="947592220"/>
@@ -599,6 +601,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<string key="NSFrame">{{17, 3}, {495, 13}}</string>
 							<reference key="NSSuperview" ref="823886803"/>
 							<reference key="NSWindow"/>
+							<reference key="NSNextKeyView"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="770444759">
 								<int key="NSCellFlags">68157504</int>
@@ -964,7 +967,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="947592220"/>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {1680, 1028}}</string>
+				<string key="NSScreenRect">{{0, 0}, {2560, 1418}}</string>
 				<string key="NSMinSize">{742, 500}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<bool key="NSWindowIsRestorable">YES</bool>
@@ -2118,8 +2121,8 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<reference key="NSNextKeyView" ref="807855078"/>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="779425232">
-							<int key="NSCellFlags">68157504</int>
-							<int key="NSCellFlags2">272892928</int>
+							<int key="NSCellFlags">603979776</int>
+							<int key="NSCellFlags2">272896000</int>
 							<string key="NSContents">Label</string>
 							<object class="NSFont" key="NSSupport">
 								<string key="NSName">LucidaGrande-Bold</string>
@@ -2141,8 +2144,8 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<reference key="NSNextKeyView" ref="589819822"/>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="612900488">
-							<int key="NSCellFlags">68157504</int>
-							<int key="NSCellFlags2">-1874590720</int>
+							<int key="NSCellFlags">603979776</int>
+							<int key="NSCellFlags2">-1874587648</int>
 							<string key="NSContents">date</string>
 							<reference key="NSSupport" ref="24"/>
 							<object class="NSDateFormatter" key="NSFormatter" id="74125248">
@@ -2179,8 +2182,8 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<reference key="NSNextKeyView" ref="824759850"/>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="953673188">
-							<int key="NSCellFlags">68157504</int>
-							<int key="NSCellFlags2">272892928</int>
+							<int key="NSCellFlags">603979776</int>
+							<int key="NSCellFlags2">272896000</int>
 							<string key="NSContents">Label</string>
 							<reference key="NSSupport" ref="24"/>
 							<reference key="NSControlView" ref="589819822"/>
@@ -2221,7 +2224,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<reference key="NSNextKeyView" ref="142181806"/>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSButtonCell" key="NSCell" id="113643342">
-							<int key="NSCellFlags">-2080374784</int>
+							<int key="NSCellFlags">-1543503872</int>
 							<int key="NSCellFlags2">131072</int>
 							<string key="NSContents">read</string>
 							<reference key="NSSupport" ref="26"/>
@@ -2274,6 +2277,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<string key="NSFrame">{{564, 0}, {22, 22}}</string>
 						<reference key="NSSuperview" ref="87381471"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSPopUpButtonCell" key="NSCell" id="814201657">
@@ -2358,7 +2362,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 									<bool key="EncodedWithXMLCoder">YES</bool>
 									<reference ref="356310878"/>
 								</object>
-								<int key="NSLMFlags">166</int>
+								<int key="NSLMFlags">38</int>
 								<nil key="NSDelegate"/>
 							</object>
 							<reference key="NSTextView" ref="520723850"/>
@@ -2366,7 +2370,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<int key="NSTCFlags">1</int>
 						</object>
 						<object class="NSTextViewSharedData" key="NSSharedData">
-							<int key="NSFlags">10757</int>
+							<int key="NSFlags">2049</int>
 							<int key="NSTextCheckingTypes">0</int>
 							<nil key="NSMarkedAttributes"/>
 							<reference key="NSBackgroundColor" ref="685044582"/>
@@ -2417,7 +2421,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							</object>
 							<nil key="NSDefaultParagraphStyle"/>
 							<nil key="NSTextFinder"/>
-							<int key="NSPreferredTextFinderStyle">1</int>
+							<int key="NSPreferredTextFinderStyle">0</int>
 						</object>
 						<int key="NSTVFlags">6</int>
 						<string key="NSMaxSize">{463, 10000000}</string>
@@ -2710,7 +2714,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 					<string key="NSFrameSize">{276, 190}</string>
 					<reference key="NSNextKeyView" ref="101763718"/>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {1680, 1028}}</string>
+				<string key="NSScreenRect">{{0, 0}, {2560, 1418}}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<bool key="NSWindowIsRestorable">YES</bool>
 			</object>
@@ -3346,7 +3350,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 					<string key="NSFrameSize">{325, 386}</string>
 					<reference key="NSNextKeyView" ref="576678578"/>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {1680, 1028}}</string>
+				<string key="NSScreenRect">{{0, 0}, {2560, 1418}}</string>
 				<string key="NSMinSize">{357, 402}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<string key="NSFrameAutosaveName">Rules</string>
@@ -3413,7 +3417,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 					<string key="NSFrameSize">{312, 310}</string>
 					<string key="NSReuseIdentifierKey">_NS:21</string>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {1680, 1028}}</string>
+				<string key="NSScreenRect">{{0, 0}, {2560, 1418}}</string>
 				<string key="NSMinSize">{600, 416}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<bool key="NSWindowIsRestorable">YES</bool>
@@ -4192,7 +4196,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<string key="label">content: arrangedObjects</string>
 						<reference key="source" ref="737464158"/>
 						<reference key="destination" ref="196445218"/>
-						<object class="NSNibBindingConnector" key="connector">
+						<object class="NSNibBindingConnector" key="connector" id="671874332">
 							<reference key="NSSource" ref="737464158"/>
 							<reference key="NSDestination" ref="196445218"/>
 							<string key="NSLabel">content: arrangedObjects</string>
@@ -4210,6 +4214,23 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<reference key="destination" ref="369229797"/>
 					</object>
 					<int key="connectionID">452</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectionIndexes: selectionIndexes</string>
+						<reference key="source" ref="737464158"/>
+						<reference key="destination" ref="196445218"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="737464158"/>
+							<reference key="NSDestination" ref="196445218"/>
+							<string key="NSLabel">selectionIndexes: selectionIndexes</string>
+							<string key="NSBinding">selectionIndexes</string>
+							<string key="NSKeyPath">selectionIndexes</string>
+							<reference key="NSPreviousConnector" ref="671874332"/>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">1137</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -7475,7 +7496,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">1131</int>
+			<int key="maxID">1137</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -7818,17 +7839,6 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 				<object class="IBPartialClassDescription">
 					<string key="className">THTweetView</string>
 					<string key="superclassName">NSView</string>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">tweetTextView</string>
-						<string key="NS.object.0">THTextView</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">tweetTextView</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">tweetTextView</string>
-							<string key="candidateClassName">THTextView</string>
-						</object>
-					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/THTweetView.h</string>

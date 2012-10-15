@@ -30,8 +30,8 @@
 		
 		if( [attributes objectForKey:@"UsernameMatch"] != nil ) {
 			NSLog( @"UsernameMatch: %@", [attributes objectForKey:@"UsernameMatch"] );
-            NSString *username = [attributes objectForKey:@"LinkMatch"];
-            NSString *urlString = [NSString stringWithFormat:@"http://www.twitter.com/%@", username];
+            NSString *username = [attributes objectForKey:@"UsernameMatch"];
+            NSString *urlString = [NSString stringWithFormat:@"https://www.twitter.com/%@", username];
             NSURL *url = [NSURL URLWithString:urlString];
             [[NSWorkspace sharedWorkspace] openURL:url];
 		}

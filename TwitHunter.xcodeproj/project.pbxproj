@@ -28,6 +28,7 @@
 		03946ADC15E5B2F800916FC5 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03946ADB15E5B2F800916FC5 /* Social.framework */; };
 		03946ADE15E5B2FD00916FC5 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03946ADD15E5B2FD00916FC5 /* Accounts.framework */; };
 		039B77EB0F9F2C99009A0C57 /* THTweet.m in Sources */ = {isa = PBXBuildFile; fileRef = 039B77EA0F9F2C99009A0C57 /* THTweet.m */; };
+		03B1703C162C32EB009AA5ED /* THTweetView.m in Sources */ = {isa = PBXBuildFile; fileRef = 03B1703B162C32EB009AA5ED /* THTweetView.m */; };
 		03BEBC51119521BE001E7311 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BEBC50119521BE001E7311 /* QuartzCore.framework */; };
 		03BECCCB1198B6B1001E7311 /* star_empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 03BECCC91198B6B1001E7311 /* star_empty.png */; };
 		03BECCCC1198B6B1001E7311 /* star_full.png in Resources */ = {isa = PBXBuildFile; fileRef = 03BECCCA1198B6B1001E7311 /* star_full.png */; };
@@ -80,6 +81,8 @@
 		03946ADD15E5B2FD00916FC5 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Accounts.framework; sourceTree = DEVELOPER_DIR; };
 		039B77E90F9F2C99009A0C57 /* THTweet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THTweet.h; sourceTree = "<group>"; };
 		039B77EA0F9F2C99009A0C57 /* THTweet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THTweet.m; sourceTree = "<group>"; };
+		03B1703A162C32EB009AA5ED /* THTweetView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THTweetView.h; sourceTree = "<group>"; };
+		03B1703B162C32EB009AA5ED /* THTweetView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THTweetView.m; sourceTree = "<group>"; };
 		03BEBC50119521BE001E7311 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		03BECCC91198B6B1001E7311 /* star_empty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star_empty.png; sourceTree = "<group>"; };
 		03BECCCA1198B6B1001E7311 /* star_full.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star_full.png; sourceTree = "<group>"; };
@@ -129,6 +132,8 @@
 				03F7F994118CC86A00CE6E55 /* THCumulativeChartView.m */,
 				0334DA391629404D000A6448 /* THTextView.h */,
 				0334DA3A1629404D000A6448 /* THTextView.m */,
+				03B1703A162C32EB009AA5ED /* THTweetView.h */,
+				03B1703B162C32EB009AA5ED /* THTweetView.m */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -359,6 +364,7 @@
 				037D73C01625358B0051665D /* STJSONIP.m in Sources */,
 				0334DA32162917B5000A6448 /* THCollectionView.m in Sources */,
 				0334DA3B1629404D000A6448 /* THTextView.m in Sources */,
+				03B1703C162C32EB009AA5ED /* THTweetView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

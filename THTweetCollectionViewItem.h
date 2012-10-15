@@ -7,10 +7,11 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "THTweetView.h"
 
 @class THTextView;
 
-@interface THTweetCollectionViewItem : NSCollectionViewItem
+@interface THTweetCollectionViewItem : NSCollectionViewItem <THTweetViewProtocol>
 
 @property (nonatomic, retain) IBOutlet THTextView *tweetTextTextView;
 
