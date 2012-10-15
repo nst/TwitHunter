@@ -24,8 +24,7 @@
 }
 
 
-- (void)setSelectionIndexes:(NSIndexSet *)indexes
-{
+- (void)setSelectionIndexes:(NSIndexSet *)indexes {
     [super setSelectionIndexes:indexes];
     
     if(currentSelection != NSNotFound) {
@@ -34,7 +33,7 @@
         [view setSelected:NO];
     }
     
-    if([indexes count] != 0) {        
+    if([indexes count] != 0) {
         NSCollectionViewItem *item = [self itemAtIndex:[indexes firstIndex]];
         THTweetView *view = (THTweetView *)[item view];
         [view setSelected:YES];
