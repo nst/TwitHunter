@@ -11,6 +11,10 @@
 #import "THTweet.h"
 #import "THUser.h"
 
+static NSRegularExpression *linksRegex = nil;
+static NSRegularExpression *usernamesRegex = nil;
+static NSRegularExpression *hashtagsRegex = nil;
+
 @implementation THTweet
 
 @dynamic text;
@@ -332,9 +336,10 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	[paragraphStyle release];
     
 	// Generate arrays of our interesting items. Links, usernames, hashtags.
-	NSArray *linkMatches = [self scanStringForLinks:statusString];
-	NSArray *usernameMatches = [self scanStringForUsernames:statusString];
-	NSArray *hashtagMatches = [self scanStringForHashtags:statusString];
+    
+	NSArray *linkMatches = [[self linksRegex] matchesInString:self.text options:0 range:NSMakeRange(0, [self.text length])];
+	NSArray *usernameMatches = [[self usernamesRegex] matchesInString:self.text options:0 range:NSMakeRange(0, [self.text length])];
+	NSArray *hashtagMatches = [[self hashtagsRegex] matchesInString:self.text options:0 range:NSMakeRange(0, [self.text length])];
 	
 	// Iterate across the string matches from our regular expressions, find the range
 	// of each match, add new attributes to that range
@@ -408,22 +413,30 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 }
 
 #pragma mark -
-#pragma mark String parsing
+#pragma mark regex
 
-// These regular expressions aren't the greatest. There are much better ones out there to parse URLs, @usernames
-// and hashtags out of tweets. Getting the escaping just right is a pain in the ass, so be forewarned.
-
-- (NSArray *)scanStringForLinks:(NSString *)string {
-    //return @[@"YouTube"];
-	return [string componentsMatchedByRegex:@"\\b(([\\w-]+://?|www[.])[^\\s()<>]+(?:\\([\\w\\d]+\\)|([^[:punct:]\\s]|/)))"];
+- (NSRegularExpression *)linksRegex {
+    if(linksRegex == nil) {
+        NSString *pattern = @"\\b(([\\w-]+://?|www[.])[^\\s()<>]+(?:\\([\\w\\d]+\\)|([^[:punct:]\\s]|/)))";
+        linksRegex = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:nil];
+    }
+    return linksRegex;
 }
 
-- (NSArray *)scanStringForUsernames:(NSString *)string {
-	return [string componentsMatchedByRegex:@"@{1}([-A-Za-z0-9_]{2,})"];
+- (NSRegularExpression *)usernamesRegex {
+    if(usernamesRegex == nil) {
+        NSString *pattern = @"@{1}([-A-Za-z0-9_]{2,})";
+        usernamesRegex = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:nil];
+    }
+    return usernamesRegex;
 }
 
-- (NSArray *)scanStringForHashtags:(NSString *)string {
-	return [string componentsMatchedByRegex:@"[\\s]{1,}#{1}([^\\s]{2,})"];
+- (NSRegularExpression *)hashtagsRegex {
+    if(hashtagsRegex == nil) {
+        NSString *pattern = @"[\\s]{1,}#{1}([^\\s]{2,})";
+        hashtagsRegex = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:nil];
+    }
+    return hashtagsRegex;
 }
 
 @end

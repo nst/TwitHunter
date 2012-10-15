@@ -60,17 +60,4 @@
 //    return [as autorelease];
 //}
 
-- (NSArray *)componentsMatchedByRegex:(NSString *)pattern {
-
-    // which return type in array
-    
-    NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:nil];
-    
-    NSArray *a = [regex matchesInString:self options:0 range:NSMakeRange(0, [self length])];
-    
-    [regex release];
-    
-    return a;
-}
-
 @end

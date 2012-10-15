@@ -14,6 +14,4 @@
 //- (NSAttributedString *)attributedStringWithURLs;
 - (unsigned long long)unsignedLongLongValue;
 
-- (NSArray *)componentsMatchedByRegex:(NSString *)pattern;
-
 @end

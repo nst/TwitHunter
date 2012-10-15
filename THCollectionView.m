@@ -9,7 +9,6 @@
 #import "THCollectionView.h"
 #import "THTweetCollectionViewItem.h"
 #import "THTweet.h"
-#import "THTweetView.h"
 
 @implementation THCollectionView
 

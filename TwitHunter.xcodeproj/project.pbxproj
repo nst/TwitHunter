@@ -11,8 +11,6 @@
 		030F24B00FB1C6CF0026C436 /* NSString+TH.m in Sources */ = {isa = PBXBuildFile; fileRef = 030F24AF0FB1C6CF0026C436 /* NSString+TH.m */; };
 		0334DA32162917B5000A6448 /* THCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0334DA31162917B5000A6448 /* THCollectionView.m */; };
 		0334DA3B1629404D000A6448 /* THTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0334DA3A1629404D000A6448 /* THTextView.m */; };
-		0334DA3E1629423D000A6448 /* THTweetView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0334DA3D1629423D000A6448 /* THTweetView.m */; };
-		0334DA4116294A78000A6448 /* THScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0334DA4016294A78000A6448 /* THScrollView.m */; };
 		033595920F9AB5180084F7BD /* THController.m in Sources */ = {isa = PBXBuildFile; fileRef = 033595910F9AB5180084F7BD /* THController.m */; };
 		033596340F9B9AF30084F7BD /* THUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 033596320F9B9AF30084F7BD /* THUser.m */; };
 		03359D1A0F9D09190084F7BD /* THTweetCollectionViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 03359D190F9D09190084F7BD /* THTweetCollectionViewItem.m */; };
@@ -51,10 +49,6 @@
 		0334DA31162917B5000A6448 /* THCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THCollectionView.m; sourceTree = "<group>"; };
 		0334DA391629404D000A6448 /* THTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THTextView.h; sourceTree = "<group>"; };
 		0334DA3A1629404D000A6448 /* THTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THTextView.m; sourceTree = "<group>"; };
-		0334DA3C1629423D000A6448 /* THTweetView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THTweetView.h; sourceTree = "<group>"; };
-		0334DA3D1629423D000A6448 /* THTweetView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THTweetView.m; sourceTree = "<group>"; };
-		0334DA3F16294A78000A6448 /* THScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THScrollView.h; sourceTree = "<group>"; };
-		0334DA4016294A78000A6448 /* THScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THScrollView.m; sourceTree = "<group>"; };
 		033595900F9AB5180084F7BD /* THController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THController.h; sourceTree = "<group>"; };
 		033595910F9AB5180084F7BD /* THController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THController.m; sourceTree = "<group>"; };
 		033596310F9B9AF30084F7BD /* THUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THUser.h; sourceTree = "<group>"; };
@@ -135,10 +129,6 @@
 				03F7F994118CC86A00CE6E55 /* THCumulativeChartView.m */,
 				0334DA391629404D000A6448 /* THTextView.h */,
 				0334DA3A1629404D000A6448 /* THTextView.m */,
-				0334DA3F16294A78000A6448 /* THScrollView.h */,
-				0334DA4016294A78000A6448 /* THScrollView.m */,
-				0334DA3C1629423D000A6448 /* THTweetView.h */,
-				0334DA3D1629423D000A6448 /* THTweetView.m */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -369,8 +359,6 @@
 				037D73C01625358B0051665D /* STJSONIP.m in Sources */,
 				0334DA32162917B5000A6448 /* THCollectionView.m in Sources */,
 				0334DA3B1629404D000A6448 /* THTextView.m in Sources */,
-				0334DA3E1629423D000A6448 /* THTweetView.m in Sources */,
-				0334DA4116294A78000A6448 /* THScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
