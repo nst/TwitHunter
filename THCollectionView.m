@@ -11,35 +11,33 @@
 #import "THTweet.h"
 #import "THTweetView.h"
 
+@interface THCollectionView ()
+@property (nonatomic, retain) NSIndexSet *formerSelectionIndexSet;
+@end
+
 @implementation THCollectionView
 
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        currentSelection = 0;
-    }
-    
-    return self;
+- (void)dealloc {
+    [_formerSelectionIndexSet release];
+    [super dealloc];
 }
-
 
 - (void)setSelectionIndexes:(NSIndexSet *)indexes {
     [super setSelectionIndexes:indexes];
     
-    if(currentSelection != NSNotFound) {
-        NSCollectionViewItem *item = [self itemAtIndex:currentSelection];
+    [_formerSelectionIndexSet enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+        NSCollectionViewItem *item = [self itemAtIndex:idx];
         THTweetView *view = (THTweetView *)[item view];
         [view setSelected:NO];
-    }
+    }];
     
-    if([indexes count] != 0) {
-        NSCollectionViewItem *item = [self itemAtIndex:[indexes firstIndex]];
+    self.formerSelectionIndexSet = indexes;
+    
+    [indexes enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+        NSCollectionViewItem *item = [self itemAtIndex:idx];
         THTweetView *view = (THTweetView *)[item view];
         [view setSelected:YES];
-    }
-
-    currentSelection = [indexes firstIndex];
+    }];
 }
 
 - (void)awakeFromNib {
