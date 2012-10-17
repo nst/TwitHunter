@@ -22,6 +22,24 @@
     [super dealloc];
 }
 
+- (NSCollectionViewItem *)newItemForRepresentedObject:(id)object {
+        
+    NSCollectionViewItem *item = [super newItemForRepresentedObject:object];
+//    NSView *view = [item view];
+//    
+//    [view bind:@"title"
+//      toObject:object
+//   withKeyPath:@"title"
+//       options:nil];
+//    
+//    [view bind:@"option"
+//      toObject:object
+//   withKeyPath:@"option"
+//       options:nil];
+    
+    return item;
+}
+
 - (void)setSelectionIndexes:(NSIndexSet *)indexes {
     [super setSelectionIndexes:indexes];
     

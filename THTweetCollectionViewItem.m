@@ -52,12 +52,16 @@
 	[[NSNotificationCenter defaultCenter] postNotification:notification];
 }
 
-- (IBAction)changeReadState:(id)sender {
+- (IBAction)toggleReadState:(id)sender {
 	THTweet *tweet = [self representedObject];
     
     BOOL wasRead = [tweet.isRead boolValue];
     
     [self setReadState:!wasRead];
+}
+
+- (IBAction)markAsRead:(id)sender {
+    [self setReadState:YES];
 }
 
 - (IBAction)retweet:(id)sender {
@@ -132,10 +136,14 @@
 
 - (void)setRepresentedObject:(id)representedObject {
     [super setRepresentedObject:representedObject];
-        
+    
+//    NSLog(@"-- setRepresentedObject");
+    
     THTweetView *tweetView = (THTweetView *)(self.view);
     
     tweetView.delegate = self;
+    
+    if(representedObject == nil) return;
     
 //    [_tweetTextTextView bind:@"attributedString" toObject:representedObject withKeyPath:@"attributedString" options:nil];
     
@@ -144,8 +152,6 @@
     if(as == nil) return;
     
     [[_tweetTextTextView textStorage] setAttributedString:as];
-    
-    //representedObject.attributedString
 }
 
 #pragma mark THTweetViewProtocol

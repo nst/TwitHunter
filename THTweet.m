@@ -296,6 +296,9 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 }
 
 - (NSAttributedString *)attributedString {
+    
+//    NSLog(@"-- attributedString");
+    
     NSString *statusString = self.text;
     
 	NSMutableAttributedString *attributedStatusString = [[NSMutableAttributedString alloc] initWithString:statusString];

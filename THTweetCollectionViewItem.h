@@ -16,7 +16,8 @@
 @property (nonatomic, retain) IBOutlet THTextView *tweetTextTextView;
 
 - (IBAction)openUserWebTimeline:(id)sender;
-- (IBAction)changeReadState:(id)sender;
+- (IBAction)toggleReadState:(id)sender;
+- (IBAction)markAsRead:(id)sender;
 
 - (IBAction)retweet:(id)sender;
 - (IBAction)reply:(id)sender;
