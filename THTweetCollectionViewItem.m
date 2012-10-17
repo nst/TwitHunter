@@ -134,24 +134,45 @@
 //    [NSMenu popUpContextMenu:menu withEvent:event forView:(NSButton *)sender];
 //}
 
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    return self;
+}
+
+- (void)loadView {
+    [super loadView];
+    
+    if(self.representedObject == nil) return;
+    
+    NSAttributedString *as = [self.representedObject attributedString];
+    
+    if(as == nil) return;
+
+    [[_tweetTextTextView textStorage] setAttributedString:as];
+    
+//    [_tweetTextTextView bind:@"attributedString" toObject:self.representedObject withKeyPath:@"attributedString" options:nil];
+}
+
 - (void)setRepresentedObject:(id)representedObject {
     [super setRepresentedObject:representedObject];
     
 //    NSLog(@"-- setRepresentedObject");
     
-    THTweetView *tweetView = (THTweetView *)(self.view);
-    
-    tweetView.delegate = self;
-    
-    if(representedObject == nil) return;
-    
+//    THTweetView *tweetView = (THTweetView *)(self.view);
+//    
+//    NSLog(@"-- %@", tweetView);
+//    
+//    tweetView.delegate = self;
+//    
+//    if(representedObject == nil) return;
+//    
 //    [_tweetTextTextView bind:@"attributedString" toObject:representedObject withKeyPath:@"attributedString" options:nil];
     
-    NSAttributedString *as = [representedObject attributedString];
-    
-    if(as == nil) return;
-    
-    [[_tweetTextTextView textStorage] setAttributedString:as];
+//    NSAttributedString *as = [representedObject attributedString];
+//    
+//    if(as == nil) return;
+//    
+//    [[_tweetTextTextView textStorage] setAttributedString:as];
 }
 
 #pragma mark THTweetViewProtocol

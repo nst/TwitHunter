@@ -10,8 +10,13 @@
 
 @implementation THTweetView
 
-- (void)drawRect:(NSRect)dirtyRect
-{
+//- (id)initWithFrame:(NSRect)frameRect {
+//    self = [super initWithFrame:frameRect];
+//    NSLog(@"-- initWithFrame");
+//    return self;
+//}
+
+- (void)drawRect:(NSRect)dirtyRect {
     if (self.selected) {
         [[NSColor orangeColor] set];
         NSRectFill(dirtyRect);
