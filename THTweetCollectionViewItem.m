@@ -14,13 +14,19 @@
 
 @implementation THTweetCollectionViewItem
 
-//- (void)awakeFromNib {
-//
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    
+    [_tweetTextTextView setEditable:NO];
+    [_tweetTextTextView setSelectable:YES];
+    [_tweetTextTextView setDrawsBackground:NO];
+//    [_tweetTextTextView setRichText:YES];
+    
 //	CALayer *layer = [CALayer layer];
 //	CGColorRef color = [NSColor redColor].CGColor;
 //	layer.backgroundColor = color;
 //	[[self view] setLayer:layer];
-//}
+}
 
 - (IBAction)openUserWebTimeline:(id)sender {
 	THTweet *tweet = [self representedObject];
@@ -130,6 +136,16 @@
     THTweetView *tweetView = (THTweetView *)(self.view);
     
     tweetView.delegate = self;
+    
+//    [_tweetTextTextView bind:@"attributedString" toObject:representedObject withKeyPath:@"attributedString" options:nil];
+    
+    NSAttributedString *as = [representedObject attributedString];
+    
+    if(as == nil) return;
+    
+    [[_tweetTextTextView textStorage] setAttributedString:as];
+    
+    //representedObject.attributedString
 }
 
 #pragma mark THTweetViewProtocol
