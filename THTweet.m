@@ -323,7 +323,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	NSDictionary *fullAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSColor colorWithDeviceHue:.53 saturation:.13 brightness:.26 alpha:1], NSForegroundColorAttributeName,
 									textShadow, NSShadowAttributeName,
-									[NSCursor arrowCursor], NSCursorAttributeName,
+									//[NSCursor arrowCursor], NSCursorAttributeName,
 									[NSNumber numberWithFloat:0.0], NSKernAttributeName,
 									[NSNumber numberWithInt:0], NSLigatureAttributeName,
 									paragraphStyle, NSParagraphStyleAttributeName,
