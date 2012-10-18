@@ -9,6 +9,28 @@
 #import "THTextView.h"
 
 @implementation THTextView
+//
+//- (void)mouseEntered:(NSEvent *)theEvent {
+//
+//    [[NSCursor arrowCursor] set];
+//
+//    [super mouseEntered:theEvent];
+//}
+
+- (void)mouseMoved:(NSEvent *)theEvent {
+
+    [super mouseMoved:theEvent];
+
+    NSPoint point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+	
+	NSInteger charIndex = [self characterIndexForInsertionAtPoint:point];
+	
+    BOOL movedOnATextCharacter = NSLocationInRange(charIndex, NSMakeRange(0, [[self string] length]));
+    
+	if (movedOnATextCharacter == NO) {
+        [[NSCursor arrowCursor] set];
+    }
+}
 
 - (void)mouseDown:(NSEvent *)theEvent {
 	NSPoint point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
@@ -51,6 +73,8 @@
 		
 	}
 	
+    //[[self nextResponder] mouseDown:theEvent];
+    
 	[super mouseDown:theEvent];
 }
 
