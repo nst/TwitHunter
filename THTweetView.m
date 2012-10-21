@@ -20,7 +20,19 @@
     if (self.selected) {
         [[NSColor orangeColor] set];
         NSRectFill(dirtyRect);
+    } else if (self.isRead) {
+        [[NSColor lightGrayColor] set];
+        NSRectFill(dirtyRect);    
     }
+}
+
+- (void)setIsRead:(BOOL)flag {
+    if (_isRead == flag) {
+        return;
+    }
+    
+    _isRead = flag;
+    [self setNeedsDisplay:YES];
 }
 
 - (void)setSelected:(BOOL)flag {

@@ -19,5 +19,6 @@
 @property (nonatomic, assign) id <THTweetViewProtocol> delegate;
 
 @property (nonatomic) BOOL selected;
+@property (nonatomic) BOOL isRead;
 
 @end
