@@ -451,7 +451,7 @@
     [_twitter getHomeTimelineSinceID:[lastKnownID description] count:@"100" successBlock:^(id json) {
         self.isConnecting = @NO;
         self.requestStatus = @"";
-        [self statusesReceived:json];
+        [self saveStatusesFromDictionaries:json];
     } errorBlock:^(NSError *error) {
         self.isConnecting = @NO;
         NSLog(@"-- error: %@", [error localizedDescription]);
@@ -488,7 +488,7 @@
     
     [_twitter getFavoritesListWithSuccessBlock:^(NSArray *statuses) {
         self.isConnecting = @NO;
-        [self statusesReceived:statuses];
+        [self saveFavoritesFromDictionaries:statuses];
     } errorBlock:^(NSError *error) {
         NSLog(@"-- error: %@", [error localizedDescription]);
         self.isConnecting = @NO;
@@ -612,13 +612,9 @@
 	[super dealloc];
 }
 
-- (void)statusesReceived:(NSArray *)statuses {
+- (void)saveStatusesFromDictionaries:(NSArray *)statuses {
 	NSLog(@"-- statusesReceived: %ld", [statuses count]);
 	
-	self.requestStatus = nil;
-    //	[requestsIDs removeObject:identifier];
-    //	self.isConnecting = [NSNumber numberWithBool:[requestsIDs count] != 0];
-    
 	if([statuses count] == 0) return;
 	
     //	BOOL isFavoritesRequest = NO; // TODO: sometimes YES
@@ -635,8 +631,8 @@
     //		[THTweet unfavorFavoritesBetweenMinId:unfavorMinId maxId:unfavorMaxId];
     //	}
 
-    NSDictionary *boundingIds = [THTweet saveTweetsFromDictionariesArray:statuses];
-    NSNumber *lowestId = [boundingIds valueForKey:@"lowestId"];
+    NSArray *tweets = [THTweet saveTweetsFromDictionariesArray:statuses];
+    //NSNumber *lowestId = [boundingIds valueForKey:@"lowestId"];
 
     /**/
     
@@ -648,24 +644,53 @@
     NSLog(@"-- privateContext: %@ type %lu", privateContext, privateContext.concurrencyType);
 
     [privateContext performBlockAndWait:^{
-        //	NSNumber *higestId = [boundingIds valueForKey:@"higestId"];
-        
-        //	if(higestId) {
-        //		[[NSUserDefaults standardUserDefaults] setObject:higestId forKey:@"highestID"];
-        //		NSLog(@"-- stored highestID: %@", higestId);
-        //	}
-        
-        NSArray *tweets = [THTweet tweetsWithIdGreaterOrEqualTo:lowestId context:privateContext];
-        
         [self updateScoresForTweets:tweets context:privateContext];
     }];
     
-//	[tweetArrayController rearrangeObjects];
-	
 	[self updateTweetFilterPredicate];
 
 	[self updateCumulatedData];
 
+	//[_tweetArrayController rearrangeObjects];
+}
+
+- (void)saveFavoritesFromDictionaries:(NSArray *)statuses {
+	NSLog(@"-- favoritesReceived: %ld", [statuses count]);
+
+	if([statuses count] == 0) return;
+
+    NSManagedObjectContext *mainContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
+    NSManagedObjectContext *privateContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    privateContext.parentContext = mainContext;
+
+    // statuses are assumed to be ordered by DESC id
+    NSArray *statusesIds = [statuses valueForKeyPath:@"id"];
+    NSString *minIdString = [statusesIds lastObject];
+//    NSString *maxIdString = [statusesIds objectAtIndex:0];
+
+    NSNumber *unfavorMinId = [NSNumber numberWithUnsignedLongLong:[minIdString unsignedLongLongValue]];
+//    NSNumber *unfavorMaxId = [NSNumber numberWithUnsignedLongLong:[maxIdString unsignedLongLongValue]];
+
+    NSArray *favoritesBoundsTweets = [THTweet tweetsWithIdGreaterOrEqualTo:unfavorMinId context:privateContext];
+    
+    for(THTweet *t in favoritesBoundsTweets) {
+        t.isFavorite = @NO;
+    }
+    
+    NSError *error = nil;
+    BOOL success = [privateContext save:&error];
+    if(success == NO) {
+        NSLog(@"-- save error: %@", [error localizedDescription]);
+    }
+    
+    NSArray *tweets = [THTweet saveTweetsFromDictionariesArray:statuses];
+    
+    [self updateScoresForTweets:tweets context:privateContext];
+    
+    [self updateTweetFilterPredicate];
+    
+	[self updateCumulatedData];
+    
 	//[_tweetArrayController rearrangeObjects];
 }
 

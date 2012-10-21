@@ -26,8 +26,8 @@
 + (THTweet *)tweetWithHighestUidInContext:(NSManagedObjectContext *)context;
 + (THTweet *)tweetWithUid:(NSString *)uid context:(NSManagedObjectContext *)context;
 + (void)unfavorFavoritesBetweenMinId:(NSNumber *)unfavorMinId maxId:(NSNumber *)unfavorMaxId context:(NSManagedObjectContext *)context;
-+ (BOOL)updateOrCreateTweetFromDictionary:(NSDictionary *)d context:(NSManagedObjectContext *)context;
-+ (NSDictionary *)saveTweetsFromDictionariesArray:(NSArray *)a;
++ (THTweet *)updateOrCreateTweetFromDictionary:(NSDictionary *)d context:(NSManagedObjectContext *)context;
++ (NSArray *)saveTweetsFromDictionariesArray:(NSArray *)a;
 + (NSArray *)tweetsContainingKeyword:(NSString *)keyword context:(NSManagedObjectContext *)context;
 + (NSUInteger)nbOfTweetsForScore:(NSNumber *)aScore andPredicates:(NSArray *)predicates context:(NSManagedObjectContext *)context;
 + (NSArray *)tweetsWithAndPredicates:(NSArray *)predicates context:(NSManagedObjectContext *)context;

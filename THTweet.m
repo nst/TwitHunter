@@ -192,7 +192,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	}
 	[request release];
 	
-	return [array lastObject];
+	return array;
 }
 
 + (void)unfavorFavoritesBetweenMinId:(NSNumber *)unfavorMinId maxId:(NSNumber *)unfavorMaxId context:(NSManagedObjectContext *)context {
@@ -219,8 +219,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	}
 }
 
-+ (BOOL)updateOrCreateTweetFromDictionary:(NSDictionary *)d context:(NSManagedObjectContext *)context {
-	// TODO: keep lower and bigger uids and if request was favorites, then un-favorite the ones out of bounds..
++ (THTweet *)updateOrCreateTweetFromDictionary:(NSDictionary *)d context:(NSManagedObjectContext *)context {
 	
 	NSString *uid = [d objectForKey:@"id"];
 	
@@ -256,30 +255,32 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	}
 	tweet.isFavorite = [d objectForKey:@"favorited"];
     
+    if(tweet.isFavorite) {
+        NSLog(@"-- %@", tweet.text);
+        NSLog(@"-- %@", d);
+    }
+    
 	NSLog(@"** created %d favorite %@ %@ %@ %@", wasCreated, tweet.isFavorite, tweet.uid, tweet.user.screenName, tweet.text);
 	
-	return YES;
+	return tweet;
 }
 
-+ (NSDictionary *)saveTweetsFromDictionariesArray:(NSArray *)a {
++ (NSArray *)saveTweetsFromDictionariesArray:(NSArray *)a {
 	// TODO: remove non-favorites between new favorites bounds
     
+    NSManagedObjectContext *parentContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
     NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    privateContext.parentContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
+    privateContext.parentContext = parentContext;
     
-	__block unsigned long long lowestID = -1;
-	__block unsigned long long highestID = 0;
-	
     __block BOOL success = NO;
     __block NSError *error = nil;
     
-	[privateContext performBlockAndWait:^{
+    __block NSMutableArray *tweets = [NSMutableArray array];
+    
+	[parentContext performBlockAndWait:^{
         for(NSDictionary *d in a) {
-            [THTweet updateOrCreateTweetFromDictionary:d context:privateContext];
-            
-            unsigned long long currentID = [[d objectForKey:@"id"] unsignedLongLongValue];
-            highestID = MAX(highestID, currentID);
-            lowestID = MIN(lowestID, currentID);
+            THTweet *t = [THTweet updateOrCreateTweetFromDictionary:d context:privateContext];
+            if(t) [tweets addObject:t];
         }
         
         success = [privateContext save:&error];
@@ -290,9 +291,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
         return nil;
     }
     
-	return [NSDictionary dictionaryWithObjectsAndKeys:
-			[NSNumber numberWithUnsignedLongLong:lowestID], @"lowestID",
-			[NSNumber numberWithUnsignedLongLong:highestID], @"higestId", nil];
+	return tweets;
 }
 
 - (NSAttributedString *)attributedString {
