@@ -295,7 +295,7 @@
 	self.requestStatus = @"Posting status...";
     
     if(_postMediaURL) {
-        [_twitter postStatusUpdate:_tweetText inReplyToStatusID:nil mediaURL:_postMediaURL lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
+        [_twitter postStatusUpdate:_tweetText inReplyToStatusID:nil mediaURL:_postMediaURL placeID:_tweetLocation.placeID lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
             self.postMediaURL = nil;
@@ -303,7 +303,7 @@
             self.requestStatus = error ? [error localizedDescription] : @"Unknown error";
         }];
     } else {
-        [_twitter postStatusUpdate:_tweetText inReplyToStatusID:nil lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
+        [_twitter postStatusUpdate:_tweetText inReplyToStatusID:nil placeID:_tweetLocation.placeID lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
         } errorBlock:^(NSError *error) {
@@ -341,8 +341,8 @@
     _locationVC.tweetLocation = [[_tweetLocation copy] autorelease];
     _locationVC.locationDelegate = self;
     
-    _locationVC.tweetLocation.latitude = @"46.5199617";
-    _locationVC.tweetLocation.longitude = @"6.6335971";
+//    _locationVC.tweetLocation.latitude = @"46.5199617";
+//    _locationVC.tweetLocation.longitude = @"6.6335971";
     
 //    NSPanel *panel = [[[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, 800, 600)
 //                                                 styleMask:NSBorderlessWindowMask
@@ -367,8 +367,6 @@
 #pragma mark THLocationVCProtocol
 - (void)locationVC:(THLocationVC *)locationVC didChooseLocation:(THTweetLocation *)location {
     
-    NSLog(@"-- xxx %@", locationVC.tweetLocation.latitude);
-    
     self.tweetLocation = locationVC.tweetLocation;
     
     [[NSApplication sharedApplication] endSheet:_locationPanel];
@@ -378,10 +376,12 @@
 }
 
 - (void)locationVCDidCancel:(THLocationVC *)locationVC {
-    NSLog(@"-- cancel");
+
     [[NSApplication sharedApplication] endSheet:_locationPanel];
     [_locationPanel orderOut:self];
-    
+
+    self.tweetLocation = nil;
+
     self.locationVC = nil;
 }
 
@@ -713,7 +713,7 @@
     
     THTweet *selectedTweet = [[_tweetArrayController selectedObjects] lastObject];
     
-    [_twitter postStatusUpdate:_tweetText inReplyToStatusID:[selectedTweet.uid description] lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
+    [_twitter postStatusUpdate:_tweetText inReplyToStatusID:[selectedTweet.uid description] placeID:_tweetLocation.placeID lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
         self.tweetText = nil;
         self.requestStatus = @"OK, reply was posted.";
     } errorBlock:^(NSError *error) {
