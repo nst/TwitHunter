@@ -17,6 +17,8 @@
 //    [super mouseEntered:theEvent];
 //}
 
+// TODO: prevent area selection
+
 - (void)mouseMoved:(NSEvent *)theEvent {
 
     [super mouseMoved:theEvent];
@@ -73,9 +75,7 @@
 		
 	}
 	
-    //[[self nextResponder] mouseDown:theEvent];
-    
-	[super mouseDown:theEvent];
+    [[self nextResponder] mouseDown:theEvent];
 }
 
 @end
