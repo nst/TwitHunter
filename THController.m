@@ -507,6 +507,19 @@
 - (void)awakeFromNib {
 	NSLog(@"-- awakeFromNib");
 	
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"TwitterClients" ofType:@"plist"];
+    NSArray *clientsDictionaries = [NSArray arrayWithContentsOfFile:path];
+    
+    NSDictionary *customClient = @{ @"name":@"Custom...", @"ck":@"", @"cs":@"" };
+    
+    NSArray *ma = [@[customClient] arrayByAddingObjectsFromArray:clientsDictionaries];
+    
+    self.twitterClients = ma;
+    
+    [_twitterClientsController setSelectedObjects:@[customClient]];
+    
+    /**/
+    
 	NSNumber *currentScore = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
 	[_cumulativeChartView setScore:[currentScore integerValue]];
 	
@@ -585,6 +598,9 @@
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 
+    [_twitterClients release];
+    [_twitterClientsController release];
+    
     [_tweetArrayController release];
     [_userArrayController release];
     [_keywordArrayController release];    

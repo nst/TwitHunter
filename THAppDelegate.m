@@ -189,6 +189,11 @@
     return NSTerminateNow;
 }
 
+- (BOOL)windowShouldClose:(id)sender {
+    [[NSApplication sharedApplication] terminate:self];
+    return YES;
+}
+
 - (void)dealloc {
     [window release];
     [managedObjectContext release];

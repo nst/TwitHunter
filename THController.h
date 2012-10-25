@@ -37,6 +37,8 @@
 @property (nonatomic, retain) IBOutlet THCumulativeChartView *cumulativeChartView;
 @property (nonatomic, retain) IBOutlet NSTextField *expectedNbTweetsLabel;
 @property (nonatomic, retain) IBOutlet NSTextField *expectedScoreLabel;
+@property (nonatomic, retain) NSArray *twitterClients;
+@property (nonatomic, retain) IBOutlet NSArrayController *twitterClientsController;
 
 - (IBAction)update:(id)sender;
 - (IBAction)synchronizeFavorites:(id)sender;
