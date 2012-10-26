@@ -201,7 +201,7 @@
 - (id)init {
 	if (self = [super init]) {
 		NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
-		self.tweetSortDescriptors = [NSArray arrayWithObject:sd];
+		self.tweetSortDescriptors = @[sd];
 		[sd release];
         
 		NSString *defaultsPath = [[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"];
