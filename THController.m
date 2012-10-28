@@ -16,6 +16,7 @@
 #import "THTweetLocation.h"
 #import "THLocationVC.h"
 #import "THCumulativeChartView.h"
+#import "THPreferencesWC.h"
 
 // TODO: https://developer.apple.com/library/mac/#qa/qa2006/qa1487.html
 // TODO: https://github.com/blladnar/AutoLink
@@ -282,12 +283,6 @@
 	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
-- (IBAction)updateCredentials:(id)sender {
-	[_preferences close];
-	
-	[self update:self];
-}
-
 - (IBAction)tweet:(id)sender {
     
     if(_tweetText == nil) return;
@@ -506,19 +501,6 @@
 
 - (void)awakeFromNib {
 	NSLog(@"-- awakeFromNib");
-	
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"TwitterClients" ofType:@"plist"];
-    NSArray *clientsDictionaries = [NSArray arrayWithContentsOfFile:path];
-    
-    NSDictionary *customClient = @{ @"name":@"Custom...", @"ck":@"", @"cs":@"" };
-    
-    NSArray *ma = [@[customClient] arrayByAddingObjectsFromArray:clientsDictionaries];
-    
-    self.twitterClients = ma;
-    
-    [_twitterClientsController setSelectedObjects:@[customClient]];
-    
-    /**/
     
 	NSNumber *currentScore = [[NSUserDefaultsController sharedUserDefaultsController] valueForKeyPath:@"values.score"];
 	[_cumulativeChartView setScore:[currentScore integerValue]];
@@ -595,11 +577,15 @@
 	//[_tweetArrayController rearrangeObjects];
 }
 
+- (IBAction)openPreferences:(id)sender {
+    
+    [[THPreferencesWC sharedPreferencesWC] showWindow:nil];
+}
+
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    [_twitterClients release];
-    [_twitterClientsController release];
+    [_preferencesWC release];
     
     [_tweetArrayController release];
     [_userArrayController release];
@@ -610,7 +596,6 @@
     [_postMediaURL release];
     
     [_collectionView release];
-	[_preferences release];
 	[_cumulativeChartView release];
 	[_expectedNbTweetsLabel release];
 	[_expectedScoreLabel release];

@@ -20,6 +20,7 @@
 @class THLocationPanel;
 @class THLocationVC;
 @class THCumulativeChartView;
+@class THPreferencesWC;
 
 @interface THController : NSObject <CumulativeChartViewDelegate, CumulativeChartViewDataSource, THLocationVCProtocol> {
 	NSUInteger tweetsCount;
@@ -33,22 +34,22 @@
 @property (nonatomic, retain) IBOutlet NSArrayController *keywordArrayController;
 @property (nonatomic, retain) IBOutlet NSPanel *locationPanel;
 @property (nonatomic, retain) IBOutlet NSCollectionView *collectionView;
-@property (nonatomic, retain) IBOutlet NSPanel *preferences;
 @property (nonatomic, retain) IBOutlet THCumulativeChartView *cumulativeChartView;
 @property (nonatomic, retain) IBOutlet NSTextField *expectedNbTweetsLabel;
 @property (nonatomic, retain) IBOutlet NSTextField *expectedScoreLabel;
 @property (nonatomic, retain) NSArray *twitterClients;
-@property (nonatomic, retain) IBOutlet NSArrayController *twitterClientsController;
+@property (nonatomic, retain) THPreferencesWC *preferencesWC;
 
 - (IBAction)update:(id)sender;
 - (IBAction)synchronizeFavorites:(id)sender;
 - (IBAction)chooseMedia:(id)sender;
 - (IBAction)chooseLocation:(id)sender;
 - (IBAction)tweet:(id)sender;
-- (IBAction)updateCredentials:(id)sender;
 - (IBAction)updateTweetScores:(id)sender;
 
 - (IBAction)markAllAsRead:(id)sender;
 - (IBAction)markAllAsUnread:(id)sender;
+
+- (IBAction)openPreferences:(id)sender;
 
 @end
