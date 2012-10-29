@@ -185,8 +185,9 @@ static THPreferencesWC *sharedPreferencesWC = nil;
             
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"tokensAK"];
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"tokensAS"];
-            
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"clientName"];
+            
+            [[NSUserDefaults standardUserDefaults] setValue:username forKey:@"userName"];
             
             [_preferencesDelegate preferences:self didChooseTwitter:_twitter];
             
@@ -229,7 +230,8 @@ static THPreferencesWC *sharedPreferencesWC = nil;
                 
                 [[NSUserDefaults standardUserDefaults] setValue:_twitter.oauthAccessToken forKey:@"tokensAK"];
                 [[NSUserDefaults standardUserDefaults] setValue:_twitter.oauthAccessTokenSecret forKey:@"tokensAS"];
-                
+
+                [[NSUserDefaults standardUserDefaults] setValue:username forKey:@"userName"];
                 [[NSUserDefaults standardUserDefaults] setValue:selectedClient[@"name"] forKey:@"clientName"];
                 
                 [_preferencesDelegate preferences:self didChooseTwitter:_twitter];

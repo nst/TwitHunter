@@ -43,18 +43,16 @@
     
     NSString *title = [NSString stringWithFormat:@"TwitHunter"];
     
-    NSString *username = _twitter.userName;
+    NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"userName"];
     NSString *consumerName = [[NSUserDefaults standardUserDefaults] valueForKey:@"clientName"];
     
     if(username) {
-        title = [title stringByAppendingFormat:@" - %@", username];
+        title = [title stringByAppendingFormat:@" - @%@", username];
     }
     
     if(consumerName) {
         title = [title stringByAppendingFormat:@" (%@)", consumerName];
     }
-        
-    NSLog(@"*** %@", title);
     
     [_window setTitle:title];
 }
