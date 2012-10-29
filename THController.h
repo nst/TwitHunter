@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import "THCumulativeChartView.h"
 #import "THLocationVC.h"
+#import "THPreferencesWC.h"
 
 #pragma mark FIXME: favorites syncronisation
 
@@ -22,7 +23,7 @@
 @class THCumulativeChartView;
 @class THPreferencesWC;
 
-@interface THController : NSObject <CumulativeChartViewDelegate, CumulativeChartViewDataSource, THLocationVCProtocol> {
+@interface THController : NSObject <CumulativeChartViewDelegate, CumulativeChartViewDataSource, THLocationVCProtocol, THPreferencesWCDelegate> {
 	NSUInteger tweetsCount;
 	NSUInteger numberOfTweetsForScore[MAX_COUNT+1];
 	NSUInteger cumulatedTweetsForScore[MAX_COUNT+1];

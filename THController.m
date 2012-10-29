@@ -16,7 +16,6 @@
 #import "THTweetLocation.h"
 #import "THLocationVC.h"
 #import "THCumulativeChartView.h"
-#import "THPreferencesWC.h"
 
 // TODO: https://developer.apple.com/library/mac/#qa/qa2006/qa1487.html
 // TODO: https://github.com/blladnar/AutoLink
@@ -499,6 +498,35 @@
 	[self synchronizeFavorites];
 }
 
+- (NSDictionary *)oAuthTokens {
+    
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"TwitterClients" ofType:@"plist"];
+    NSArray *twitterClients = [NSArray arrayWithContentsOfFile:path];
+
+    NSString *ak = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"tokensAK"];
+    NSString *as = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"tokensAS"];
+    NSString *name = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"clientName"];
+
+    __block NSDictionary *d = nil;
+    
+    [twitterClients enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        d = (NSDictionary *)obj;
+        
+        if([d[@"name"] isEqualToString:name]) {
+            *stop = YES;
+        }
+    }];
+    
+    NSString *ck = d[@"ck"];
+    NSString *cs = d[@"cs"];
+    
+    if(ck && cs && ak && as && name) {
+        return @{@"ck":ck, @"cs":cs, @"ak":ak, @"as":as, @"name":name};
+    }
+    
+    return nil;
+}
+
 - (void)awakeFromNib {
 	NSLog(@"-- awakeFromNib");
     
@@ -512,8 +540,25 @@
     
 	[_collectionView setMaxNumberOfColumns:1];
 	
-    self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthOSX];
+    // TODO: create twitter instance from user tokens and default client identity
+    // use osx and show preferences if not available
     
+    NSDictionary *tokens = [self oAuthTokens];
+    
+    NSLog(@"**** %@", tokens);
+    
+    if(tokens) {
+        self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:tokens[@"ck"] consumerSecret:tokens[@"cs"] oauthToken:tokens[@"ak"] oauthTokenSecret:tokens[@"as"]];
+
+        NSLog(@"-- USING %@", tokens[@"name"]);
+    } else {
+        self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthOSX];
+
+        NSLog(@"-- USING OSX");
+}
+
+    NSLog(@"**** %@", _twitter);
+
     //    self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:@"" consumerSecret:@"" username:@"" password:@""];
     
     self.requestStatus = @"requesting access";
@@ -579,7 +624,9 @@
 
 - (IBAction)openPreferences:(id)sender {
     
-    [[THPreferencesWC sharedPreferencesWC] showWindow:nil];
+    THPreferencesWC *preferences = [THPreferencesWC sharedPreferencesWC];
+    preferences.preferencesDelegate = self;
+    [preferences showWindow:nil];
 }
 
 - (void)dealloc {
@@ -788,5 +835,11 @@
 //- (void)locationPickerDidCancel:(THLocationPickerWindowController *)locationPicker {
 //    [_locationPickerWindowController close];
 //}
+
+#pragma mark THPreferencesWCDelegate
+
+- (void)preferences:(THPreferencesWC *)preferences didChooseTwitter:(STTwitterAPIWrapper *)twitter {
+    self.twitter = twitter;
+}
 
 @end
