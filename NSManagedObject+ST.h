@@ -13,6 +13,7 @@
 
 + (NSEntityDescription *)entityInContext:(NSManagedObjectContext *)context;
 + (id)createInContext:(NSManagedObjectContext *)context;
++ (void)deleteAllObjectsInContext:(NSManagedObjectContext *)context;
 
 - (BOOL)save;
 - (void)deleteObject;

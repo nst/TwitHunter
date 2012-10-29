@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0304F3ED1639993A007344E0 /* TwitterClients.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0304F3EC1639993A007344E0 /* TwitterClients.plist */; };
+		0304F3ED1639993A007344E0 /* TwitterXAuthClients.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0304F3EC1639993A007344E0 /* TwitterXAuthClients.plist */; };
 		0304F403163C3042007344E0 /* THPreferencesWC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0304F401163C3042007344E0 /* THPreferencesWC.xib */; };
 		0304F40E163DDEFD007344E0 /* THPreferencesWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0304F40C163DDEFD007344E0 /* THPreferencesWC.m */; };
 		03084755160E6B420096E40C /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03084754160E6B420096E40C /* Security.framework */; };
@@ -47,7 +47,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0304F3EC1639993A007344E0 /* TwitterClients.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TwitterClients.plist; sourceTree = "<group>"; };
+		0304F3EC1639993A007344E0 /* TwitterXAuthClients.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TwitterXAuthClients.plist; sourceTree = "<group>"; };
 		0304F401163C3042007344E0 /* THPreferencesWC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = THPreferencesWC.xib; sourceTree = "<group>"; };
 		0304F40B163DDEFD007344E0 /* THPreferencesWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THPreferencesWC.h; sourceTree = "<group>"; };
 		0304F40C163DDEFD007344E0 /* THPreferencesWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THPreferencesWC.m; sourceTree = "<group>"; };
@@ -258,7 +258,7 @@
 				0334DA68162E8D96000A6448 /* THTweetCollectionViewItem.xib */,
 				0304F401163C3042007344E0 /* THPreferencesWC.xib */,
 				03359F1B0F9D412A0084F7BD /* Defaults.plist */,
-				0304F3EC1639993A007344E0 /* TwitterClients.plist */,
+				0304F3EC1639993A007344E0 /* TwitterXAuthClients.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -348,7 +348,7 @@
 				03BECCCC1198B6B1001E7311 /* star_full.png in Resources */,
 				037D73B51623FA190051665D /* THLocationVC.xib in Resources */,
 				0334DA69162E8D96000A6448 /* THTweetCollectionViewItem.xib in Resources */,
-				0304F3ED1639993A007344E0 /* TwitterClients.plist in Resources */,
+				0304F3ED1639993A007344E0 /* TwitterXAuthClients.plist in Resources */,
 				0304F403163C3042007344E0 /* THPreferencesWC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

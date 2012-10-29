@@ -29,6 +29,24 @@
 	[[self managedObjectContext] deleteObject:self];
 }
 
++ (void)deleteAllObjectsInContext:(NSManagedObjectContext *)context {
+    NSFetchRequest *fr = [[NSFetchRequest alloc] init];
+    [fr setEntity:[self entityInContext:context]];
+    [fr setIncludesPropertyValues:NO]; // only fetch the managedObjectID
+    
+    NSError *error = nil;
+    NSArray *allObjects = [context executeFetchRequest:fr error:&error];
+    [fr release];
+
+    if(allObjects == nil) {
+        NSLog(@"-- error: %@", [error localizedDescription]);
+    }
+    
+    for (NSManagedObject *mo in allObjects) {
+        [context deleteObject:mo];
+    }
+}
+
 //+ (id)create {
 //	NSEntityDescription *entityDecription = [self entity];
 //	NSString *name = [entityDecription name];

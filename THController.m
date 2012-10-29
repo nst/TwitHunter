@@ -37,6 +37,28 @@
 
 @implementation THController
 
+- (void)setTwitter:(STTwitterAPIWrapper *)twitter {
+    [_twitter autorelease];
+    _twitter = [twitter retain];
+    
+    NSString *title = [NSString stringWithFormat:@"TwitHunter"];
+    
+    NSString *username = _twitter.userName;
+    NSString *consumerName = [[NSUserDefaults standardUserDefaults] valueForKey:@"clientName"];
+    
+    if(username) {
+        title = [title stringByAppendingFormat:@" - %@", username];
+    }
+    
+    if(consumerName) {
+        title = [title stringByAppendingFormat:@" (%@)", consumerName];
+    }
+        
+    NSLog(@"*** %@", title);
+    
+    [_window setTitle:title];
+}
+
 - (NSMutableArray *)predicatesWithoutScore {
 	NSMutableArray *a = [NSMutableArray array];
 	
@@ -514,7 +536,7 @@
     // TODO: create twitter instance from user tokens and default client identity
     // use osx and show preferences if not available
     
-    self.twitter = [[THPreferencesWC sharedPreferencesWC] twitterWrapperAsPrefered];
+    self.twitter = [[THPreferencesWC sharedPreferencesWC] twitterWrapper];
     
 //    NSDictionary *tokens = [self oAuthTokens];
 //    
@@ -812,6 +834,28 @@
 #pragma mark THPreferencesWCDelegate
 
 - (void)preferences:(THPreferencesWC *)preferences didChooseTwitter:(STTwitterAPIWrapper *)twitter {
+
+    NSManagedObjectContext *mainContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
+
+    BOOL cleanupDatabaseForNewUser = self.twitter.userName && twitter.userName && ([self.twitter.userName isEqualToString:twitter.userName] == NO);
+    
+    if(cleanupDatabaseForNewUser) {
+
+        [_tweetArrayController willChangeValueForKey:@"selectionIndexes"];
+        _tweetArrayController.selectionIndexes = nil;
+        [_tweetArrayController didChangeValueForKey:@"selectionIndexes"];
+        
+        [_tweetArrayController willChangeValueForKey:@"arrangedObjects"];
+        [THTweet deleteAllObjectsInContext:mainContext];
+        [_tweetArrayController didChangeValueForKey:@"arrangedObjects"];
+        
+        NSError *saveError = nil;
+        BOOL success = [mainContext save:&saveError];
+        if(success == NO) {
+            NSLog(@"-- saveError: %@", [saveError localizedDescription]);
+        }
+    }
+    
     self.twitter = twitter;
 }
 

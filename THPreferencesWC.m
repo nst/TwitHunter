@@ -9,17 +9,13 @@
 #import "THPreferencesWC.h"
 #import "STTwitterAPIWrapper.h"
 
+static NSString *kTHOSXTwitterIntegrationName = @"OSX Twitter Integration";
+
 @interface THPreferencesWC ()
 
 @end
 
 static THPreferencesWC *sharedPreferencesWC = nil;
-
-typedef enum {
-    OSX = 0,
-    Known = 1,
-    Custom = 2
-} THPreferencesConnectionIdentityIndex;
 
 @implementation THPreferencesWC
 
@@ -30,8 +26,7 @@ typedef enum {
 	return sharedPreferencesWC;
 }
 
-- (id)initWithWindow:(NSWindow *)window
-{
+- (id)initWithWindow:(NSWindow *)window {
     self = [super initWithWindow:window];
     if (self) {
         // Initialization code here.
@@ -40,21 +35,35 @@ typedef enum {
     return self;
 }
 
-- (void)windowDidLoad
-{
+- (void)windowDidLoad {
     [super windowDidLoad];
     
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"TwitterClients" ofType:@"plist"];
-    self.twitterClients = [NSArray arrayWithContentsOfFile:path];
-
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"TwitterXAuthClients" ofType:@"plist"];
+    NSArray *xAuthClients = [NSArray arrayWithContentsOfFile:path];
+    
+    NSDictionary *defaultClient = @{@"name" : kTHOSXTwitterIntegrationName};
+    
+    self.twitterClients = [@[defaultClient] arrayByAddingObjectsFromArray:xAuthClients];
+    
     /**/
     
-    NSUInteger i = [self indexOfUsedKnownClientIdentity];
-    
-    if(i == NSNotFound) i = 0;
-    
-    [[NSUserDefaults standardUserDefaults] setInteger:i forKey:@"PreferencesKnownClientIdentityIndex"];
+    NSString *clientName = [[NSUserDefaults standardUserDefaults] valueForKey:@"clientName"];
 
+    __block NSUInteger selectionIndex = 0;
+    
+    [_twitterClients enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        NSDictionary *d = (NSDictionary *)obj;
+        
+        if([[d valueForKey:@"name"] isEqualToString:clientName]) {
+            *stop = YES;
+            selectionIndex = idx;
+            
+            NSLog(@"---------- %d %@", selectionIndex, d);
+        }
+    }];
+
+    [_twitterClientsController setSelectionIndex:selectionIndex];
+    
     // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
 }
 
@@ -70,15 +79,13 @@ typedef enum {
 
 - (void)sheetDidEnd:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(NSDictionary *)contextInfo {
     
-    NSLog(@"-- %lu", returnCode);
-    
     if(returnCode != 1) {
         self.username = nil;
         self.password = nil;
     }
     
     _usernamePasswordBlock(_username, _password);
-
+    
     self.username = nil;
     self.password = nil;
 }
@@ -95,7 +102,7 @@ typedef enum {
 
 - (NSUInteger)indexOfUsedKnownClientIdentity {
     
-    NSString *name = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"clientName"];
+    NSString *name = [[NSUserDefaults standardUserDefaults] valueForKey:@"clientName"];
     
     if(name == nil) return NSNotFound;
     
@@ -111,15 +118,15 @@ typedef enum {
             index = idx;
         }
     }];
-
+    
     return index;
 }
 
 - (NSDictionary *)preferedClientIdentityDictionary {
     
-    NSString *ak = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"tokensAK"];
-    NSString *as = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"tokensAS"];
-    NSString *name = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"clientName"];
+    NSString *ak = [[NSUserDefaults standardUserDefaults] valueForKey:@"tokensAK"];
+    NSString *as = [[NSUserDefaults standardUserDefaults] valueForKey:@"tokensAS"];
+    NSString *name = [[NSUserDefaults standardUserDefaults] valueForKey:@"clientName"];
     
     __block NSDictionary *d = nil;
     
@@ -141,11 +148,9 @@ typedef enum {
     return nil;
 }
 
-- (STTwitterAPIWrapper *)twitterWrapperAsPrefered {
-
-    NSDictionary *d = [self preferedClientIdentityDictionary];
+- (STTwitterAPIWrapper *)twitterWrapper {
     
-#warning TODO: add -[STTwitterAPIWrapper name]
+    NSDictionary *d = [self preferedClientIdentityDictionary];
     
     if (d == nil) {
         NSLog(@"-- USING OSX");
@@ -153,38 +158,24 @@ typedef enum {
     }
     
     NSLog(@"-- USING %@", d[@"name"]);
-    return [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:d[@"ck"]
-                                                consumerSecret:d[@"cs"]
-                                                    oauthToken:d[@"ak"]
-                                              oauthTokenSecret:d[@"as"]];
-    
-//    NSUInteger i = [[NSUserDefaults standardUserDefaults] integerForKey:@"TwitterConnectionIdentityIndex"];
-//    
-//    if (i == OSX) {
-//        
-//        return [STTwitterAPIWrapper twitterAPIWithOAuthOSX];
-//    
-//    } else  if (i == Known) {
-//    
-//        NSUInteger i = [self indexOfUsedKnownClientIdentity];
-//        
-//        NSArray *twitterClients = [_twitterClientsController arrangedObjects];
-//
-//
-//
-//    } else if (i == Custom) {
-//        return 
-//    }
-    
+    return [STTwitterAPIWrapper twitterAPIWithOAuthConsumerName:d[@"name"]
+                                                    consumerKey:d[@"ck"]
+                                                 consumerSecret:d[@"cs"]
+                                                     oauthToken:d[@"ak"]
+                                               oauthTokenSecret:d[@"as"]];
 }
 
-- (IBAction)testConnection:(id)sender {
+- (IBAction)loginAction:(id)sender {
     
-    self.connectionStatus = @"Testing connection...";
+    self.connectionStatus = @"Trying to login...";
+
+    NSDictionary *selectedClient = [[_twitterClientsController selectedObjects] lastObject];
     
-    NSUInteger i = [[NSUserDefaults standardUserDefaults] integerForKey:@"TwitterConnectionIdentityIndex"];
+    NSLog(@"-- %@", _twitterClientsController);
+    NSLog(@"-- %@", [_twitterClientsController selectedObjects]);
+    NSLog(@"-- %@", [[_twitterClientsController selectedObjects] lastObject]);
     
-    if(i == OSX) {
+    if(selectedClient == nil || [[selectedClient valueForKey:@"name"] isEqualToString:kTHOSXTwitterIntegrationName]) {
         
         self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthOSX];
         
@@ -194,39 +185,28 @@ typedef enum {
             
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"tokensAK"];
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"tokensAS"];
-
+            
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"clientName"];
             
             [_preferencesDelegate preferences:self didChooseTwitter:_twitter];
-
+            
         } errorBlock:^(NSError *error) {
             
             self.connectionStatus = [error localizedDescription];
         }];
-
-    } else if (i == Known) {
         
-        NSUInteger i = [self indexOfUsedKnownClientIdentity];
+    } else {
+                
+        NSString *consumerName = selectedClient[@"name"];
+        NSString *consumerKey = selectedClient[@"ck"];
+        NSString *consumerSecret = selectedClient[@"cs"];
         
-        NSArray *twitterClients = [_twitterClientsController arrangedObjects];
-        
-        if([twitterClients count] == 0) {
-            NSLog(@"-- error: no twitter clients");
-            return;
-        }
-        
-        if(i >= [twitterClients count]) i = 0;
-        
-        NSDictionary *twitterClient = [twitterClients objectAtIndex:i];
-        
-        NSString *consumerKey = twitterClient[@"ck"];
-        NSString *consumerSecret = twitterClient[@"cs"];
-        
+        NSLog(@"-- %@", consumerName);
         NSLog(@"-- %@", consumerKey);
         NSLog(@"-- %@", consumerSecret);
         
-        if(consumerKey == nil || consumerSecret == nil) {
-            self.connectionStatus = [NSString stringWithFormat:@"error: no consumer key or secret in %@", twitterClient];
+        if(consumerName == nil || consumerKey == nil || consumerSecret == nil) {
+            self.connectionStatus = [NSString stringWithFormat:@"error: no name, consumer key or secret in %@", selectedClient];
             return;
         }
         
@@ -237,35 +217,36 @@ typedef enum {
                 return;
             };
             
-            self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:consumerKey consumerSecret:consumerSecret username:username password:password];
+            self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerName:consumerName
+                                                                    consumerKey:consumerKey
+                                                                 consumerSecret:consumerSecret
+                                                                       username:username
+                                                                       password:password];
             
             [_twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
                 
-                self.connectionStatus = [NSString stringWithFormat:@"Access granted for %@ on %@", username, twitterClient[@"name"]];
+                self.connectionStatus = [NSString stringWithFormat:@"Access granted for %@ on %@", username, selectedClient[@"name"]];
                 
                 [[NSUserDefaults standardUserDefaults] setValue:_twitter.oauthAccessToken forKey:@"tokensAK"];
                 [[NSUserDefaults standardUserDefaults] setValue:_twitter.oauthAccessTokenSecret forKey:@"tokensAS"];
                 
-                [[NSUserDefaults standardUserDefaults] setValue:twitterClient[@"name"] forKey:@"clientName"];
+                [[NSUserDefaults standardUserDefaults] setValue:selectedClient[@"name"] forKey:@"clientName"];
                 
                 [_preferencesDelegate preferences:self didChooseTwitter:_twitter];
-
+                
             } errorBlock:^(NSError *error) {
                 
                 self.connectionStatus = [error localizedDescription];
             }];
             
         }];
-
-    } else if (i == Custom) {
-        
     }
-
+    
 }
 
 - (void)dealloc {
     if (_usernamePasswordBlock) [_usernamePasswordBlock release];
-
+    
     [_usernameAndPasswordPanel release];
     [_twitterClients release];
     [_twitterClientsController release];

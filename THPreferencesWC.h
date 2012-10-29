@@ -40,6 +40,8 @@ typedef void (^UsernamePasswordBlock_t)(NSString *username, NSString *password);
 - (IBAction)usernamePasswordCancel:(id)sender;
 - (IBAction)usernamePasswordOK:(id)sender;
 
-- (STTwitterAPIWrapper *)twitterWrapperAsPrefered;
+- (IBAction)loginAction:(id)sender;
+
+- (STTwitterAPIWrapper *)twitterWrapper;
 
 @end

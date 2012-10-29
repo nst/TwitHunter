@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>ck</key>
+		<string>CjulERsDeqhhjSme66ECg</string>
+		<key>cs</key>
+		<string>IQWdVyqFxghAtURHGeGiWAsmCAGmdW3WmbEx6Hck</string>
+		<key>name</key>
+		<string>Twitter for iPad</string>
+	</dict>
+	<dict>
+		<key>ck</key>
+		<string>IQKbtAYlXLripLGPWd0HUA</string>
+		<key>cs</key>
+		<string>GgDYlkSvaPxGxC4X8liwpUoqKwwr3lCADbz8A7ADU</string>
+		<key>name</key>
+		<string>Twitter for iPhone</string>
+	</dict>
+</array>
+</plist>
