@@ -115,6 +115,69 @@ typedef enum {
     return index;
 }
 
+- (NSDictionary *)preferedClientIdentityDictionary {
+    
+    NSString *ak = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"tokensAK"];
+    NSString *as = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"tokensAS"];
+    NSString *name = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"clientName"];
+    
+    __block NSDictionary *d = nil;
+    
+    [_twitterClients enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        d = (NSDictionary *)obj;
+        
+        if([d[@"name"] isEqualToString:name]) {
+            *stop = YES;
+        }
+    }];
+    
+    NSString *ck = d[@"ck"];
+    NSString *cs = d[@"cs"];
+    
+    if(ck && cs && ak && as && name) {
+        return @{@"ck":ck, @"cs":cs, @"ak":ak, @"as":as, @"name":name};
+    }
+    
+    return nil;
+}
+
+- (STTwitterAPIWrapper *)twitterWrapperAsPrefered {
+
+    NSDictionary *d = [self preferedClientIdentityDictionary];
+    
+#warning TODO: add -[STTwitterAPIWrapper name]
+    
+    if (d == nil) {
+        NSLog(@"-- USING OSX");
+        return [STTwitterAPIWrapper twitterAPIWithOAuthOSX];
+    }
+    
+    NSLog(@"-- USING %@", d[@"name"]);
+    return [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:d[@"ck"]
+                                                consumerSecret:d[@"cs"]
+                                                    oauthToken:d[@"ak"]
+                                              oauthTokenSecret:d[@"as"]];
+    
+//    NSUInteger i = [[NSUserDefaults standardUserDefaults] integerForKey:@"TwitterConnectionIdentityIndex"];
+//    
+//    if (i == OSX) {
+//        
+//        return [STTwitterAPIWrapper twitterAPIWithOAuthOSX];
+//    
+//    } else  if (i == Known) {
+//    
+//        NSUInteger i = [self indexOfUsedKnownClientIdentity];
+//        
+//        NSArray *twitterClients = [_twitterClientsController arrangedObjects];
+//
+//
+//
+//    } else if (i == Custom) {
+//        return 
+//    }
+    
+}
+
 - (IBAction)testConnection:(id)sender {
     
     self.connectionStatus = @"Testing connection...";
@@ -141,7 +204,7 @@ typedef enum {
             self.connectionStatus = [error localizedDescription];
         }];
 
-    } else {
+    } else if (i == Known) {
         
         NSUInteger i = [self indexOfUsedKnownClientIdentity];
         
@@ -194,6 +257,8 @@ typedef enum {
             
         }];
 
+    } else if (i == Custom) {
+        
     }
 
 }

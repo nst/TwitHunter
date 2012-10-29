@@ -498,35 +498,6 @@
 	[self synchronizeFavorites];
 }
 
-- (NSDictionary *)oAuthTokens {
-    
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"TwitterClients" ofType:@"plist"];
-    NSArray *twitterClients = [NSArray arrayWithContentsOfFile:path];
-
-    NSString *ak = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"tokensAK"];
-    NSString *as = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"tokensAS"];
-    NSString *name = [[NSUserDefaults standardUserDefaults] valueForKeyPath:@"clientName"];
-
-    __block NSDictionary *d = nil;
-    
-    [twitterClients enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        d = (NSDictionary *)obj;
-        
-        if([d[@"name"] isEqualToString:name]) {
-            *stop = YES;
-        }
-    }];
-    
-    NSString *ck = d[@"ck"];
-    NSString *cs = d[@"cs"];
-    
-    if(ck && cs && ak && as && name) {
-        return @{@"ck":ck, @"cs":cs, @"ak":ak, @"as":as, @"name":name};
-    }
-    
-    return nil;
-}
-
 - (void)awakeFromNib {
 	NSLog(@"-- awakeFromNib");
     
@@ -543,49 +514,51 @@
     // TODO: create twitter instance from user tokens and default client identity
     // use osx and show preferences if not available
     
-    NSDictionary *tokens = [self oAuthTokens];
+    self.twitter = [[THPreferencesWC sharedPreferencesWC] twitterWrapperAsPrefered];
     
-    NSLog(@"**** %@", tokens);
-    
-    if(tokens) {
-        self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:tokens[@"ck"] consumerSecret:tokens[@"cs"] oauthToken:tokens[@"ak"] oauthTokenSecret:tokens[@"as"]];
-
-        NSLog(@"-- USING %@", tokens[@"name"]);
-    } else {
-        self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthOSX];
-
-        NSLog(@"-- USING OSX");
-}
-
-    NSLog(@"**** %@", _twitter);
-
-    //    self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:@"" consumerSecret:@"" username:@"" password:@""];
-    
-    self.requestStatus = @"requesting access";
-    
-    [_twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
-        NSLog(@"-- access granted for %@", username);
-        
-        self.requestStatus = [NSString stringWithFormat:@"access granted for %@", username];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
-        
-        [self update:self];
-        
-        [self updateCumulatedData];
-
-        //[_tweetArrayController rearrangeObjects];
-        //        NSString *username = [_oauth username];
-        
-        [self synchronizeFavorites];
-        
-        [self resetTimer];
-    } errorBlock:^(NSError *error) {
-        NSLog(@"-- %@", [error localizedDescription]);
-        self.requestStatus = [error localizedDescription];
-    }];
+//    NSDictionary *tokens = [self oAuthTokens];
+//    
+//    NSLog(@"**** %@", tokens);
+//    
+//    if(tokens) {
+//        self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:tokens[@"ck"] consumerSecret:tokens[@"cs"] oauthToken:tokens[@"ak"] oauthTokenSecret:tokens[@"as"]];
+//
+//        NSLog(@"-- USING %@", tokens[@"name"]);
+//    } else {
+//        self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthOSX];
+//
+//        NSLog(@"-- USING OSX");
+//    }
+//
+//    NSLog(@"**** %@", _twitter);
+//
+//    //    self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:@"" consumerSecret:@"" username:@"" password:@""];
+//    
+//    self.requestStatus = @"requesting access";
+//    
+//    [_twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
+//        NSLog(@"-- access granted for %@", username);
+//        
+//        self.requestStatus = [NSString stringWithFormat:@"access granted for %@", username];
+//        
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
+//        
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
+//        
+//        [self update:self];
+//        
+//        [self updateCumulatedData];
+//
+//        //[_tweetArrayController rearrangeObjects];
+//        //        NSString *username = [_oauth username];
+//        
+//        [self synchronizeFavorites];
+//        
+//        [self resetTimer];
+//    } errorBlock:^(NSError *error) {
+//        NSLog(@"-- %@", [error localizedDescription]);
+//        self.requestStatus = [error localizedDescription];
+//    }];
 }
 
 - (void)setFavoriteFlagForTweet:(NSNotification *)aNotification {
