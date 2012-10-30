@@ -38,7 +38,7 @@ static THPreferencesWC *sharedPreferencesWC = nil;
 - (void)windowDidLoad {
     [super windowDidLoad];
     
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"TwitterXAuthClients" ofType:@"plist"];
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"TwitterXAuthTokens" ofType:@"plist"];
     NSArray *xAuthClients = [NSArray arrayWithContentsOfFile:path];
     
     NSDictionary *defaultClient = @{@"name" : kTHOSXTwitterIntegrationName};
