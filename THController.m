@@ -17,9 +17,14 @@
 #import "THLocationVC.h"
 #import "THCumulativeChartView.h"
 
+#warning TODO: fix sort ordering
+
 // TODO: https://developer.apple.com/library/mac/#qa/qa2006/qa1487.html
 // TODO: https://github.com/blladnar/AutoLink
 // TODO: http://www.nightproductions.net/developer.htm
+
+// $ rm ~/Library/Application\ Support/TwitHunter/TwitHunter.sqlite3
+// $ rm ~/Library/Preferences/ch.seriot.TwitHunter.plist
 
 @interface THController ()
 @property (nonatomic, retain) THTweetLocation *tweetLocation;
@@ -220,7 +225,7 @@
 
 - (id)init {
 	if (self = [super init]) {
-		NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
+		NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"uid" ascending:NO];
 		self.tweetSortDescriptors = @[sd];
 		[sd release];
         
@@ -692,7 +697,9 @@
 
 	[self updateCumulatedData];
 
-	//[_tweetArrayController rearrangeObjects];
+	[_tweetArrayController rearrangeObjects];
+    
+    NSLog(@"---- %d", [[_tweetArrayController arrangedObjects] count]);
 }
 
 - (void)saveFavoritesFromDictionaries:(NSArray *)statuses {
@@ -852,6 +859,10 @@
         [_tweetArrayController willChangeValueForKey:@"arrangedObjects"];
         [THTweet deleteAllObjectsInContext:mainContext];
         [_tweetArrayController didChangeValueForKey:@"arrangedObjects"];
+
+        [_userArrayController willChangeValueForKey:@"arrangedObjects"];
+        [THUser deleteAllObjectsInContext:mainContext];
+        [_userArrayController didChangeValueForKey:@"arrangedObjects"];
         
         NSError *saveError = nil;
         BOOL success = [mainContext save:&saveError];
