@@ -141,7 +141,6 @@
 							<string key="NSFrame">{{17, 20}, {466, 17}}</string>
 							<reference key="NSSuperview" ref="370944965"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView"/>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="866815022">
@@ -240,7 +239,7 @@
 					<reference key="NSNextKeyView" ref="647301071"/>
 					<string key="NSReuseIdentifierKey">_NS:20</string>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {2560, 1418}}</string>
+				<string key="NSScreenRect">{{0, 0}, {1680, 1028}}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<bool key="NSWindowIsRestorable">YES</bool>
 			</object>
@@ -250,21 +249,22 @@
 			<object class="NSWindowTemplate" id="469081332">
 				<int key="NSWindowStyleMask">31</int>
 				<int key="NSWindowBacking">2</int>
-				<string key="NSWindowRect">{{167, 107}, {275, 158}}</string>
+				<string key="NSWindowRect">{{167, 107}, {275, 163}}</string>
 				<int key="NSWTFlags">-1535638528</int>
 				<string key="NSWindowTitle">Window</string>
 				<string key="NSWindowClass">NSPanel</string>
 				<nil key="NSViewClass"/>
 				<nil key="NSUserInterfaceItemIdentifier"/>
 				<object class="NSView" key="NSWindowView" id="696903647">
-					<nil key="NSNextResponder"/>
+					<reference key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<array class="NSMutableArray" key="NSSubviews">
 						<object class="NSTextField" id="711902079">
 							<reference key="NSNextResponder" ref="696903647"/>
 							<int key="NSvFlags">268</int>
-							<string key="NSFrame">{{17, 104}, {241, 34}}</string>
+							<string key="NSFrame">{{17, 109}, {241, 34}}</string>
 							<reference key="NSSuperview" ref="696903647"/>
+							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="859557243"/>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<string key="NSAntiCompressionPriority">{250, 750}</string>
@@ -285,8 +285,9 @@
 						<object class="NSTextField" id="969370519">
 							<reference key="NSNextResponder" ref="696903647"/>
 							<int key="NSvFlags">268</int>
-							<string key="NSFrame">{{115, 74}, {118, 22}}</string>
+							<string key="NSFrame">{{115, 79}, {118, 22}}</string>
 							<reference key="NSSuperview" ref="696903647"/>
+							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="684344881"/>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<bool key="NSEnabled">YES</bool>
@@ -320,8 +321,9 @@
 						<object class="NSTextField" id="859557243">
 							<reference key="NSNextResponder" ref="696903647"/>
 							<int key="NSvFlags">268</int>
-							<string key="NSFrame">{{39, 76}, {71, 17}}</string>
+							<string key="NSFrame">{{39, 81}, {71, 17}}</string>
 							<reference key="NSSuperview" ref="696903647"/>
+							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="969370519"/>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
 							<bool key="NSEnabled">YES</bool>
@@ -342,6 +344,7 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{39, 51}, {71, 17}}</string>
 							<reference key="NSSuperview" ref="696903647"/>
+							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="1020705640"/>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
 							<bool key="NSEnabled">YES</bool>
@@ -362,6 +365,7 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{202, 13}, {59, 32}}</string>
 							<reference key="NSSuperview" ref="696903647"/>
+							<reference key="NSWindow"/>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSButtonCell" key="NSCell" id="1006415571">
@@ -385,6 +389,7 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{14, 13}, {82, 32}}</string>
 							<reference key="NSSuperview" ref="696903647"/>
+							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="591242802"/>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<bool key="NSEnabled">YES</bool>
@@ -409,6 +414,7 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{115, 49}, {118, 22}}</string>
 							<reference key="NSSuperview" ref="696903647"/>
+							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="287899285"/>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<bool key="NSEnabled">YES</bool>
@@ -430,11 +436,13 @@
 							<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 						</object>
 					</array>
-					<string key="NSFrameSize">{275, 158}</string>
+					<string key="NSFrameSize">{275, 163}</string>
+					<reference key="NSSuperview"/>
+					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="711902079"/>
 					<string key="NSReuseIdentifierKey">_NS:21</string>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {2560, 1418}}</string>
+				<string key="NSScreenRect">{{0, 0}, {1680, 1028}}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<bool key="NSWindowIsRestorable">YES</bool>
 			</object>
@@ -456,22 +464,6 @@
 						<reference key="destination" ref="534197233"/>
 					</object>
 					<int key="connectionID">148</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">usernameTextField</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="969370519"/>
-					</object>
-					<int key="connectionID">220</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">passwordTextField</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="1020705640"/>
-					</object>
-					<int key="connectionID">221</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
