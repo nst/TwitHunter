@@ -58,7 +58,7 @@ static THPreferencesWC *sharedPreferencesWC = nil;
             *stop = YES;
             selectionIndex = idx;
             
-            NSLog(@"---------- %d %@", selectionIndex, d);
+//            NSLog(@"---------- %d %@", selectionIndex, d);
         }
     }];
 
