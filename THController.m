@@ -17,8 +17,6 @@
 #import "THLocationVC.h"
 #import "THCumulativeChartView.h"
 
-#warning TODO: fix sort ordering
-
 // TODO: https://developer.apple.com/library/mac/#qa/qa2006/qa1487.html
 // TODO: https://github.com/blladnar/AutoLink
 // TODO: http://www.nightproductions.net/developer.htm
@@ -697,9 +695,7 @@
 
 	[self updateCumulatedData];
 
-	[_tweetArrayController rearrangeObjects];
-    
-    NSLog(@"---- %d", [[_tweetArrayController arrangedObjects] count]);
+//	[_tweetArrayController rearrangeObjects];
 }
 
 - (void)saveFavoritesFromDictionaries:(NSArray *)statuses {
