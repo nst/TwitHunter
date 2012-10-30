@@ -127,6 +127,8 @@
 
     NSLog(@"updateCumulatedData took %f seconds", [[NSDate date] timeIntervalSinceDate:startDate]);
 
+    NSLog(@"-- updateCumulatedData -> _cumulativeChartView %@", _cumulativeChartView);
+    
 	[self recomputeCumulatedTweetsForScore];
 	[_cumulativeChartView setNeedsDisplay:YES];
 }
@@ -498,18 +500,17 @@
 
 - (void)synchronizeFavorites {
     
-	self.requestStatus = @"Syncronizing Favorites";
+	self.requestStatus = @"Syncronizing favorites...";
 	self.isConnecting = @YES;
-    
-    self.requestStatus = @"";
-    
+        
     [_twitter getFavoritesListWithSuccessBlock:^(NSArray *statuses) {
         self.isConnecting = @NO;
         [self saveFavoritesFromDictionaries:statuses];
+        self.requestStatus = @"Favorites are synchronized.";
     } errorBlock:^(NSError *error) {
         NSLog(@"-- error: %@", [error localizedDescription]);
         self.isConnecting = @NO;
-        self.requestStatus = [error localizedDescription];
+        self.requestStatus = [NSString stringWithFormat:@"Error in synchronizing favorites, %@.", [error localizedDescription]];
     }];
     
     //	[requestsIDs addObject:s];
@@ -528,60 +529,16 @@
 	[_cumulativeChartView setScore:[currentScore integerValue]];
 	
 	[self updateTweetFilterPredicate];
-    //[_tweetArrayController rearrangeObjects];
 
-	//[self updateTweetScores:self];
-    
 	[_collectionView setMaxNumberOfColumns:1];
-	
-    // TODO: create twitter instance from user tokens and default client identity
-    // use osx and show preferences if not available
     
     self.twitter = [[THPreferencesWC sharedPreferencesWC] twitterWrapper];
+
+//    [self updateTweetFilterPredicate];
     
-//    NSDictionary *tokens = [self oAuthTokens];
-//    
-//    NSLog(@"**** %@", tokens);
-//    
-//    if(tokens) {
-//        self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:tokens[@"ck"] consumerSecret:tokens[@"cs"] oauthToken:tokens[@"ak"] oauthTokenSecret:tokens[@"as"]];
-//
-//        NSLog(@"-- USING %@", tokens[@"name"]);
-//    } else {
-//        self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthOSX];
-//
-//        NSLog(@"-- USING OSX");
-//    }
-//
-//    NSLog(@"**** %@", _twitter);
-//
-//    //    self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerKey:@"" consumerSecret:@"" username:@"" password:@""];
-//    
-//    self.requestStatus = @"requesting access";
-//    
-//    [_twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
-//        NSLog(@"-- access granted for %@", username);
-//        
-//        self.requestStatus = [NSString stringWithFormat:@"access granted for %@", username];
-//        
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeTweetReadStatusNotification:) name:@"DidChangeTweetReadStateNotification" object:nil];
-//        
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setFavoriteFlagForTweet:) name:@"SetFavoriteFlagForTweet" object:nil];
-//        
-//        [self update:self];
-//        
-//        [self updateCumulatedData];
-//
-//        //[_tweetArrayController rearrangeObjects];
-//        //        NSString *username = [_oauth username];
-//        
-//        [self synchronizeFavorites];
-//        
-//        [self resetTimer];
-//    } errorBlock:^(NSError *error) {
-//        NSLog(@"-- %@", [error localizedDescription]);
-//        self.requestStatus = [error localizedDescription];
-//    }];
+	[self updateCumulatedData];
+    
+    [self update:self];
 }
 
 - (void)setFavoriteFlagForTweet:(NSNotification *)aNotification {
@@ -659,22 +616,8 @@
 - (void)saveStatusesFromDictionaries:(NSArray *)statuses {
 	NSLog(@"-- statusesReceived: %ld", [statuses count]);
 	
-	if([statuses count] == 0) return;
+//	if([statuses count] == 0) return;
 	
-    //	BOOL isFavoritesRequest = NO; // TODO: sometimes YES
-    //
-    //	if(isFavoritesRequest) {
-    //		// statuses are assumed to be ordered by DESC id
-    //		NSArray *statusesIds = [statuses valueForKeyPath:@"id"];
-    //		NSString *minIdString = [statusesIds lastObject];
-    //		NSString *maxIdString = [statusesIds objectAtIndex:0];
-    //
-    //		NSNumber *unfavorMinId = [NSNumber numberWithUnsignedLongLong:[minIdString unsignedLongLongValue]];
-    //		NSNumber *unfavorMaxId = [NSNumber numberWithUnsignedLongLong:[maxIdString unsignedLongLongValue]];
-    //
-    //		[THTweet unfavorFavoritesBetweenMinId:unfavorMinId maxId:unfavorMaxId];
-    //	}
-
     NSArray *tweets = [THTweet saveTweetsFromDictionariesArray:statuses];
     //NSNumber *lowestId = [boundingIds valueForKey:@"lowestId"];
 
@@ -690,12 +633,12 @@
     [privateContext performBlockAndWait:^{
         [self updateScoresForTweets:tweets context:privateContext];
     }];
-    
+
 	[self updateTweetFilterPredicate];
 
 	[self updateCumulatedData];
-
-//	[_tweetArrayController rearrangeObjects];
+    
+//    [_tweetArrayController rearrangeObjects];
 }
 
 - (void)saveFavoritesFromDictionaries:(NSArray *)statuses {
