@@ -533,12 +533,19 @@
 	[_collectionView setMaxNumberOfColumns:1];
     
     self.twitter = [[THPreferencesWC sharedPreferencesWC] twitterWrapper];
-
-//    [self updateTweetFilterPredicate];
     
 	[self updateCumulatedData];
     
     [self update:self];
+    
+//    [_twitter getUserTimelineWithScreenName:@"dickc" successBlock:^(NSArray *statuses) {        
+//        for(NSDictionary *d in statuses) {
+//            NSLog(@"-- %@ %@", d[@"uid"], d[@"source"]);
+//        }
+//        
+//    } errorBlock:^(NSError *error) {
+//        NSLog(@"-- %@", error);
+//    }];
 }
 
 - (void)setFavoriteFlagForTweet:(NSNotification *)aNotification {
