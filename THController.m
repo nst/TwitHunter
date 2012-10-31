@@ -783,11 +783,11 @@
 
     NSString *formerUserName = _twitter.userName;
     NSString *newUserName = twitter.userName;
-    
+        
     NSLog(@"--> formerUserName: %@", formerUserName);
     NSLog(@"--> newUserName: %@", newUserName);
     
-    BOOL cleanupDatabaseForNewUser = formerUserName && newUserName && ([formerUserName isEqualToString:newUserName] == NO);
+    BOOL cleanupDatabaseForNewUser = newUserName && ([formerUserName isEqualToString:newUserName] == NO);
     
     if(cleanupDatabaseForNewUser) {
 
