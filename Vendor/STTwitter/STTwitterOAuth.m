@@ -8,6 +8,7 @@
 
 #import "STTwitterOAuth.h"
 #import "STHTTPRequest.h"
+#import "NSString+STTwitter.h"
 
 #include <CommonCrypto/CommonHMAC.h>
 
@@ -269,10 +270,12 @@
 
 - (void)postTokenRequest:(void(^)(NSURL *url, NSString *oauthToken))successBlock oauthCallback:(NSString *)oauthCallback errorBlock:(void(^)(NSError *error))errorBlock {
 
+    NSString *theOAuthCallback = [oauthCallback length] ? oauthCallback : @"oob"; // out of band, ie PIN instead of redirect
+    
     [self postResource:@"oauth/request_token"
          baseURLString:@"https://api.twitter.com"
             parameters:@{}
-         oauthCallback:oauthCallback
+         oauthCallback:theOAuthCallback
           successBlock:^(id body) {
         
         NSDictionary *d = [body parametersDictionary];
@@ -457,7 +460,7 @@
         
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", baseURLString, resource];
     
-    STHTTPRequest *r = [STHTTPRequest requestWithURLString:urlString];
+    __block STHTTPRequest *r = [STHTTPRequest requestWithURLString:urlString];
 
     r.POSTDictionary = params;
     
@@ -484,6 +487,21 @@
     };
     
     r.errorBlock = ^(NSError *error) {
+
+        // do our best to extract Twitter error message from responseString
+        
+        NSError *regexError = nil;
+        NSString *errorString = [r.responseString firstMatchWithRegex:@"<error>(.*)</error>" error:&regexError];
+        if(errorString == nil) {
+            NSLog(@"-- regexError: %@", [regexError localizedDescription]);
+        }
+        
+        if(errorString) {
+            error = [NSError errorWithDomain:NSStringFromClass([self class]) code:0 userInfo:@{NSLocalizedDescriptionKey : errorString}];
+        } else if([r.responseString length] < 64) {
+            error = [NSError errorWithDomain:NSStringFromClass([self class]) code:0 userInfo:@{NSLocalizedDescriptionKey : r.responseString}];
+        }
+        
         NSLog(@"-- body: %@", r.responseString);
         errorBlock(error);
     };
