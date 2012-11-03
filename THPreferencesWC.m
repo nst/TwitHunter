@@ -181,7 +181,7 @@ static THPreferencesWC *sharedPreferencesWC = nil;
         
         [_twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
             
-            self.connectionStatus = [NSString stringWithFormat:@"Access granted for %@", username];
+            self.connectionStatus = [NSString stringWithFormat:@"Access granted for @%@", username];
             
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"tokensAK"];
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"tokensAS"];
@@ -226,7 +226,7 @@ static THPreferencesWC *sharedPreferencesWC = nil;
             
             [_twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
                 
-                self.connectionStatus = [NSString stringWithFormat:@"Access granted for %@ on %@", username, selectedClient[@"name"]];
+                self.connectionStatus = [NSString stringWithFormat:@"Access granted for @%@ on %@", username, selectedClient[@"name"]];
                 
                 [[NSUserDefaults standardUserDefaults] setValue:_twitter.oauthAccessToken forKey:@"tokensAK"];
                 [[NSUserDefaults standardUserDefaults] setValue:_twitter.oauthAccessTokenSecret forKey:@"tokensAS"];
