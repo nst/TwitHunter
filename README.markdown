@@ -8,7 +8,7 @@ So far, it is just a quick hack, but it works :-)
 
 TwitHunter also demontrates how simple it is to write a Twitter client on OS X 10.8 without using any third party library.
 
-![TwitHunter](https://github.com/nst/TwitHunter/raw/master/art/twithunter.png "Screenshot")
+![TwitHunter](art/twithunter.png "Screenshot")
 
 A signed "nightly build" can be found at [http://seriot.ch/temp/TwitHunter.app.zip](http://seriot.ch/temp/TwitHunter.app.zip)
 
