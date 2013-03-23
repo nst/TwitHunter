@@ -8,11 +8,13 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "THController.m"
-         timestampString = "371760603.397315"
+         timestampString = "373321726.173656"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "786"
-         endingLineNumber = "786">
+         startingLineNumber = "732"
+         endingLineNumber = "732"
+         landmarkName = "@implementation THController"
+         landmarkType = "3">
       </FileBreakpoint>
    </FileBreakpoints>
    <ExceptionBreakpoints>
