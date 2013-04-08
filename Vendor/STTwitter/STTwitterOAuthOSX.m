@@ -10,6 +10,9 @@
 #import <Social/Social.h>
 #import <Accounts/Accounts.h>
 
+#if TARGET_OS_IPHONE
+#else
+
 @implementation STTwitterOAuthOSX
 
 - (void)verifyCredentialsWithSuccessBlock:(void(^)(NSString *username))successBlock errorBlock:(void(^)(NSError *error))errorBlock {
@@ -76,9 +79,6 @@
         }
         
         [request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
-            NSString *output = [NSString stringWithFormat:@"HTTP response status: %ld", [urlResponse statusCode]];
-            NSLog(@"%@", output);
-            
             if(responseData == nil) {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     errorBlock(nil);
@@ -88,7 +88,6 @@
             
             NSError *jsonError = nil;
             NSJSONSerialization *json = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableLeaves error:&jsonError];
-            NSLog(@"-- jsonError: %@", [jsonError localizedDescription]);
             
             if(json == nil) {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -178,3 +177,5 @@
 }
 
 @end
+
+#endif

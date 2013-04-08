@@ -2,6 +2,6 @@
 // Prefix header for all source files of the 'TwitHunter' target in the 'TwitHunter' project
 //
 
-//#ifdef __OBJC__
-//    #import <Cocoa/Cocoa.h>
-//#endif
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif

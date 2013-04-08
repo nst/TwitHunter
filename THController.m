@@ -314,7 +314,7 @@
 	self.requestStatus = @"Posting status...";
     
     if(_postMediaURL) {
-        [_twitter postStatusUpdate:_tweetText inReplyToStatusID:nil mediaURL:_postMediaURL placeID:_tweetLocation.placeID lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
+        [_twitter postStatusUpdate:_tweetText inReplyToStatusID:nil mediaURL:_postMediaURL placeID:_tweetLocation.placeID lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSDictionary *response) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
             self.postMediaURL = nil;
@@ -322,7 +322,7 @@
             self.requestStatus = error ? [error localizedDescription] : @"Unknown error";
         }];
     } else {
-        [_twitter postStatusUpdate:_tweetText inReplyToStatusID:nil placeID:_tweetLocation.placeID lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
+        [_twitter postStatusUpdate:_tweetText inReplyToStatusID:nil placeID:_tweetLocation.placeID lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSDictionary *response) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
         } errorBlock:^(NSError *error) {
@@ -557,11 +557,11 @@
     self.requestStatus = @"Setting favorite...";
     self.isConnecting = @YES;
     
-    [_twitter postFavoriteState:(BOOL)value forStatusID:[tweet.uid description] successBlock:^(NSString *jsonString) {
+    [_twitter postFavoriteState:(BOOL)value forStatusID:[tweet.uid description] successBlock:^(NSDictionary *status) {
         self.isConnecting = @NO;
-        NSLog(@"-- success : %@", jsonString);
+        NSLog(@"-- success : %@", status);
         
-        BOOL updatedFavoriteValue = [[jsonString valueForKey:@"favorited"] boolValue];
+        BOOL updatedFavoriteValue = [[status valueForKey:@"favorited"] boolValue];
         
         self.requestStatus = [NSString stringWithFormat:@"Did set favorite to %d", updatedFavoriteValue];
         tweet.isFavorite = @(updatedFavoriteValue);
@@ -692,7 +692,7 @@
     
     self.requestStatus = @"Posting retweet...";
     
-    [_twitter postStatusRetweetWithID:[tweet.uid description] successBlock:^(NSString *response) {
+    [_twitter postStatusRetweetWithID:[tweet.uid description] successBlock:^(NSDictionary *status) {
         self.requestStatus = @"Retweet OK";
     } errorBlock:^(NSError *error) {
         self.requestStatus = [error localizedDescription];
@@ -707,7 +707,7 @@
     
     THTweet *selectedTweet = [[_tweetArrayController selectedObjects] lastObject];
     
-    [_twitter postStatusUpdate:_tweetText inReplyToStatusID:[selectedTweet.uid description] placeID:_tweetLocation.placeID lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSString *response) {
+    [_twitter postStatusUpdate:_tweetText inReplyToStatusID:[selectedTweet.uid description] placeID:_tweetLocation.placeID lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSDictionary *response) {
         self.tweetText = nil;
         self.requestStatus = @"OK, reply was posted.";
     } errorBlock:^(NSError *error) {
@@ -719,7 +719,7 @@
     
     self.requestStatus = @"Posting remote delete...";
     
-    [_twitter postDestroyStatusWithID:[tweet.uid description] successBlock:^(NSString *response) {
+    [_twitter postDestroyStatusWithID:[tweet.uid description] successBlock:^(NSDictionary *status) {
         self.requestStatus = @"Delete OK";
         [tweet deleteObject];
         //[_tweetArrayController rearrangeObjects];

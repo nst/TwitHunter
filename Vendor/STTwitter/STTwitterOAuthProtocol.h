@@ -16,12 +16,12 @@
 
 - (void)getResource:(NSString *)resource
          parameters:(NSDictionary *)params
-       successBlock:(void(^)(id json))successBlock
+       successBlock:(void(^)(id response))successBlock
          errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (void)postResource:(NSString *)resource
           parameters:(NSDictionary *)params
-        successBlock:(void(^)(id json))successBlock
+        successBlock:(void(^)(id response))successBlock
           errorBlock:(void(^)(NSError *error))errorBlock;
 
 @optional
@@ -34,7 +34,12 @@
                          successBlock:(void(^)(NSString *oauthToken, NSString *oauthTokenSecret, NSString *userID, NSString *screenName))successBlock
                            errorBlock:(void(^)(NSError *error))errorBlock;
 
+- (void)invalidateBearerTokenWithSuccessBlock:(void(^)())successBlock
+                                   errorBlock:(void(^)(NSError *error))errorBlock;
+
 - (NSString *)oauthAccessToken;
 - (NSString *)oauthAccessTokenSecret;
+
+- (NSString *)bearerToken;
 
 @end

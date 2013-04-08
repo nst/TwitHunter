@@ -8,18 +8,20 @@
 
 #import "STTwitterHTML.h"
 #import "STHTTPRequest.h"
+#import "NSString+STTwitter.h"
 
 @implementation STTwitterHTML
 
 - (void)getLoginForm:(void(^)(NSString *authenticityToken))successBlock errorBlock:(void(^)(NSError *error))errorBlock {
     
-    STHTTPRequest *r = [STHTTPRequest requestWithURLString:@"https://api.twitter.com/intent/session"];
+    STHTTPRequest *r = [STHTTPRequest requestWithURLString:@"https://twitter.com/login"];
     
     r.completionBlock = ^(NSDictionary *headers, NSString *body) {
 
         NSError *error = nil;
-        NSString *token = [body firstMatchWithRegex:@"<input name=\"authenticity_token\" type=\"hidden\" value=\"(\\S+)\" />" error:&error];
-        
+//        NSString *token = [body firstMatchWithRegex:@"<input type=\"hidden\" value=\"(\\S+)\" name=\"authenticity_token\"/>" error:&error];        
+        NSString *token = [body firstMatchWithRegex:@"formAuthenticityToken&quot;:&quot;(\\S+?)&quot" error:&error];
+
         if(token == nil) {
             errorBlock(error);
             return;
@@ -48,7 +50,7 @@
         return;
     }
     
-    STHTTPRequest *r = [STHTTPRequest requestWithURLString:@"https://api.twitter.com/intent/session"];
+    STHTTPRequest *r = [STHTTPRequest requestWithURLString:@"https://twitter.com/sessions"];
     
     r.POSTDictionary = @{@"authenticity_token" : authenticityToken,
                          @"session[username_or_email]" : username,
@@ -72,8 +74,6 @@
     STHTTPRequest *r = [STHTTPRequest requestWithURL:url];
         
     r.completionBlock = ^(NSDictionary *headers, NSString *body) {
-        //NSLog(@"-- body: %@", body);
-
         /*
         <form action="https://api.twitter.com/oauth/authorize" id="oauth_form" method="post"><div style="margin:0;padding:0"><input name="authenticity_token" type="hidden" value="dacd811cf06655518633ad93e950132614eab7f4" /></div>
         
@@ -119,8 +119,6 @@
                          @"oauth_token" : oauthToken};
     
     r.completionBlock = ^(NSDictionary *headers, NSString *body) {
-        
-        //NSLog(@"-- body: %@", body);
         
         NSError *error = nil;
         NSString *pin = [body firstMatchWithRegex:@"<code>(\\d+)</code>" error:&error];

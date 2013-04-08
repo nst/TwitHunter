@@ -12,6 +12,10 @@
 
 #include <CommonCrypto/CommonHMAC.h>
 
+@interface NSData (Base64)
+- (NSString *)base64Encoding; // private API
+@end
+
 @interface STTwitterOAuth ()
 
 @property (nonatomic, retain) NSString *username;
@@ -138,8 +142,6 @@
     
     NSString *headerValue = [NSString stringWithFormat:@"OAuth %@", encodedParametersString];
     
-    NSLog(@"-- %@", headerValue);
-    
     return headerValue;
 }
 
@@ -189,16 +191,10 @@
     
     NSString *encodedParametersString = [encodedParameters componentsJoinedByString:@"&"];
     
-    NSLog(@"-- encodedParametersString: %@", encodedParametersString);
-    
-    NSLog(@"-- normalizedURL: %@", [url normalizedForOauthSignatureString]);
-    
     NSString *signatureBaseString = [NSString stringWithFormat:@"%@&%@&%@",
                                      [httpMethod uppercaseString],
                                      [[url normalizedForOauthSignatureString] urlEncodedString],
                                      [encodedParametersString urlEncodedString]];
-    
-    NSLog(@"-- signatureBaseString: %@", signatureBaseString);
     
     return signatureBaseString;
 }
@@ -211,8 +207,6 @@
 
     NSString *signatureBaseString = [[self class] signatureBaseStringWithHTTPMethod:httpMethod url:url allParametersUnsorted:parameters];
     
-    NSLog(@"-- signatureBaseString: %@", signatureBaseString);
-    
     /*
      Note that there are some flows, such as when obtaining a request token, where the token secret is not yet known. In this case, the signing key should consist of the percent encoded consumer secret followed by an ampersand character '&'.
      */
@@ -221,8 +215,6 @@
     NSString *encodedTokenSecret = [tokenSecret urlEncodedString];
     
     NSString *signingKey = [NSString stringWithFormat:@"%@&", encodedConsumerSecret];
-    
-    NSLog(@"-- signing key: %@", signingKey);
     
     if(encodedTokenSecret) {
         signingKey = [signingKey stringByAppendingString:encodedTokenSecret];
@@ -290,7 +282,6 @@
         successBlock(url, _oauthRequestToken);
         
     } errorBlock:^(NSError *error) {
-        NSLog(@"-- error: %@", [error localizedDescription]);
         errorBlock(error);
     }];
 }
@@ -308,14 +299,14 @@
          baseURLString:@"https://api.twitter.com"
             parameters:d
           successBlock:^(NSString *body) {
-        NSDictionary *d = [body parametersDictionary];
+        NSDictionary *dict = [body parametersDictionary];
         
         // https://api.twitter.com/oauth/authorize?oauth_token=OAUTH_TOKEN&oauth_token_secret=OAUTH_TOKEN_SECRET&user_id=USER_ID&screen_name=SCREEN_NAME
         
-        self.oauthAccessToken = d[@"oauth_token"];
-        self.oauthAccessTokenSecret = d[@"oauth_token_secret"];
+        self.oauthAccessToken = dict[@"oauth_token"];
+        self.oauthAccessTokenSecret = dict[@"oauth_token_secret"];
         
-        successBlock(_oauthAccessToken, _oauthAccessTokenSecret, d[@"user_id"], d[@"screen_name"]);
+        successBlock(_oauthAccessToken, _oauthAccessTokenSecret, dict[@"user_id"], dict[@"screen_name"]);
     } errorBlock:^(NSError *error) {
         errorBlock(error);
     }];
@@ -325,7 +316,12 @@
                          successBlock:(void(^)(NSString *oauthToken, NSString *oauthTokenSecret, NSString *userID, NSString *screenName))successBlock
                            errorBlock:(void(^)(NSError *error))errorBlock {
 
-    NSParameterAssert(pin);
+    if([pin length] == 0) {
+        errorBlock([NSError errorWithDomain:NSStringFromClass([self class]) code:0 userInfo:@{NSLocalizedDescriptionKey : @"PIN needed"}]);
+        return;
+    }
+    
+    //NSParameterAssert(pin);
     
     NSDictionary *d = @{@"oauth_verifier" : pin};
     
@@ -333,14 +329,14 @@
          baseURLString:@"https://api.twitter.com"
             parameters:d
           successBlock:^(NSString *body) {
-        NSDictionary *d = [body parametersDictionary];
+        NSDictionary *dict = [body parametersDictionary];
         
         // https://api.twitter.com/oauth/authorize?oauth_token=OAUTH_TOKEN&oauth_token_secret=OAUTH_TOKEN_SECRET&user_id=USER_ID&screen_name=SCREEN_NAME
         
-        self.oauthAccessToken = d[@"oauth_token"];
-        self.oauthAccessTokenSecret = d[@"oauth_token_secret"];
+        self.oauthAccessToken = dict[@"oauth_token"];
+        self.oauthAccessTokenSecret = dict[@"oauth_token_secret"];
                 
-        successBlock(_oauthAccessToken, _oauthAccessTokenSecret, d[@"user_id"], d[@"screen_name"]);
+        successBlock(_oauthAccessToken, _oauthAccessTokenSecret, dict[@"user_id"], dict[@"screen_name"]);
 
     } errorBlock:^(NSError *error) {
         errorBlock(error);
@@ -405,7 +401,7 @@
 
 - (void)getResource:(NSString *)resource
          parameters:(NSDictionary *)params
-       successBlock:(void(^)(id json))successBlock
+       successBlock:(void(^)(id response))successBlock
          errorBlock:(void(^)(NSError *error))errorBlock {
     
     NSMutableString *urlString = [NSMutableString stringWithFormat:@"https://api.twitter.com/1.1/%@", resource];
@@ -431,20 +427,16 @@
         
         NSError *jsonError = nil;
         id json = [NSJSONSerialization JSONObjectWithData:r.responseData options:NSJSONReadingMutableLeaves error:&jsonError];
-        NSLog(@"-- jsonError: %@", [jsonError localizedDescription]);
         
         if(json == nil) {
             errorBlock(jsonError);
             return;
         }
         
-        NSLog(@"** %@", json);
-        
         successBlock(json);
     };
     
     r.errorBlock = ^(NSError *error) {
-        NSLog(@"-- body: %@", r.responseString);
         errorBlock(error);
     };
     
@@ -455,7 +447,7 @@
        baseURLString:(NSString *)baseURLString // no trailing slash
           parameters:(NSDictionary *)params
        oauthCallback:(NSString *)oauthCallback
-        successBlock:(void(^)(id json))successBlock
+        successBlock:(void(^)(id response))successBlock
           errorBlock:(void(^)(NSError *error))errorBlock {
         
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", baseURLString, resource];
@@ -464,26 +456,36 @@
 
     r.POSTDictionary = params;
     
+	NSString *postKey = [params valueForKey:@"postDataKey"];
     // https://dev.twitter.com/docs/api/1.1/post/statuses/update_with_media
-    NSData *mediaData = [params valueForKey:@"media[]"];
+    NSData *postData = [params valueForKey:postKey];
     
     NSMutableDictionary *mutableParams = [[params mutableCopy] autorelease];
-    
-    if(mediaData) {
-        [mutableParams removeObjectForKey:@"media[]"];
+    [mutableParams removeObjectForKey:@"postDataKey"];
+    if(postData) {
+        [mutableParams removeObjectForKey:postKey];
 
-        [r setDataToUpload:mediaData parameterName:@"media[]" mimeType:@"application/octet-stream" fileName:@"media.jpg"];
+        [r setDataToUpload:postData parameterName:postKey mimeType:@"application/octet-stream" fileName:@"media.jpg"];
     }
     
-    [self signRequest:r isMediaUpload:(mediaData != nil) oauthCallback:oauthCallback];
+    [self signRequest:r isMediaUpload:(postData != nil) oauthCallback:oauthCallback];
 
     // POST parameters must not be encoded while posting media, or spaces will appear as %20 in the status
-    r.encodePOSTDictionary = (mediaData == nil);
+    r.encodePOSTDictionary = (postData == nil);
     
     r.POSTDictionary = mutableParams ? mutableParams : @{};
 
     r.completionBlock = ^(NSDictionary *headers, NSString *body) {
-        successBlock(body);
+        
+        NSError *jsonError = nil;
+        id json = [NSJSONSerialization JSONObjectWithData:r.responseData options:NSJSONReadingMutableLeaves error:&jsonError];
+        
+        if(json == nil) {
+            successBlock(body); // response is not necessarily json, eg. https://api.twitter.com/oauth/request_token
+            return;
+        }
+        
+        successBlock(json);
     };
     
     r.errorBlock = ^(NSError *error) {
@@ -492,17 +494,13 @@
         
         NSError *regexError = nil;
         NSString *errorString = [r.responseString firstMatchWithRegex:@"<error>(.*)</error>" error:&regexError];
-        if(errorString == nil) {
-            NSLog(@"-- regexError: %@", [regexError localizedDescription]);
-        }
         
         if(errorString) {
             error = [NSError errorWithDomain:NSStringFromClass([self class]) code:0 userInfo:@{NSLocalizedDescriptionKey : errorString}];
-        } else if([r.responseString length] < 64) {
+        } else if(r.responseString && [r.responseString length] < 64) {
             error = [NSError errorWithDomain:NSStringFromClass([self class]) code:0 userInfo:@{NSLocalizedDescriptionKey : r.responseString}];
         }
         
-        NSLog(@"-- body: %@", r.responseString);
         errorBlock(error);
     };
     
@@ -512,7 +510,7 @@
 - (void)postResource:(NSString *)resource
        baseURLString:(NSString *)baseURLString // no trailing slash
           parameters:(NSDictionary *)params
-        successBlock:(void(^)(id json))successBlock
+        successBlock:(void(^)(id response))successBlock
           errorBlock:(void(^)(NSError *error))errorBlock {
 
     [self postResource:resource
@@ -526,7 +524,7 @@
 - (void)postResource:(NSString *)resource
           parameters:(NSDictionary *)params
        oauthCallback:(NSString *)oauthCallback
-        successBlock:(void(^)(id json))successBlock
+        successBlock:(void(^)(id response))successBlock
           errorBlock:(void(^)(NSError *error))errorBlock {
     
     [self postResource:resource baseURLString:@"https://api.twitter.com/1.1" parameters:params oauthCallback:oauthCallback successBlock:successBlock errorBlock:errorBlock];
@@ -534,7 +532,7 @@
 
 - (void)postResource:(NSString *)resource
           parameters:(NSDictionary *)params
-        successBlock:(void(^)(id json))successBlock
+        successBlock:(void(^)(id response))successBlock
           errorBlock:(void(^)(NSError *error))errorBlock {
     
     [self postResource:resource parameters:params oauthCallback:nil successBlock:successBlock errorBlock:errorBlock];
@@ -590,8 +588,7 @@
     unsigned char buf[CC_SHA1_DIGEST_LENGTH];
     CCHmac(kCCHmacAlgSHA1, [key UTF8String], [key length], [self UTF8String], [self length], buf);
     NSData *data = [NSData dataWithBytes:buf length:CC_SHA1_DIGEST_LENGTH];
-    
-    return [data base64EncodedString];
+    return [data base64Encoding];
 }
 
 - (NSDictionary *)parametersDictionary {
@@ -603,7 +600,6 @@
     for(NSString *parameter in parameters) {
         NSArray *keyValue = [parameter componentsSeparatedByString:@"="];
         if([keyValue count] != 2) {
-            NSLog(@"-- bad parameter: %@", parameter);
             continue;
         }
         
@@ -615,8 +611,9 @@
 
 - (NSString *)urlEncodedString {
     // https://dev.twitter.com/docs/auth/percent-encoding-parameters
+    // http://tools.ietf.org/html/rfc3986#section-2.1
     
-    return [self stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    return [self st_stringByAddingRFC3986PercentEscapesUsingEncoding:NSUTF8StringEncoding];
 }
 
 @end
@@ -624,7 +621,11 @@
 @implementation NSData (STTwitterOAuth)
 
 - (NSString *)base64EncodedString {
-    
+
+#if TARGET_OS_IPHONE
+    return [self base64Encoding]; // private API
+#else
+
     CFDataRef retval = NULL;
     SecTransformRef encodeTrans = SecEncodeTransformCreate(kSecBase64Encoding, NULL);
     if (encodeTrans == NULL) return nil;
@@ -641,6 +642,9 @@
     }
     
     return [s autorelease];
-}
+    
+#endif
 
+}
 @end
+
