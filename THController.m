@@ -557,7 +557,12 @@
     
 	[self updateCumulatedData];
     
-    [self update:self];
+    [_twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
+        [self update:self];
+    } errorBlock:^(NSError *error) {
+        NSLog(@"-- %@", [error localizedDescription]);
+    }];
+    
     
 //    [_twitter getUserTimelineWithScreenName:@"dickc" successBlock:^(NSArray *statuses) {        
 //        for(NSDictionary *d in statuses) {
