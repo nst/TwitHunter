@@ -8,7 +8,7 @@
 
 #import "THLocationVC.h"
 #import "THTweetLocation.h"
-#import "STTwitterAPIWrapper.h"
+#import "STTwitter.h"
 #import "STJSONIP.h"
 
 @interface THLocationVC ()
@@ -24,14 +24,6 @@
     }
     
     return self;
-}
-
-- (void)dealloc {
-    [_twitter release];
-    [_tweetLocation release];
-    [_twitterPlaces release];
-    [_twitterPlacesController release];
-    [super dealloc];
 }
 
 - (void)awakeFromNib {

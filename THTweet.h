@@ -14,14 +14,14 @@
 {
 }
 
-@property (nonatomic, retain) NSString * text;
-@property (nonatomic, retain) NSNumber * uid;
-@property (nonatomic, retain) NSNumber * score;
-@property (nonatomic, retain) NSNumber * isRead;
+@property (nonatomic, strong) NSString * text;
+@property (nonatomic, strong) NSNumber * uid;
+@property (nonatomic, strong) NSNumber * score;
+@property (nonatomic, strong) NSNumber * isRead;
 //@property (nonatomic, retain) NSNumber * containsURL;
-@property (nonatomic, retain) NSNumber * isFavorite;
-@property (nonatomic, retain) NSDate * date;
-@property (nonatomic, retain) THUser * user;
+@property (nonatomic, strong) NSNumber * isFavorite;
+@property (nonatomic, strong) NSDate * date;
+@property (nonatomic, strong) THUser * user;
 
 + (THTweet *)tweetWithHighestUidInContext:(NSManagedObjectContext *)context;
 + (THTweet *)tweetWithUid:(NSString *)uid context:(NSManagedObjectContext *)context;

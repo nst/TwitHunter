@@ -15,14 +15,14 @@
 {
 }
 
-@property (nonatomic, retain) NSNumber * uid;
-@property (nonatomic, retain) NSNumber * score;
-@property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) NSString * screenName;
-@property (nonatomic, retain) NSString * imageURL;
-@property (nonatomic, retain) NSNumber * friendsCount;
-@property (nonatomic, retain) NSNumber * followersCount;
-@property (nonatomic, retain) NSSet* tweets;
+@property (nonatomic, strong) NSNumber * uid;
+@property (nonatomic, strong) NSNumber * score;
+@property (nonatomic, strong) NSString * name;
+@property (nonatomic, strong) NSString * screenName;
+@property (nonatomic, strong) NSString * imageURL;
+@property (nonatomic, strong) NSNumber * friendsCount;
+@property (nonatomic, strong) NSNumber * followersCount;
+@property (nonatomic, strong) NSSet* tweets;
 
 + (THUser *)getOrCreateUserWithDictionary:(NSDictionary *)d context:(NSManagedObjectContext *)context;
 + (THUser *)userWithName:(NSString *)aName context:(NSManagedObjectContext *)context;

@@ -7,7 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "STTwitterOAuthProtocol.h"
+#import "STTwitterProtocol.h"
+
+extern NSString * const kSTPOSTDataKey;
 
 /*
  Based on the following documentation
@@ -20,23 +22,23 @@
  ...
  */
 
-@interface STTwitterOAuth : NSObject <STTwitterOAuthProtocol>
+@interface STTwitterOAuth : NSObject <STTwitterProtocol>
 
-+ (STTwitterOAuth *)twitterServiceWithConsumerName:(NSString *)consumerName
-                                       consumerKey:(NSString *)consumerKey
-                                    consumerSecret:(NSString *)consumerSecret;
++ (instancetype)twitterOAuthWithConsumerName:(NSString *)consumerName
+                                 consumerKey:(NSString *)consumerKey
+                              consumerSecret:(NSString *)consumerSecret;
 
-+ (STTwitterOAuth *)twitterServiceWithConsumerName:(NSString *)consumerName
-                                       consumerKey:(NSString *)consumerKey
-                                    consumerSecret:(NSString *)consumerSecret
-                                        oauthToken:(NSString *)oauthToken
-                                  oauthTokenSecret:(NSString *)oauthTokenSecret;
++ (instancetype)twitterOAuthWithConsumerName:(NSString *)consumerName
+                                 consumerKey:(NSString *)consumerKey
+                              consumerSecret:(NSString *)consumerSecret
+                                  oauthToken:(NSString *)oauthToken
+                            oauthTokenSecret:(NSString *)oauthTokenSecret;
 
-+ (STTwitterOAuth *)twitterServiceWithConsumerName:(NSString *)consumerName
-                                       consumerKey:(NSString *)consumerKey
-                                    consumerSecret:(NSString *)consumerSecret
-                                          username:(NSString *)username
-                                          password:(NSString *)password;
++ (instancetype)twitterOAuthWithConsumerName:(NSString *)consumerName
+                                 consumerKey:(NSString *)consumerKey
+                              consumerSecret:(NSString *)consumerSecret
+                                    username:(NSString *)username
+                                    password:(NSString *)password;
 
 - (void)postTokenRequest:(void(^)(NSURL *url, NSString *oauthToken))successBlock
            oauthCallback:(NSString *)oauthCallback
@@ -50,6 +52,10 @@
                                        password:(NSString *)password
                                    successBlock:(void(^)(NSString *oauthToken, NSString *oauthTokenSecret, NSString *userID, NSString *screenName))successBlock
                                      errorBlock:(void(^)(NSError *error))errorBlock;
+
+// reverse auth phase 1
+- (void)postReverseOAuthTokenRequest:(void(^)(NSString *authenticationHeader))successBlock
+                          errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (BOOL)canVerifyCredentials;
 
@@ -66,5 +72,5 @@
 
 @interface NSURL (STTwitterOAuth)
 - (NSString *)normalizedForOauthSignatureString;
-- (NSArray *)getParametersDictionaries;
+- (NSArray *)rawGetParametersDictionaries;
 @end

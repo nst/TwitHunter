@@ -12,7 +12,7 @@
 #import "THTextRule.h"
 #import "NSManagedObject+ST.h"
 #import "NSString+TH.h"
-#import "STTwitterAPIWrapper.h"
+#import "STTwitter.h"
 #import "THTweetLocation.h"
 #import "THLocationVC.h"
 #import "THCumulativeChartView.h"
@@ -25,24 +25,45 @@
 // $ rm ~/Library/Preferences/ch.seriot.TwitHunter.plist
 
 @interface THController ()
-@property (nonatomic, retain) THTweetLocation *tweetLocation;
-@property (nonatomic, retain) THLocationVC *locationVC;
-@property (nonatomic, retain) STTwitterAPIWrapper *twitter;
-@property (nonatomic, retain) NSDate *latestTimeUpdateCulumatedDataWasAsked;
-@property (nonatomic, retain) NSArray *tweetSortDescriptors;
-@property (nonatomic, retain) NSPredicate *tweetFilterPredicate;
-@property (nonatomic, retain) NSString *tweetText;
-@property (nonatomic, retain) NSNumber *isConnecting;
-@property (nonatomic, retain) NSString *requestStatus;
-@property (nonatomic, retain) NSTimer *timer;
-@property (nonatomic, retain) NSURL *postMediaURL;
+@property (nonatomic, strong) THTweetLocation *tweetLocation;
+@property (nonatomic, strong) THLocationVC *locationVC;
+@property (nonatomic, strong) STTwitterAPI *twitter;
+@property (nonatomic, strong) NSDate *latestTimeUpdateCulumatedDataWasAsked;
+@property (nonatomic, strong) NSArray *tweetSortDescriptors;
+@property (nonatomic, strong) NSPredicate *tweetFilterPredicate;
+@property (nonatomic, strong) NSString *tweetText;
+@property (nonatomic, strong) NSNumber *isConnecting;
+@property (nonatomic, strong) NSString *requestStatus;
+@property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, strong) NSURL *postMediaURL;
 @end
 
 @implementation THController
 
-- (void)setTwitter:(STTwitterAPIWrapper *)twitter {
-    [_twitter autorelease];
-    _twitter = [twitter retain];
+@synthesize twitter = _twitter;
+@synthesize window = _window;
+@synthesize cumulativeChartView = _cumulativeChartView;
+@synthesize latestTimeUpdateCulumatedDataWasAsked = _latestTimeUpdateCulumatedDataWasAsked;
+@synthesize timer = _timer;
+@synthesize tweetText = _tweetText;
+@synthesize postMediaURL = _postMediaURL;
+@synthesize tweetLocation = _tweetLocation;
+@synthesize locationPanel = _locationPanel;
+@synthesize collectionView = _collectionView;
+@synthesize locationVC = _locationVC;
+@synthesize tweetArrayController = _tweetArrayController;
+@synthesize preferencesWC = _preferencesWC;
+@synthesize keywordArrayController = _keywordArrayController;
+@synthesize expectedNbTweetsLabel = _expectedNbTweetsLabel;
+@synthesize userArrayController = _userArrayController;
+@synthesize expectedScoreLabel = _expectedScoreLabel;
+@synthesize tweetSortDescriptors = _tweetSortDescriptors;
+@synthesize tweetFilterPredicate = _tweetFilterPredicate;
+@synthesize isConnecting = _isConnecting;
+@synthesize requestStatus = _requestStatus;
+
+- (void)setTwitter:(STTwitterAPI *)twitter {
+    _twitter = twitter;
     
     NSString *title = [NSString stringWithFormat:@"TwitHunter"];
     
@@ -95,14 +116,14 @@
 
 - (void)updateCumulatedData {
     
-	self.latestTimeUpdateCulumatedDataWasAsked = [[NSDate date] retain];
+	self.latestTimeUpdateCulumatedDataWasAsked = [NSDate date];
     
-    NSDate *startDate = [[_latestTimeUpdateCulumatedDataWasAsked copy] autorelease];
+    NSDate *startDate = [_latestTimeUpdateCulumatedDataWasAsked copy];
     
     NSArray *predicates = [self predicatesWithoutScore];
     
     NSManagedObjectContext *mainContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
-    NSManagedObjectContext *privateContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     privateContext.parentContext = mainContext;
     
     __block NSArray *tweets = nil;
@@ -161,7 +182,6 @@
         NSFetchRequest *fr = [[NSFetchRequest alloc] init];
         [fr setEntity:[THTextRule entityInContext:context]];
         NSArray *allRules = [context executeFetchRequest:fr error:nil];
-        [fr release];
         
         // text score
         for(THTextRule *rule in allRules) {
@@ -187,7 +207,7 @@
 	NSLog(@"-- update scores");
 	
     NSManagedObjectContext *mainContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
-    NSManagedObjectContext *privateContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     privateContext.parentContext = mainContext;
     
     __block NSArray *allTweets = nil;
@@ -197,7 +217,6 @@
         NSEntityDescription *entity = [THTweet entityInContext:privateContext];
         [fr setEntity:entity];
         allTweets = [privateContext executeFetchRequest:fr error:nil];
-        [fr release];
     }];
     
 	[self updateScoresForTweets:allTweets context:privateContext];
@@ -227,7 +246,6 @@
 	if (self = [super init]) {
 		NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"uid" ascending:NO];
 		self.tweetSortDescriptors = @[sd];
-		[sd release];
         
 		NSString *defaultsPath = [[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"];
 		NSDictionary *defaults = [NSDictionary dictionaryWithContentsOfFile:defaultsPath];
@@ -314,15 +332,18 @@
 	self.requestStatus = @"Posting status...";
     
     if(_postMediaURL) {
-        [_twitter postStatusUpdate:_tweetText inReplyToStatusID:nil mediaURL:_postMediaURL placeID:_tweetLocation.placeID lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSDictionary *response) {
+        
+        [_twitter postStatusUpdate:_tweetText inReplyToStatusID:nil mediaURL:_postMediaURL placeID:_tweetLocation.placeID latitude:_tweetLocation.latitude longitude:_tweetLocation.longitude successBlock:^(NSDictionary *status) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
             self.postMediaURL = nil;
         } errorBlock:^(NSError *error) {
             self.requestStatus = error ? [error localizedDescription] : @"Unknown error";
         }];
+
     } else {
-        [_twitter postStatusUpdate:_tweetText inReplyToStatusID:nil placeID:_tweetLocation.placeID lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSDictionary *response) {
+        
+        [_twitter postStatusUpdate:_tweetText inReplyToStatusID:nil latitude:_tweetLocation.latitude longitude:_tweetLocation.longitude placeID:_tweetLocation.placeID displayCoordinates:nil trimUser:nil successBlock:^(NSDictionary *status) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
         } errorBlock:^(NSError *error) {
@@ -338,10 +359,10 @@
 
 - (IBAction)chooseLocation:(id)sender {
     
-    NSTextField *latitudeTextField = [[[NSTextField alloc] initWithFrame:NSMakeRect(0,32, 180, 24)] autorelease];
-    NSTextField *longitudeTextField = [[[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 180, 24)] autorelease];
+    NSTextField *latitudeTextField = [[NSTextField alloc] initWithFrame:NSMakeRect(0,32, 180, 24)];
+    NSTextField *longitudeTextField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 180, 24)];
     
-    NSView *accessoryView = [[[NSView alloc] initWithFrame:NSMakeRect(0, 0, 200, 64)] autorelease];
+    NSView *accessoryView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 200, 64)];
     [accessoryView addSubview:latitudeTextField];
     [accessoryView addSubview:longitudeTextField];
     
@@ -349,15 +370,15 @@
     //    self.locationVC = [[[THLocationVC alloc] initWithNibName:@"THLocationVC" bundle:[NSBundle mainBundle]] autorelease];
     
     if(_tweetLocation == nil) {
-        self.tweetLocation = [[[THTweetLocation alloc] init] autorelease];
+        self.tweetLocation = [[THTweetLocation alloc] init];
     }
     
 #pragma mark TODO:
     // NSWindow setContentView:
     
-    self.locationVC = [[[THLocationVC alloc] initWithNibName:@"THLocationVC" bundle:nil] autorelease];
+    self.locationVC = [[THLocationVC alloc] initWithNibName:@"THLocationVC" bundle:nil];
     _locationVC.twitter = _twitter;
-    _locationVC.tweetLocation = [[_tweetLocation copy] autorelease];
+    _locationVC.tweetLocation = [_tweetLocation copy];
     _locationVC.locationDelegate = self;
     
 //    _locationVC.tweetLocation.latitude = @"46.5199617";
@@ -446,7 +467,7 @@
 	self.isConnecting = @YES;
 	
     NSManagedObjectContext *mainContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
-    NSManagedObjectContext *privateContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     privateContext.parentContext = mainContext;
     
     __block THTweet *latestTweet = nil;
@@ -592,32 +613,11 @@
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    [_preferencesWC release];
     
-    [_tweetArrayController release];
-    [_userArrayController release];
-    [_keywordArrayController release];    
-    [_latestTimeUpdateCulumatedDataWasAsked release];
-    [_window release];
-	[_twitter release];
-    [_postMediaURL release];
     
-    [_collectionView release];
-	[_cumulativeChartView release];
-	[_expectedNbTweetsLabel release];
-	[_expectedScoreLabel release];
     
-    [_tweetSortDescriptors release];
-    [_tweetFilterPredicate release];
-    [_tweetText release];
-    [_isConnecting release];
-    [_requestStatus release];
-    [_timer release];
     
-    [_locationPanel release];
-    [_tweetLocation release];
     
-	[super dealloc];
 }
 
 - (void)saveStatusesFromDictionaries:(NSArray *)statuses {
@@ -631,7 +631,7 @@
     /**/
     
     NSManagedObjectContext *mainContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
-    NSManagedObjectContext *privateContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     privateContext.parentContext = mainContext;
     
     NSLog(@"-- mainContext   : %@ type %lu", privateContext.parentContext, privateContext.parentContext.concurrencyType);
@@ -654,7 +654,7 @@
 	if([statuses count] == 0) return;
 
     NSManagedObjectContext *mainContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
-    NSManagedObjectContext *privateContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     privateContext.parentContext = mainContext;
 
     // statuses are assumed to be ordered by DESC id
@@ -707,7 +707,7 @@
     
     THTweet *selectedTweet = [[_tweetArrayController selectedObjects] lastObject];
     
-    [_twitter postStatusUpdate:_tweetText inReplyToStatusID:[selectedTweet.uid description] placeID:_tweetLocation.placeID lat:_tweetLocation.latitude lon:_tweetLocation.longitude successBlock:^(NSDictionary *response) {
+    [_twitter postStatusUpdate:_tweetText inReplyToStatusID:[selectedTweet.uid description] latitude:_tweetLocation.latitude longitude:_tweetLocation.longitude placeID:_tweetLocation.placeID displayCoordinates:nil trimUser:nil successBlock:^(NSDictionary *status) {
         self.tweetText = nil;
         self.requestStatus = @"OK, reply was posted.";
     } errorBlock:^(NSError *error) {
@@ -719,10 +719,9 @@
     
     self.requestStatus = @"Posting remote delete...";
     
-    [_twitter postDestroyStatusWithID:[tweet.uid description] successBlock:^(NSDictionary *status) {
+    [_twitter postStatusesDestroy:[tweet.uid description] trimUser:nil successBlock:^(NSDictionary *status) {
         self.requestStatus = @"Delete OK";
         [tweet deleteObject];
-        //[_tweetArrayController rearrangeObjects];
     } errorBlock:^(NSError *error) {
         self.requestStatus = [error localizedDescription];
     }];
@@ -784,7 +783,7 @@
 
 #pragma mark THPreferencesWCDelegate
 
-- (void)preferences:(THPreferencesWC *)preferences didChooseTwitter:(STTwitterAPIWrapper *)twitter {
+- (void)preferences:(THPreferencesWC *)preferences didChooseTwitter:(STTwitterAPI *)twitter {
 
     NSManagedObjectContext *mainContext = [(id)[[NSApplication sharedApplication] delegate] managedObjectContext];
 

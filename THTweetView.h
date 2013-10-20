@@ -16,7 +16,7 @@
 
 @interface THTweetView : NSView
 
-@property (nonatomic, assign) id <THTweetViewProtocol> delegate;
+@property (nonatomic, unsafe_unretained) id <THTweetViewProtocol> delegate;
 
 @property (nonatomic) BOOL selected;
 @property (nonatomic) BOOL isRead;

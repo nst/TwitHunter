@@ -35,7 +35,6 @@ static NSDateFormatter *createdAtDateFormatter = nil;
         
         NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
         [createdAtDateFormatter setLocale:usLocale];
-        [usLocale release];
         [createdAtDateFormatter setDateStyle:NSDateFormatterLongStyle];
         [createdAtDateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
         [createdAtDateFormatter setDateFormat: @"EEE MMM dd HH:mm:ss Z yyyy"];
@@ -80,7 +79,6 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	
 	NSArray *tweets = [context executeFetchRequest:request error:&error];
 	
-	[request release];
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	}
@@ -98,7 +96,6 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	
 	NSUInteger count = [context countForFetchRequest:request error:&error];
 	
-	[request release];
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	}
@@ -130,7 +127,6 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	}
-	[request release];
 	return array;
 }
 
@@ -155,14 +151,13 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	if(array == nil) {
 		NSLog(@"-- error:%@", error);
 	}
-	[request release];
 	
 	return [array lastObject];
 }
 
 + (THTweet *)tweetWithHighestUidInContext:(NSManagedObjectContext *)context {
     
-    NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[self entityInContext:context]];
     
     NSSortDescriptor *sd = [NSSortDescriptor sortDescriptorWithKey:@"uid" ascending:NO];
@@ -190,7 +185,6 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	}
-	[request release];
 	
 	return array;
 }
@@ -211,7 +205,6 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 	if(error) {
 		NSLog(@"-- error:%@", error);
 	}
-	[request release];
 	
 	for(THTweet *t in array) {
 		t.isFavorite = [NSNumber numberWithBool:NO];
@@ -275,7 +268,7 @@ static NSDateFormatter *createdAtDateFormatter = nil;
     __block BOOL success = NO;
     __block NSError *error = nil;
     
-    __block NSMutableArray *tweets = [NSMutableArray array];
+    __weak NSMutableArray *tweets = [NSMutableArray array];
     
 	[parentContext performBlockAndWait:^{
         for(NSDictionary *d in a) {
@@ -328,8 +321,6 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 									paragraphStyle, NSParagraphStyleAttributeName,
 									[NSFont systemFontOfSize:11.0], NSFontAttributeName, nil];
 	[attributedStatusString addAttributes:fullAttributes range:NSMakeRange(0, [statusString length])];
-	[textShadow release];
-	[paragraphStyle release];
     
 	// Generate arrays of our interesting items. Links, usernames, hashtags.
     
@@ -352,7 +343,6 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 									  s, @"LinkMatch",
 									  nil];
 			[attributedStatusString addAttributes:linkAttr range:range];
-			[linkAttr release];
 		}
 	}
 	
@@ -368,7 +358,6 @@ static NSDateFormatter *createdAtDateFormatter = nil;
 									   s, @"UsernameMatch",
 									   nil];
 			[attributedStatusString addAttributes:linkAttr2 range:range];
-			[linkAttr2 release];
 		}
 	}
 	
@@ -384,11 +373,10 @@ static NSDateFormatter *createdAtDateFormatter = nil;
                                        s, @"HashtagMatch",
                                        nil];
 			[attributedStatusString addAttributes:linkAttr3 range:range];
-			[linkAttr3 release];
 		}
 	}
 	
-    return [attributedStatusString autorelease];
+    return attributedStatusString;
     
     
     

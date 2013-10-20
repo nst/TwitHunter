@@ -144,11 +144,6 @@
 	CGContextSetAllowsAntialiasing(context, true);	
 }
 
-- (void)dealloc {
-	[dataSource release];
-	[delegate release];
-	[super dealloc];
-}
 
 #pragma mark mouse events
 

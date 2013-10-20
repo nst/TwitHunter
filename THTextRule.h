@@ -13,8 +13,8 @@
 {
 }
 
-@property (nonatomic, retain) NSNumber * score;
-@property (nonatomic, retain) NSString * keyword;
+@property (nonatomic, strong) NSNumber * score;
+@property (nonatomic, strong) NSString * keyword;
 
 @end
 

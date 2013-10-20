@@ -10,38 +10,38 @@
 
 typedef void (^UsernamePasswordBlock_t)(NSString *username, NSString *password);
 
-@class STTwitterAPIWrapper;
+@class STTwitterAPI;
 @class THPreferencesWC;
 
 @protocol THPreferencesWCDelegate
-- (void)preferences:(THPreferencesWC *)preferences didChooseTwitter:(STTwitterAPIWrapper *)twitter;
+- (void)preferences:(THPreferencesWC *)preferences didChooseTwitter:(STTwitterAPI *)twitter;
 @end
 
 @interface THPreferencesWC : NSWindowController
 
 + (THPreferencesWC *)sharedPreferencesWC;
 
-@property (nonatomic, assign) id <THPreferencesWCDelegate> preferencesDelegate;
+@property (nonatomic, unsafe_unretained) id <THPreferencesWCDelegate> preferencesDelegate;
 
 @property (nonatomic, copy) UsernamePasswordBlock_t usernamePasswordBlock;
 
-@property (nonatomic, retain) NSString *connectionStatus;
+@property (nonatomic, strong) NSString *connectionStatus;
 
-@property (nonatomic, retain) STTwitterAPIWrapper *twitter;
+@property (nonatomic, strong) STTwitterAPI *twitter;
 
-@property (nonatomic, retain) NSArray *twitterClients;
+@property (nonatomic, strong) NSArray *twitterClients;
 
-@property (nonatomic, retain) IBOutlet NSArrayController *twitterClientsController;
-@property (nonatomic, retain) IBOutlet NSPanel *usernameAndPasswordPanel;
+@property (nonatomic, strong) IBOutlet NSArrayController *twitterClientsController;
+@property (nonatomic, strong) IBOutlet NSPanel *usernameAndPasswordPanel;
 
-@property (nonatomic, retain) NSString *username;
-@property (nonatomic, retain) NSString *password;
+@property (nonatomic, strong) NSString *username;
+@property (nonatomic, strong) NSString *password;
 
 - (IBAction)usernamePasswordCancel:(id)sender;
 - (IBAction)usernamePasswordOK:(id)sender;
 
 - (IBAction)loginAction:(id)sender;
 
-- (STTwitterAPIWrapper *)twitterWrapper;
+- (STTwitterAPI *)twitterWrapper;
 
 @end

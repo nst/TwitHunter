@@ -23,7 +23,7 @@
 @dynamic followersCount;
 
 + (THUser *)userWithName:(NSString *)aName context:(NSManagedObjectContext *)context {
-	NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
+	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:[self entityInContext:context]];
 	NSPredicate *p = [NSPredicate predicateWithFormat:@"name == %@", aName, nil];
 	[request setPredicate:p];
@@ -54,7 +54,7 @@
 }
 
 - (NSImage *)image {
-	return [[[NSImage alloc] initByReferencingURL:[NSURL URLWithString:self.imageURL]] autorelease];
+	return [[NSImage alloc] initByReferencingURL:[NSURL URLWithString:self.imageURL]];
 }
 
 @end

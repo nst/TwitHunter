@@ -19,44 +19,54 @@ extern NSUInteger const kSTHTTPRequestDefaultTimeout;
 @class STHTTPRequest;
 
 typedef void (^uploadProgressBlock_t)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite);
+typedef void (^downloadProgressBlock_t)(NSData *data, NSInteger totalBytesReceived, NSInteger totalBytesExpectedToReceive);
 typedef void (^completionBlock_t)(NSDictionary *headers, NSString *body);
 typedef void (^errorBlock_t)(NSError *error);
 
 @interface STHTTPRequest : NSObject <NSURLConnectionDelegate>
 
 @property (copy) uploadProgressBlock_t uploadProgressBlock;
+@property (copy) downloadProgressBlock_t downloadProgressBlock;
 @property (copy) completionBlock_t completionBlock;
 @property (copy) errorBlock_t errorBlock;
-@property (nonatomic) NSStringEncoding postDataEncoding;
-@property (nonatomic, retain) NSDictionary *POSTDictionary;
-@property (nonatomic, retain) NSData *POSTData;
-@property (nonatomic, retain) NSMutableDictionary *requestHeaders;
-@property (nonatomic, readonly) NSInteger responseStatus;
-@property (nonatomic, retain, readonly) NSString *responseStringEncodingName;
-@property (nonatomic, retain, readonly) NSDictionary *responseHeaders;
-@property (nonatomic, retain, readonly) NSURL *url;
-@property (nonatomic, retain, readonly) NSMutableData *responseData;
-@property (nonatomic, retain, readonly) NSError *error;
-@property (nonatomic, retain) NSString *responseString;
-@property (nonatomic) NSStringEncoding forcedResponseEncoding;
-@property (nonatomic) BOOL encodePOSTDictionary; // default YES
+
+// request
+@property (nonatomic, strong) NSString *HTTPMethod; // default: GET, or POST if POSTDictionary or files to upload
+@property (nonatomic, strong) NSMutableDictionary *requestHeaders;
+@property (nonatomic, strong) NSDictionary *POSTDictionary; // keys and values are NSString instances
+@property (nonatomic, strong) NSData *rawPOSTData; // eg. to post JSON contents
+@property (nonatomic) NSStringEncoding POSTDataEncoding;
 @property (nonatomic, assign) NSUInteger timeoutSeconds;
 @property (nonatomic) BOOL addCredentialsToURL; // default NO
-//@property (nonatomic, strong) NSString *requestMethod;
+@property (nonatomic) BOOL encodePOSTDictionary; // default YES
+@property (nonatomic, strong, readonly) NSURL *url;
+@property (nonatomic) BOOL ignoreSharedCookiesStorage;
+
+// response
+@property (nonatomic) NSStringEncoding forcedResponseEncoding;
+@property (nonatomic, readonly) NSInteger responseStatus;
+@property (nonatomic, strong, readonly) NSString *responseStringEncodingName;
+@property (nonatomic, strong, readonly) NSDictionary *responseHeaders;
+@property (nonatomic, strong, readonly) NSString *responseString;
+@property (nonatomic, strong, readonly) NSMutableData *responseData;
+@property (nonatomic, strong, readonly) NSError *error;
 
 + (STHTTPRequest *)requestWithURL:(NSURL *)url;
 + (STHTTPRequest *)requestWithURLString:(NSString *)urlString;
+
+- (NSString *)debugDescription; // logged when launched with -STHTTPRequestShowDebugDescription 1
+- (NSString *)curlDescription; // logged when launched with -STHTTPRequestShowCurlDescription 1
 
 - (NSString *)startSynchronousWithError:(NSError **)error;
 - (void)startAsynchronous;
 - (void)cancel;
 
 // Cookies
-+ (void)addCookieWithName:(NSString *)name value:(NSString *)value url:(NSURL *)url;
+- (void)addCookieWithName:(NSString *)name value:(NSString *)value url:(NSURL *)url;
 - (void)addCookieWithName:(NSString *)name value:(NSString *)value;
 - (NSArray *)requestCookies;
-+ (NSArray *)sessionCookies;
-+ (void)deleteSessionCookies;
+- (NSArray *)sessionCookies;
+- (void)deleteSessionCookies;
 
 // Credentials
 + (NSURLCredential *)sessionAuthenticationCredentialsForURL:(NSURL *)requestURL;
@@ -71,12 +81,12 @@ typedef void (^errorBlock_t)(NSError *error);
 - (NSDictionary *)responseHeaders;
 
 // Upload
-- (void)setFileToUpload:(NSString *)path parameterName:(NSString *)param;
-- (void)setDataToUpload:(NSData *)data parameterName:(NSString *)param;
-- (void)setDataToUpload:(NSData *)data parameterName:(NSString *)param mimeType:(NSString *)mimeType fileName:(NSString *)fileName;
+- (void)addFileToUpload:(NSString *)path parameterName:(NSString *)param;
+- (void)addDataToUpload:(NSData *)data parameterName:(NSString *)param;
+- (void)addDataToUpload:(NSData *)data parameterName:(NSString *)param mimeType:(NSString *)mimeType fileName:(NSString *)fileName;
 
 // Session
-+ (void)clearSession; // delete all credentials and cookies
+- (void)clearSession; // delete all credentials and cookies
 
 @end
 

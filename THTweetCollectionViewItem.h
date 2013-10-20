@@ -13,7 +13,7 @@
 
 @interface THTweetCollectionViewItem : NSCollectionViewItem <THTweetViewProtocol>
 
-@property (nonatomic, retain) IBOutlet THTextView *tweetTextTextView;
+@property (nonatomic, strong) IBOutlet THTextView *tweetTextTextView;
 
 - (IBAction)openUserWebTimeline:(id)sender;
 - (IBAction)toggleReadState:(id)sender;

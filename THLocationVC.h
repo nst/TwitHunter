@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class STTwitterAPIWrapper;
+@class STTwitterAPI;
 @class THTweetLocation;
 @class THLocationPanel;
 @class THLocationVC;
@@ -20,11 +20,11 @@
 
 @interface THLocationVC : NSViewController
 
-@property (nonatomic, assign) id <THLocationVCProtocol> locationDelegate;
-@property (nonatomic, retain) STTwitterAPIWrapper *twitter;
-@property (nonatomic, retain) THTweetLocation *tweetLocation;
-@property (nonatomic, retain) IBOutlet NSArrayController *twitterPlacesController;
-@property (nonatomic, retain) NSArray *twitterPlaces;
+@property (nonatomic, unsafe_unretained) id <THLocationVCProtocol> locationDelegate;
+@property (nonatomic, strong) STTwitterAPI *twitter;
+@property (nonatomic, strong) THTweetLocation *tweetLocation;
+@property (nonatomic, strong) IBOutlet NSArrayController *twitterPlacesController;
+@property (nonatomic, strong) NSArray *twitterPlaces;
 
 - (IBAction)lookupIPAddress:(id)sender;
 - (IBAction)lookupCoordinates:(id)sender;

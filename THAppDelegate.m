@@ -35,7 +35,7 @@
     
     if (managedObjectModel) return managedObjectModel;
 	
-    managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:nil] retain];
+    managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
     return managedObjectModel;
 }
 
@@ -77,7 +77,7 @@
                                                         options:nil
                                                           error:&error]){
         [[NSApplication sharedApplication] presentError:error];
-        [persistentStoreCoordinator release], persistentStoreCoordinator = nil;
+        persistentStoreCoordinator = nil;
         return nil;
     }
     
@@ -180,7 +180,6 @@
         [alert addButtonWithTitle:cancelButton];
         
         NSInteger answer = [alert runModal];
-        [alert release];
         alert = nil;
         
         if (answer == NSAlertAlternateReturn) return NSTerminateCancel;
@@ -194,13 +193,5 @@
     return YES;
 }
 
-- (void)dealloc {
-    [window release];
-    [managedObjectContext release];
-    [persistentStoreCoordinator release];
-    [managedObjectModel release];
-	
-    [super dealloc];
-}
 
 @end

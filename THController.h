@@ -15,7 +15,7 @@
 
 #define MAX_COUNT 100
 
-@class STTwitterAPIWrapper;
+@class STTwitterAPI;
 @class THTweet;
 @class THTweetLocation;
 @class THLocationPanel;
@@ -29,17 +29,17 @@
 	NSUInteger cumulatedTweetsForScore[MAX_COUNT+1];
 }
 
-@property (nonatomic, retain) IBOutlet NSWindow *window;
-@property (nonatomic, retain) IBOutlet NSArrayController *tweetArrayController;
-@property (nonatomic, retain) IBOutlet NSArrayController *userArrayController;
-@property (nonatomic, retain) IBOutlet NSArrayController *keywordArrayController;
-@property (nonatomic, retain) IBOutlet NSPanel *locationPanel;
-@property (nonatomic, retain) IBOutlet NSCollectionView *collectionView;
-@property (nonatomic, retain) IBOutlet THCumulativeChartView *cumulativeChartView;
-@property (nonatomic, retain) IBOutlet NSTextField *expectedNbTweetsLabel;
-@property (nonatomic, retain) IBOutlet NSTextField *expectedScoreLabel;
-@property (nonatomic, retain) NSArray *twitterClients;
-@property (nonatomic, retain) THPreferencesWC *preferencesWC;
+@property (nonatomic, strong) IBOutlet NSWindow *window;
+@property (nonatomic, strong) IBOutlet NSArrayController *tweetArrayController;
+@property (nonatomic, strong) IBOutlet NSArrayController *userArrayController;
+@property (nonatomic, strong) IBOutlet NSArrayController *keywordArrayController;
+@property (nonatomic, strong) IBOutlet NSPanel *locationPanel;
+@property (nonatomic, strong) IBOutlet NSCollectionView *collectionView;
+@property (nonatomic, strong) IBOutlet THCumulativeChartView *cumulativeChartView;
+@property (nonatomic, strong) IBOutlet NSTextField *expectedNbTweetsLabel;
+@property (nonatomic, strong) IBOutlet NSTextField *expectedScoreLabel;
+@property (nonatomic, strong) NSArray *twitterClients;
+@property (nonatomic, strong) THPreferencesWC *preferencesWC;
 
 - (IBAction)update:(id)sender;
 - (IBAction)synchronizeFavorites:(id)sender;

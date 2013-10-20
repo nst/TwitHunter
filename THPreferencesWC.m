@@ -7,7 +7,7 @@
 //
 
 #import "THPreferencesWC.h"
-#import "STTwitterAPIWrapper.h"
+#import "STTwitter.h"
 
 static NSString *kTHOSXTwitterIntegrationName = @"OSX Twitter Integration";
 
@@ -18,6 +18,15 @@ static NSString *kTHOSXTwitterIntegrationName = @"OSX Twitter Integration";
 static THPreferencesWC *sharedPreferencesWC = nil;
 
 @implementation THPreferencesWC
+
+@synthesize twitterClients = _twitterClients;
+@synthesize twitterClientsController = _twitterClientsController;
+@synthesize twitter = _twitter;
+@synthesize username = _username;
+@synthesize password = _password;
+@synthesize preferencesDelegate = _preferencesDelegate;
+@synthesize usernameAndPasswordPanel = _usernameAndPasswordPanel;
+@synthesize connectionStatus = _connectionStatus;
 
 + (THPreferencesWC *)sharedPreferencesWC {
 	if (!sharedPreferencesWC) {
@@ -148,17 +157,17 @@ static THPreferencesWC *sharedPreferencesWC = nil;
     return nil;
 }
 
-- (STTwitterAPIWrapper *)twitterWrapper {
+- (STTwitterAPI *)twitterWrapper {
     
     NSDictionary *d = [self preferedClientIdentityDictionary];
     
     if (d == nil) {
         NSLog(@"-- USING OSX");
-        return [STTwitterAPIWrapper twitterAPIWithOAuthOSX];
+        return [STTwitterAPI twitterAPIOSWithFirstAccount];
     }
     
     NSLog(@"-- USING %@", d[@"name"]);
-    return [STTwitterAPIWrapper twitterAPIWithOAuthConsumerName:d[@"name"]
+    return [STTwitterAPI twitterAPIWithOAuthConsumerName:d[@"name"]
                                                     consumerKey:d[@"ck"]
                                                  consumerSecret:d[@"cs"]
                                                      oauthToken:d[@"ak"]
@@ -177,7 +186,7 @@ static THPreferencesWC *sharedPreferencesWC = nil;
     
     if(selectedClient == nil || [[selectedClient valueForKey:@"name"] isEqualToString:kTHOSXTwitterIntegrationName]) {
         
-        self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthOSX];
+        self.twitter = [STTwitterAPI twitterAPIOSWithFirstAccount];
         
         [_twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
             
@@ -218,7 +227,7 @@ static THPreferencesWC *sharedPreferencesWC = nil;
                 return;
             };
             
-            self.twitter = [STTwitterAPIWrapper twitterAPIWithOAuthConsumerName:consumerName
+            self.twitter = [STTwitterAPI twitterAPIWithOAuthConsumerName:consumerName
                                                                     consumerKey:consumerKey
                                                                  consumerSecret:consumerSecret
                                                                        username:username
@@ -246,18 +255,5 @@ static THPreferencesWC *sharedPreferencesWC = nil;
     
 }
 
-- (void)dealloc {
-    if (_usernamePasswordBlock) [_usernamePasswordBlock release];
-    
-    [_usernameAndPasswordPanel release];
-    [_twitterClients release];
-    [_twitterClientsController release];
-    [_username release];
-    [_password release];
-    [_twitter release];
-    [_connectionStatus release];
-    
-    [super dealloc];
-}
 
 @end

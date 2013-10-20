@@ -12,15 +12,10 @@
 #import "THTweetView.h"
 
 @interface THCollectionView ()
-@property (nonatomic, retain) NSIndexSet *formerSelectionIndexSet;
+@property (nonatomic, strong) NSIndexSet *formerSelectionIndexSet;
 @end
 
 @implementation THCollectionView
-
-- (void)dealloc {
-    [_formerSelectionIndexSet release];
-    [super dealloc];
-}
 
 - (NSCollectionViewItem *)newItemForRepresentedObject:(id)object {
         

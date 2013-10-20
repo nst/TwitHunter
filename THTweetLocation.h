@@ -10,14 +10,14 @@
 
 @interface THTweetLocation : NSObject
 
-@property (nonatomic, retain) NSString *ipAddress;
+@property (nonatomic, strong) NSString *ipAddress;
 
-@property (nonatomic, retain) NSString *placeID;
-@property (nonatomic, retain) NSString *fullName;
+@property (nonatomic, strong) NSString *placeID;
+@property (nonatomic, strong) NSString *fullName;
 
-@property (nonatomic, retain) NSString *latitude;
-@property (nonatomic, retain) NSString *longitude;
+@property (nonatomic, strong) NSString *latitude;
+@property (nonatomic, strong) NSString *longitude;
 
-@property (nonatomic, retain) NSString *query;
+@property (nonatomic, strong) NSString *query;
 
 @end

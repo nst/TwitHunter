@@ -31,8 +31,8 @@
 	NSTrackingRectTag tag;
 }
 
-@property (nonatomic, retain) NSObject <CumulativeChartViewDelegate> *delegate;
-@property (nonatomic, retain) NSObject <CumulativeChartViewDataSource> *dataSource;
+@property (nonatomic, strong) NSObject <CumulativeChartViewDelegate> *delegate;
+@property (nonatomic, strong) NSObject <CumulativeChartViewDataSource> *dataSource;
 
 - (void)setScore:(NSUInteger)aScore;
 

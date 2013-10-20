@@ -36,7 +36,6 @@
     
     NSError *error = nil;
     NSArray *allObjects = [context executeFetchRequest:fr error:&error];
-    [fr release];
 
     if(allObjects == nil) {
         NSLog(@"-- error: %@", [error localizedDescription]);
