@@ -333,7 +333,15 @@
     
     if(_postMediaURL) {
         
-        [_twitter postStatusUpdate:_tweetText inReplyToStatusID:nil mediaURL:_postMediaURL placeID:_tweetLocation.placeID latitude:_tweetLocation.latitude longitude:_tweetLocation.longitude successBlock:^(NSDictionary *status) {
+        [_twitter postStatusUpdate:_tweetText
+                 inReplyToStatusID:nil
+                          mediaURL:_postMediaURL
+                           placeID:_tweetLocation.placeID
+                          latitude:_tweetLocation.latitude
+                         longitude:_tweetLocation.longitude
+               uploadProgressBlock:^(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite) {
+                   NSLog(@"-- uploadProgressBlock: %@ / %@", @(totalBytesWritten), @(totalBytesExpectedToWrite));
+        } successBlock:^(NSDictionary *status) {
             self.tweetText = @"";
             self.requestStatus = @"OK, status was posted.";
             self.postMediaURL = nil;

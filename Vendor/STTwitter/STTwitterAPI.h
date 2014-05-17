@@ -21,6 +21,16 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ENUM(NSUInteger, STTwitterAPIErrorCode) {
+    STTwitterAPICannotPostEmptyStatus,
+    STTwitterAPIMediaDataIsEmpty
+};
+
+extern NSString *kBaseURLStringAPI;
+extern NSString *kBaseURLStringStream;
+extern NSString *kBaseURLStringUserStream;
+extern NSString *kBaseURLStringSiteStream;
+
 /*
  Tweet fields contents
  https://dev.twitter.com/docs/platform-objects/tweets
@@ -76,6 +86,13 @@
                                   consumerSecret:(NSString *)consumerSecret;
 
 - (void)postTokenRequest:(void(^)(NSURL *url, NSString *oauthToken))successBlock
+              forceLogin:(NSNumber *)forceLogin
+              screenName:(NSString *)screenName
+           oauthCallback:(NSString *)oauthCallback
+              errorBlock:(void(^)(NSError *error))errorBlock;
+
+// convenience
+- (void)postTokenRequest:(void(^)(NSURL *url, NSString *oauthToken))successBlock
            oauthCallback:(NSString *)oauthCallback
               errorBlock:(void(^)(NSError *error))errorBlock;
 
@@ -90,6 +107,8 @@
                           errorBlock:(void(^)(NSError *error))errorBlock;
 
 // reverse auth step 2
+// WARNING: if the Twitter account was set in iOS settings, the tokens may be nil after a system update.
+// In this case, you can call -[ACAccountStore renewCredentialsForAccount:completion:] to let the user enter her Twitter password again.
 - (void)postReverseAuthAccessTokenWithAuthenticationHeader:(NSString *)authenticationHeader
                                               successBlock:(void(^)(NSString *oAuthToken, NSString *oAuthTokenSecret, NSString *userID, NSString *screenName))successBlock
                                                 errorBlock:(void(^)(NSError *error))errorBlock;
@@ -101,35 +120,37 @@
 
 - (NSString *)prettyDescription;
 
-@property (nonatomic, strong) NSString *userName; // available for osx, set after successful connection for STTwitterOAuth
+@property (nonatomic, retain) NSString *userName; // available for osx, set after successful connection for STTwitterOAuth
 
-@property (weak, nonatomic, readonly) NSString *oauthAccessToken;
-@property (weak, nonatomic, readonly) NSString *oauthAccessTokenSecret;
-@property (weak, nonatomic, readonly) NSString *bearerToken;
+@property (nonatomic, readonly) NSString *oauthAccessToken;
+@property (nonatomic, readonly) NSString *oauthAccessTokenSecret;
+@property (nonatomic, readonly) NSString *bearerToken;
 
 #pragma mark Generic methods to GET and POST
 
-- (NSString *)fetchResource:(NSString *)resource
-                 HTTPMethod:(NSString *)HTTPMethod
-              baseURLString:(NSString *)baseURLString
-                 parameters:(NSDictionary *)params
-              progressBlock:(void (^)(NSString *requestID, id response))progressBlock // TODO: handle progressBlock?
-               successBlock:(void (^)(NSString *requestID, NSDictionary *requestHeaders, NSDictionary *responseHeaders, id response))successBlock
-                 errorBlock:(void (^)(NSString *requestID, NSDictionary *requestHeaders, NSDictionary *responseHeaders, NSError *error))errorBlock;
-
-- (void)getResource:(NSString *)resource
+- (id)fetchResource:(NSString *)resource
+         HTTPMethod:(NSString *)HTTPMethod
       baseURLString:(NSString *)baseURLString
-         parameters:(NSDictionary *)parameters
-      progressBlock:(void(^)(id json))progressBlock
-       successBlock:(void(^)(NSDictionary *rateLimits, id json))successBlock
-         errorBlock:(void(^)(NSError *error))errorBlock;
+         parameters:(NSDictionary *)params
+uploadProgressBlock:(void(^)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite))uploadProgressBlock
+downloadProgressBlock:(void (^)(id request, id response))downloadProgressBlock
+       successBlock:(void (^)(id request, NSDictionary *requestHeaders, NSDictionary *responseHeaders, id response))successBlock
+         errorBlock:(void (^)(id request, NSDictionary *requestHeaders, NSDictionary *responseHeaders, NSError *error))errorBlock;
 
-- (void)postResource:(NSString *)resource
-       baseURLString:(NSString *)baseURLString
-          parameters:(NSDictionary *)parameters
-       progressBlock:(void(^)(id json))progressBlock
-        successBlock:(void(^)(NSDictionary *rateLimits, id response))successBlock
-          errorBlock:(void(^)(NSError *error))errorBlock;
+- (id)getResource:(NSString *)resource
+    baseURLString:(NSString *)baseURLString
+       parameters:(NSDictionary *)parameters
+downloadProgressBlock:(void(^)(id json))progredownloadProgressBlockssBlock
+     successBlock:(void(^)(NSDictionary *rateLimits, id json))successBlock
+       errorBlock:(void(^)(NSError *error))errorBlock;
+
+- (id)postResource:(NSString *)resource
+     baseURLString:(NSString *)baseURLString
+        parameters:(NSDictionary *)parameters
+uploadProgressBlock:(void(^)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite))uploadProgressBlock
+downloadProgressBlock:(void(^)(id json))downloadProgressBlock
+      successBlock:(void(^)(NSDictionary *rateLimits, id response))successBlock
+        errorBlock:(void(^)(NSError *error))errorBlock;
 
 #pragma mark Timelines
 
@@ -147,7 +168,7 @@
 - (void)getStatusesMentionTimelineWithCount:(NSString *)count
                                     sinceID:(NSString *)sinceID
                                       maxID:(NSString *)maxID
-                                   trimUser:(NSNumber *)timUser
+                                   trimUser:(NSNumber *)trimUser
                          contributorDetails:(NSNumber *)contributorDetails
                             includeEntities:(NSNumber *)includeEntities
                                successBlock:(void(^)(NSArray *statuses))successBlock
@@ -367,6 +388,7 @@
                longitude:(NSString *)longitude
                  placeID:(NSString *)placeID
       displayCoordinates:(NSNumber *)displayCoordinates
+     uploadProgressBlock:(void(^)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite))uploadProgressBlock
             successBlock:(void(^)(NSDictionary *status))successBlock
               errorBlock:(void(^)(NSError *error))errorBlock;
 
@@ -377,6 +399,7 @@
                  placeID:(NSString *)placeID
                 latitude:(NSString *)latitude
                longitude:(NSString *)longitude
+     uploadProgressBlock:(void(^)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite))uploadProgressBlock
             successBlock:(void(^)(NSDictionary *status))successBlock
               errorBlock:(void(^)(NSError *error))errorBlock;
 
@@ -449,19 +472,19 @@
  At least one predicate parameter (follow, locations, or track) must be specified.
  */
 
-- (void)postStatusesFilterUserIDs:(NSArray *)userIDs
-                  keywordsToTrack:(NSArray *)keywordsToTrack
-            locationBoundingBoxes:(NSArray *)locationBoundingBoxes
-                        delimited:(NSNumber *)delimited
-                    stallWarnings:(NSNumber *)stallWarnings
-                    progressBlock:(void(^)(id response))progressBlock
-                stallWarningBlock:(void(^)(NSString *code, NSString *message, NSUInteger percentFull))stallWarningBlock
-                       errorBlock:(void(^)(NSError *error))errorBlock;
+- (id)postStatusesFilterUserIDs:(NSArray *)userIDs
+                keywordsToTrack:(NSArray *)keywordsToTrack
+          locationBoundingBoxes:(NSArray *)locationBoundingBoxes
+                      delimited:(NSNumber *)delimited
+                  stallWarnings:(NSNumber *)stallWarnings
+                  progressBlock:(void(^)(NSDictionary *tweet))progressBlock
+              stallWarningBlock:(void(^)(NSString *code, NSString *message, NSUInteger percentFull))stallWarningBlock
+                     errorBlock:(void(^)(NSError *error))errorBlock;
 
 // convenience
-- (void)postStatusesFilterKeyword:(NSString *)keyword
-                    progressBlock:(void(^)(id response))progressBlock
-                       errorBlock:(void(^)(NSError *error))errorBlock;
+- (id)postStatusesFilterKeyword:(NSString *)keyword
+                  progressBlock:(void(^)(NSDictionary *tweet))progressBlock
+                     errorBlock:(void(^)(NSError *error))errorBlock;
 
 /*
  GET    statuses/sample
@@ -469,11 +492,11 @@
  Returns a small random sample of all public statuses. The Tweets returned by the default access level are the same, so if two different clients connect to this endpoint, they will see the same Tweets.
  */
 
-- (void)getStatusesSampleDelimited:(NSNumber *)delimited
-                     stallWarnings:(NSNumber *)stallWarnings
-                     progressBlock:(void(^)(id response))progressBlock
-                 stallWarningBlock:(void(^)(NSString *code, NSString *message, NSUInteger percentFull))stallWarningBlock
-                        errorBlock:(void(^)(NSError *error))errorBlock;
+- (id)getStatusesSampleDelimited:(NSNumber *)delimited
+                   stallWarnings:(NSNumber *)stallWarnings
+                   progressBlock:(void(^)(id response))progressBlock
+               stallWarningBlock:(void(^)(NSString *code, NSString *message, NSUInteger percentFull))stallWarningBlock
+                      errorBlock:(void(^)(NSError *error))errorBlock;
 
 /*
  GET    statuses/firehose
@@ -483,12 +506,12 @@
  Returns all public statuses. Few applications require this level of access. Creative use of a combination of other resources and various access levels can satisfy nearly every application use case.
  */
 
-- (void)getStatusesFirehoseWithCount:(NSString *)count
-                           delimited:(NSNumber *)delimited
-                       stallWarnings:(NSNumber *)stallWarnings
-                       progressBlock:(void(^)(id response))progressBlock
-                   stallWarningBlock:(void(^)(NSString *code, NSString *message, NSUInteger percentFull))stallWarningBlock
-                          errorBlock:(void(^)(NSError *error))errorBlock;
+- (id)getStatusesFirehoseWithCount:(NSString *)count
+                         delimited:(NSNumber *)delimited
+                     stallWarnings:(NSNumber *)stallWarnings
+                     progressBlock:(void(^)(id response))progressBlock
+                 stallWarningBlock:(void(^)(NSString *code, NSString *message, NSUInteger percentFull))stallWarningBlock
+                        errorBlock:(void(^)(NSError *error))errorBlock;
 
 /*
  GET    user
@@ -496,15 +519,15 @@
  Streams messages for a single user, as described in User streams https://dev.twitter.com/docs/streaming-apis/streams/user
  */
 
-- (void)getUserStreamDelimited:(NSNumber *)delimited
-                 stallWarnings:(NSNumber *)stallWarnings
+- (id)getUserStreamDelimited:(NSNumber *)delimited
+               stallWarnings:(NSNumber *)stallWarnings
 includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccounts
-                includeReplies:(NSNumber *)includeReplies
-               keywordsToTrack:(NSArray *)keywordsToTrack
-         locationBoundingBoxes:(NSArray *)locationBoundingBoxes
-                 progressBlock:(void(^)(id response))progressBlock
-             stallWarningBlock:(void(^)(NSString *code, NSString *message, NSUInteger percentFull))stallWarningBlock
-                    errorBlock:(void(^)(NSError *error))errorBlock;
+              includeReplies:(NSNumber *)includeReplies
+             keywordsToTrack:(NSArray *)keywordsToTrack
+       locationBoundingBoxes:(NSArray *)locationBoundingBoxes
+               progressBlock:(void(^)(id response))progressBlock
+           stallWarningBlock:(void(^)(NSString *code, NSString *message, NSUInteger percentFull))stallWarningBlock
+                  errorBlock:(void(^)(NSError *error))errorBlock;
 
 /*
  GET    site
@@ -512,14 +535,14 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
  Streams messages for a set of users, as described in Site streams https://dev.twitter.com/docs/streaming-apis/streams/site
  */
 
-- (void)getSiteStreamForUserIDs:(NSArray *)userIDs
-                      delimited:(NSNumber *)delimited
-                  stallWarnings:(NSNumber *)stallWarnings
-         restrictToUserMessages:(NSNumber *)restrictToUserMessages
-                 includeReplies:(NSNumber *)includeReplies
-                  progressBlock:(void(^)(id response))progressBlock
-              stallWarningBlock:(void(^)(NSString *code, NSString *message, NSUInteger percentFull))stallWarningBlock
-                     errorBlock:(void(^)(NSError *error))errorBlock;
+- (id)getSiteStreamForUserIDs:(NSArray *)userIDs
+                    delimited:(NSNumber *)delimited
+                stallWarnings:(NSNumber *)stallWarnings
+       restrictToUserMessages:(NSNumber *)restrictToUserMessages
+               includeReplies:(NSNumber *)includeReplies
+                progressBlock:(void(^)(id response))progressBlock
+            stallWarningBlock:(void(^)(NSString *code, NSString *message, NSUInteger percentFull))stallWarningBlock
+                   errorBlock:(void(^)(NSError *error))errorBlock;
 
 #pragma mark Direct Messages
 
@@ -766,6 +789,7 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
 - (void)getFriendsListForUserID:(NSString *)userID
                    orScreenName:(NSString *)screenName
                          cursor:(NSString *)cursor
+                          count:(NSString *)count
                      skipStatus:(NSNumber *)skipStatus
             includeUserEntities:(NSNumber *)includeUserEntities
                    successBlock:(void(^)(NSArray *users, NSString *previousCursor, NSString *nextCursor))successBlock
@@ -1093,6 +1117,54 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
                           successBlock:(void(^)(NSDictionary *banner))successBlock
                             errorBlock:(void(^)(NSError *error))errorBlock;
 
+/*
+ POST   mutes/users/create
+ 
+ Mutes the user specified in the ID parameter for the authenticating user.
+ 
+ Returns the muted user in the requested format when successful. Returns a string describing the failure condition when unsuccessful.
+ 
+ Actions taken in this method are asynchronous and changes will be eventually consistent.
+ */
+- (void)postMutesUsersCreateForScreenName:(NSString *)screenName
+                                 orUserID:(NSString *)userID
+                             successBlock:(void(^)(NSDictionary *user))successBlock
+                               errorBlock:(void(^)(NSError *error))errorBlock;
+
+/*
+ POST   mutes/users/destroy
+ 
+ Un-mutes the user specified in the ID parameter for the authenticating user.
+ 
+ Returns the unmuted user in the requested format when successful. Returns a string describing the failure condition when unsuccessful.
+ 
+ Actions taken in this method are asynchronous and changes will be eventually consistent.
+ */
+- (void)postMutesUsersDestroyForScreenName:(NSString *)screenName
+                                  orUserID:(NSString *)userID
+                              successBlock:(void(^)(NSDictionary *user))successBlock
+                                errorBlock:(void(^)(NSError *error))errorBlock;
+
+/*
+ GET    mutes/users/ids
+ 
+ Returns an array of numeric user ids the authenticating user has muted.
+ */
+- (void)getMutesUsersIDsWithCursor:(NSString *)cursor
+                      successBlock:(void(^)(NSArray *userIDs, NSString *previousCursor, NSString *nextCursor))successBlock
+                        errorBlock:(void(^)(NSError *error))errorBlock;
+
+/*
+ GET    mutes/users/list
+ 
+ Returns an array of user objects the authenticating user has muted.
+ */
+- (void)getMutesUsersListWithCursor:(NSString *)cursor
+                    includeEntities:(NSNumber *)includeEntities
+                         skipStatus:(NSNumber *)skipStatus
+                       successBlock:(void(^)(NSArray *users, NSString *previousCursor, NSString *nextCursor))successBlock
+                         errorBlock:(void(^)(NSError *error))errorBlock;
+
 #pragma mark Suggested Users
 
 /*
@@ -1234,7 +1306,7 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
  */
 
 - (void)postListsMembersDestroyForListID:(NSString *)listID
-                            successBlock:(void(^)())successBlock
+                            successBlock:(void(^)(id response))successBlock
                               errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (void)postListsMembersDestroyForSlug:(NSString *)slug
@@ -1270,14 +1342,14 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
                             cursor:(NSString *)cursor
                    includeEntities:(NSNumber *)includeEntities
                         skipStatus:(NSNumber *)skipStatus
-                      successBlock:(void(^)())successBlock
+                      successBlock:(void(^)(NSArray *users, NSString *previousCursor, NSString *nextCursor))successBlock
                         errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (void)getListsSubscribersForListID:(NSString *)listID
                               cursor:(NSString *)cursor
                      includeEntities:(NSNumber *)includeEntities
                           skipStatus:(NSNumber *)skipStatus
-                        successBlock:(void(^)())successBlock
+                        successBlock:(void(^)(NSArray *users, NSString *previousCursor, NSString *nextCursor))successBlock
                           errorBlock:(void(^)(NSError *error))errorBlock;
 
 /*
@@ -1287,13 +1359,13 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
  */
 
 - (void)postListSubscribersCreateForListID:(NSString *)listID
-                              successBlock:(void(^)())successBlock
+                              successBlock:(void(^)(id response))successBlock
                                 errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (void)postListSubscribersCreateForSlug:(NSString *)slug
                          ownerScreenName:(NSString *)ownerScreenName
                                orOwnerID:(NSString *)ownerID
-                            successBlock:(void(^)())successBlock
+                            successBlock:(void(^)(id response))successBlock
                               errorBlock:(void(^)(NSError *error))errorBlock;
 
 /*
@@ -1307,7 +1379,7 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
                             orScreenName:(NSString *)screenName
                          includeEntities:(NSNumber *)includeEntities
                               skipStatus:(NSNumber *)skipStatus
-                            successBlock:(void(^)())successBlock
+                            successBlock:(void(^)(id response))successBlock
                               errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (void)getListsSubscribersShowForSlug:(NSString *)slug
@@ -1317,7 +1389,7 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
                           orScreenName:(NSString *)screenName
                        includeEntities:(NSNumber *)includeEntities
                             skipStatus:(NSNumber *)skipStatus
-                          successBlock:(void(^)())successBlock
+                          successBlock:(void(^)(id response))successBlock
                             errorBlock:(void(^)(NSError *error))errorBlock;
 
 /*
@@ -1327,13 +1399,13 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
  */
 
 - (void)postListSubscribersDestroyForListID:(NSString *)listID
-                               successBlock:(void(^)())successBlock
+                               successBlock:(void(^)(id response))successBlock
                                  errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (void)postListSubscribersDestroyForSlug:(NSString *)slug
                           ownerScreenName:(NSString *)ownerScreenName
                                 orOwnerID:(NSString *)ownerID
-                             successBlock:(void(^)())successBlock
+                             successBlock:(void(^)(id response))successBlock
                                errorBlock:(void(^)(NSError *error))errorBlock;
 
 /*
@@ -1347,7 +1419,7 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
 - (void)postListsMembersCreateAllForListID:(NSString *)listID
                                    userIDs:(NSArray *)userIDs // array of strings
                              orScreenNames:(NSArray *)screenNames // array of strings
-                              successBlock:(void(^)())successBlock
+                              successBlock:(void(^)(id response))successBlock
                                 errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (void)postListsMembersCreateAllForSlug:(NSString *)slug
@@ -1355,7 +1427,7 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
                                orOwnerID:(NSString *)ownerID
                                  userIDs:(NSArray *)userIDs // array of strings
                            orScreenNames:(NSArray *)screenNames // array of strings
-                            successBlock:(void(^)())successBlock
+                            successBlock:(void(^)(id response))successBlock
                               errorBlock:(void(^)(NSError *error))errorBlock;
 
 /*
@@ -1413,7 +1485,7 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
 - (void)postListMemberCreateForListID:(NSString *)listID
                                userID:(NSString *)userID
                            screenName:(NSString *)screenName
-                         successBlock:(void(^)())successBlock
+                         successBlock:(void(^)(id response))successBlock
                            errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (void)postListMemberCreateForSlug:(NSString *)slug
@@ -1421,7 +1493,7 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
                           orOwnerID:(NSString *)ownerID
                              userID:(NSString *)userID
                          screenName:(NSString *)screenName
-                       successBlock:(void(^)())successBlock
+                       successBlock:(void(^)(id response))successBlock
                          errorBlock:(void(^)(NSError *error))errorBlock;
 
 /*
@@ -1431,13 +1503,13 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
  */
 
 - (void)postListsDestroyForListID:(NSString *)listID
-                     successBlock:(void(^)())successBlock
+                     successBlock:(void(^)(id response))successBlock
                        errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (void)postListsDestroyForSlug:(NSString *)slug
                 ownerScreenName:(NSString *)ownerScreenName
                       orOwnerID:(NSString *)ownerID
-                   successBlock:(void(^)())successBlock
+                   successBlock:(void(^)(id response))successBlock
                      errorBlock:(void(^)(NSError *error))errorBlock;
 
 /*
@@ -1450,7 +1522,7 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
                             name:(NSString *)name
                        isPrivate:(BOOL)isPrivate
                      description:(NSString *)description
-                    successBlock:(void(^)())successBlock
+                    successBlock:(void(^)(id response))successBlock
                       errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (void)postListsUpdateForSlug:(NSString *)slug
@@ -1459,7 +1531,7 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
                           name:(NSString *)name
                      isPrivate:(BOOL)isPrivate
                    description:(NSString *)description
-                  successBlock:(void(^)())successBlock
+                  successBlock:(void(^)(id response))successBlock
                     errorBlock:(void(^)(NSError *error))errorBlock;
 
 /*
@@ -1514,7 +1586,7 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
 - (void)postListsMembersDestroyAllForListID:(NSString *)listID
                                     userIDs:(NSArray *)userIDs // array of strings
                               orScreenNames:(NSArray *)screenNames // array of strings
-                               successBlock:(void(^)())successBlock
+                               successBlock:(void(^)(id response))successBlock
                                  errorBlock:(void(^)(NSError *error))errorBlock;
 
 - (void)postListsMembersDestroyAllForSlug:(NSString *)slug
@@ -1522,7 +1594,7 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
                                 orOwnerID:(NSString *)ownerID
                                   userIDs:(NSArray *)userIDs // array of strings
                             orScreenNames:(NSArray *)screenNames // array of strings
-                             successBlock:(void(^)())successBlock
+                             successBlock:(void(^)(id response))successBlock
                                errorBlock:(void(^)(NSError *error))errorBlock;
 
 /*
@@ -1680,6 +1752,8 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
  Before creating a place you need to query GET geo/similar_places with the latitude, longitude and name of the place you wish to create. The query will return an array of places which are similar to the one you wish to create, and a token. If the place you wish to create isn't in the returned array you can use the token with this method to create a new one.
  
  Learn more about Finding Tweets about Places.
+ 
+ WARNING: deprecated since December 2nd, 2013 https://dev.twitter.com/discussions/22452
  */
 
 - (void)postGeoPlaceWithName:(NSString *)name // eg. "Twitter HQ"
@@ -1812,6 +1886,21 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
 					 successBlock:(void(^)(NSDictionary *rateLimits))successBlock
 					   errorBlock:(void(^)(NSError *error))errorBlock;
 
+#pragma mark Tweets
+
+/*
+ GET statuses/lookup
+ 
+ Returns fully-hydrated tweet objects for up to 100 tweets per request, as specified by comma-separated values passed to the id parameter. This method is especially useful to get the details (hydrate) a collection of Tweet IDs. GET statuses/show/:id is used to retrieve a single tweet object.
+ */
+
+- (void)getStatusesLookupTweetIDs:(NSArray *)tweetIDs
+                  includeEntities:(NSNumber *)includeEntities
+                         trimUser:(NSNumber *)trimUser
+                              map:(NSNumber *)map
+					 successBlock:(void(^)(NSArray *tweets))successBlock
+					   errorBlock:(void(^)(NSError *error))errorBlock;
+
 #pragma mark -
 #pragma mark UNDOCUMENTED APIs
 
@@ -1902,5 +1991,12 @@ includeMessagesFromFollowedAccounts:(NSNumber *)includeMessagesFromFollowedAccou
                            timeZone:(NSString *)timeZone
                        successBlock:(void(^)(id userProfile))successBlock
                          errorBlock:(void(^)(NSError *error))errorBlock;
+
+// GET search/typeahead.json
+- (void)_getSearchTypeaheadQuery:(NSString *)query
+                      resultType:(NSString *)resultType // "all"
+                  sendErrorCodes:(NSNumber *)sendErrorCodes
+                    successBlock:(void(^)(id results))successBlock
+                      errorBlock:(void(^)(NSError *error))errorBlock;
 
 @end

@@ -11,8 +11,13 @@
 @interface STHTTPRequest (STTwitter)
 
 + (STHTTPRequest *)twitterRequestWithURLString:(NSString *)urlString
-                        stTwitterProgressBlock:(void(^)(id json))progressBlock
+                  stTwitterUploadProgressBlock:(void(^)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite))uploadProgressBlock
+                stTwitterDownloadProgressBlock:(void(^)(id json))downloadProgressBlock
                          stTwitterSuccessBlock:(void(^)(NSDictionary *requestHeaders, NSDictionary *responseHeaders, id json))successBlock
                            stTwitterErrorBlock:(void(^)(NSDictionary *requestHeaders, NSDictionary *responseHeaders, NSError *error))errorBlock;
+
++ (void)expandedURLStringForShortenedURLString:(NSString *)urlString
+                                  successBlock:(void(^)(NSString *expandedURLString))successBlock
+                                    errorBlock:(void(^)(NSError *error))errorBlock;
 
 @end

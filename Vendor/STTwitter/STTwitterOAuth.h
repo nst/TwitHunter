@@ -22,6 +22,11 @@ extern NSString * const kSTPOSTDataKey;
  ...
  */
 
+NS_ENUM(NSUInteger, STTwitterOAuthErrorCode) {
+    STTwitterOAuthCannotPostAccessTokenRequestWithoutPIN,
+    STTwitterOAuthBadCredentialsOrConsumerTokensNotXAuthEnabled
+};
+
 @interface STTwitterOAuth : NSObject <STTwitterProtocol>
 
 + (instancetype)twitterOAuthWithConsumerName:(NSString *)consumerName
@@ -41,8 +46,16 @@ extern NSString * const kSTPOSTDataKey;
                                     password:(NSString *)password;
 
 - (void)postTokenRequest:(void(^)(NSURL *url, NSString *oauthToken))successBlock
+              forceLogin:(NSNumber *)forceLogin // optional, default @(NO)
+              screenName:(NSString *)screenName // optional, default nil
            oauthCallback:(NSString *)oauthCallback
               errorBlock:(void(^)(NSError *error))errorBlock;
+
+// convenience
+- (void)postTokenRequest:(void(^)(NSURL *url, NSString *oauthToken))successBlock
+           oauthCallback:(NSString *)oauthCallback
+              errorBlock:(void(^)(NSError *error))errorBlock;
+
 
 - (void)postAccessTokenRequestWithPIN:(NSString *)pin
                          successBlock:(void(^)(NSString *oauthToken, NSString *oauthTokenSecret, NSString *userID, NSString *screenName))successBlock
@@ -64,13 +77,13 @@ extern NSString * const kSTPOSTDataKey;
 @end
 
 @interface NSString (STTwitterOAuth)
-+ (NSString *)random32Characters;
-- (NSString *)signHmacSHA1WithKey:(NSString *)key;
-- (NSDictionary *)parametersDictionary;
-- (NSString *)urlEncodedString;
++ (NSString *)st_random32Characters;
+- (NSString *)st_signHmacSHA1WithKey:(NSString *)key;
+- (NSDictionary *)st_parametersDictionary;
+- (NSString *)st_urlEncodedString;
 @end
 
 @interface NSURL (STTwitterOAuth)
-- (NSString *)normalizedForOauthSignatureString;
-- (NSArray *)rawGetParametersDictionaries;
+- (NSString *)st_normalizedForOauthSignatureString;
+- (NSArray *)st_rawGetParametersDictionaries;
 @end

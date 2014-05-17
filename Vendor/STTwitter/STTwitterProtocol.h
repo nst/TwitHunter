@@ -8,19 +8,22 @@
 
 #import <Foundation/Foundation.h>
 
+@class STHTTPRequest;
+
 @protocol STTwitterProtocol <NSObject>
 
 - (BOOL)canVerifyCredentials;
 - (void)verifyCredentialsWithSuccessBlock:(void(^)(NSString *username))successBlock
                                errorBlock:(void(^)(NSError *error))errorBlock;
 
-- (NSString *)fetchResource:(NSString *)resource
-                 HTTPMethod:(NSString *)HTTPMethod
-              baseURLString:(NSString *)baseURLString
-                 parameters:(NSDictionary *)params
-              progressBlock:(void(^)(NSString *requestID, id response))progressBlock
-               successBlock:(void(^)(NSString *requestID, NSDictionary *requestHeaders, NSDictionary *responseHeaders, id response))successBlock
-                 errorBlock:(void(^)(NSString *requestID, NSDictionary *requestHeaders, NSDictionary *responseHeaders, NSError *error))errorBlock;
+- (id)fetchResource:(NSString *)resource
+         HTTPMethod:(NSString *)HTTPMethod
+      baseURLString:(NSString *)baseURLString
+         parameters:(NSDictionary *)params
+uploadProgressBlock:(void(^)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite))uploadProgressBlock
+downloadProgressBlock:(void(^)(id request, id response))progressBlock
+       successBlock:(void(^)(id request, NSDictionary *requestHeaders, NSDictionary *responseHeaders, id response))successBlock
+         errorBlock:(void(^)(id request, NSDictionary *requestHeaders, NSDictionary *responseHeaders, NSError *error))errorBlock;
 
 - (NSString *)consumerName;
 - (NSString *)loginTypeDescription;
@@ -28,6 +31,8 @@
 @optional
 
 - (void)postTokenRequest:(void(^)(NSURL *url, NSString *oauthToken))successBlock
+              forceLogin:(NSNumber *)forceLogin
+              screenName:(NSString *)screenName
            oauthCallback:(NSString *)oauthCallback
               errorBlock:(void(^)(NSError *error))errorBlock;
 
@@ -35,7 +40,7 @@
                          successBlock:(void(^)(NSString *oauthToken, NSString *oauthTokenSecret, NSString *userID, NSString *screenName))successBlock
                            errorBlock:(void(^)(NSError *error))errorBlock;
 
-- (void)invalidateBearerTokenWithSuccessBlock:(void(^)())successBlock
+- (void)invalidateBearerTokenWithSuccessBlock:(void(^)(id response))successBlock
                                    errorBlock:(void(^)(NSError *error))errorBlock;
 
 // access tokens are available only with plain OAuth authentication

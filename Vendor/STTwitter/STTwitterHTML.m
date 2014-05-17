@@ -20,7 +20,7 @@
         
         NSError *error = nil;
         //        NSString *token = [body firstMatchWithRegex:@"<input type=\"hidden\" value=\"(\\S+)\" name=\"authenticity_token\"/>" error:&error];
-        NSString *token = [body firstMatchWithRegex:@"formAuthenticityToken&quot;:&quot;(\\S+?)&quot" error:&error];
+        NSString *token = [body st_firstMatchWithRegex:@"formAuthenticityToken&quot;:&quot;(\\S+?)&quot" error:&error];
         
         if(token == nil) {
             errorBlock(error);
@@ -40,12 +40,12 @@
 - (void)postLoginFormWithUsername:(NSString *)username
                          password:(NSString *)password
                 authenticityToken:(NSString *)authenticityToken
-                     successBlock:(void(^)())successBlock
+                     successBlock:(void(^)(NSString *body))successBlock
                        errorBlock:(void(^)(NSError *error))errorBlock {
     
     if([username length] == 0 || [password length] == 0) {
         NSString *errorDescription = [NSString stringWithFormat:@"Missing credentials"];
-        NSError *error = [NSError errorWithDomain:NSStringFromClass([self class]) code:0 userInfo:@{NSLocalizedDescriptionKey : errorDescription}];
+        NSError *error = [NSError errorWithDomain:NSStringFromClass([self class]) code:STTwitterHTMLCannotPostWithoutCredentials userInfo:@{NSLocalizedDescriptionKey : errorDescription}];
         errorBlock(error);
         return;
     }
@@ -59,7 +59,7 @@
                          @"commit" : @"Sign in"};
     
     r.completionBlock = ^(NSDictionary *headers, NSString *body) {
-        successBlock();
+        successBlock(body);
     };
     
     r.errorBlock = ^(NSError *error) {
@@ -81,7 +81,7 @@
          */
         
         NSError *error1 = nil;
-        NSString *authenticityToken = [body firstMatchWithRegex:@"<input name=\"authenticity_token\" type=\"hidden\" value=\"(\\S+)\" />" error:&error1];
+        NSString *authenticityToken = [body st_firstMatchWithRegex:@"<input name=\"authenticity_token\" type=\"hidden\" value=\"(\\S+)\" />" error:&error1];
         
         if(authenticityToken == nil) {
             errorBlock(error1);
@@ -92,7 +92,7 @@
         
         NSError *error2 = nil;
         
-        NSString *oauthToken = [body firstMatchWithRegex:@"<input id=\"oauth_token\" name=\"oauth_token\" type=\"hidden\" value=\"(\\S+)\" />" error:&error2];
+        NSString *oauthToken = [body st_firstMatchWithRegex:@"<input id=\"oauth_token\" name=\"oauth_token\" type=\"hidden\" value=\"(\\S+)\" />" error:&error2];
         
         if(oauthToken == nil) {
             errorBlock(error2);
@@ -121,7 +121,7 @@
     r.completionBlock = ^(NSDictionary *headers, NSString *body) {
         
         NSError *error = nil;
-        NSString *pin = [body firstMatchWithRegex:@"<code>(\\d+)</code>" error:&error];
+        NSString *pin = [body st_firstMatchWithRegex:@"<code>(\\d+)</code>" error:&error];
         
         if(pin == nil) {
             errorBlock(error);
